@@ -89,7 +89,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     }
   }
 
-  Widget _buildSearchInterface(List<String> sources, List<String> tags) {
+  Widget _buildSearchInterface() {
     final provider = Provider.of<ArticleProvider>(context);
     return Visibility(
       visible: _isSearchVisible,
@@ -166,7 +166,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               ExpansionTile(
                 title: const Text('Источники', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                children: sources.map((source) {
+                children: provider.sources.map((source) {
                   return CheckboxListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                     title: Text(source, style: const TextStyle(fontSize: 20)),
@@ -184,7 +184,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               ExpansionTile(
                 title: const Text('Тэги', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                children: tags.map((tag) {
+                children: provider.tags.map((tag) {
                   return CheckboxListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                     title: Text(tag, style: const TextStyle(fontSize: 20)),
@@ -423,7 +423,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
           ),
 
           // Интерфейс поиска
-          _buildSearchInterface(sources, tags),
+          _buildSearchInterface(),
 
           // Список статей
           Expanded(
