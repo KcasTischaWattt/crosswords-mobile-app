@@ -8,7 +8,7 @@ import '../screens/article_detail_page.dart';
 class ArticlesPage extends StatefulWidget  {
   final bool isFavoriteDialogEnabled;
 
-  const ArticlesPage({Key? key, required this.isFavoriteDialogEnabled}) : super(key: key);
+  const ArticlesPage({super.key, required this.isFavoriteDialogEnabled});
 
   @override
   _ArticlesPageState createState() => _ArticlesPageState();
@@ -37,8 +37,10 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
       curve: Curves.easeInOut,
     );
 
-    Future.microtask(() =>
-        Provider.of<ArticleProvider>(context, listen: false).loadArticles());
+    Future.microtask(() {
+      if (!mounted) return;
+      Provider.of<ArticleProvider>(context, listen: false).loadArticles();
+    });
   }
 
   @override
@@ -104,7 +106,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 25),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
@@ -209,7 +211,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 25),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           ),
@@ -237,7 +239,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 25),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           ),
@@ -304,8 +306,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Consumer<ArticleProvider>(
       builder: (context, provider, child) {
-        final List<String> sources = provider.sources;
-        final List<String> tags = provider.tags;
         final List<Article> allArticles = provider.articles;
         final List<Article> displayedArticles = provider.showOnlyFavorites
             ? allArticles.where((article) => provider.favoriteArticles.contains(article.id)).toList()
