@@ -15,6 +15,7 @@ class ArticleProvider extends ChangeNotifier {
   Set<String> _selectedSources = {};
   Set<String> _selectedTags = {};
   bool _searchInText = false;
+  bool _isSearchVisible = false;
 
   List<Article> get articles => _articles;
   bool get isLoading => _isLoading;
@@ -24,6 +25,7 @@ class ArticleProvider extends ChangeNotifier {
   Set<String> get selectedSources => _selectedSources;
   Set<String> get selectedTags => _selectedTags;
   bool get searchInText => _searchInText;
+  bool get isSearchVisible => _isSearchVisible;
 
 
   // TODO загрузка данных
@@ -165,6 +167,11 @@ class ArticleProvider extends ChangeNotifier {
     _selectedSources.clear();
     _selectedTags.clear();
     _searchInText = false;
+    notifyListeners();
+  }
+
+  void toggleSearchVisibility() {
+    _isSearchVisible = !_isSearchVisible;
     notifyListeners();
   }
 }
