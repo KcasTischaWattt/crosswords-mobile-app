@@ -60,14 +60,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
   }
 
   void _toggleSearchExpanded() {
-    setState(() {
-      _isSearchExpanded = !_isSearchExpanded;
-      if (_isSearchExpanded) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-      }
-    });
+    _isSearchExpanded = !_isSearchExpanded;
+    _isSearchExpanded ? _animationController.forward() : _animationController.reverse();
   }
 
   void _setSearchOption(String option) {
@@ -91,9 +85,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      setState(() {
-        controller.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
+      controller.text = DateFormat('yyyy-MM-dd').format(picked);
     }
   }
 
