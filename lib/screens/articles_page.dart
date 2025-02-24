@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Для выбора дат
-import '../data/fake_articles.dart';
-import '../models/article.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../providers/article_provider.dart';
+import '../data/models/article.dart';
+import '../screens/article_detail_page.dart';
 
-class ArticlesPage extends StatefulWidget {
+class ArticlesPage extends StatefulWidget  {
   final bool isFavoriteDialogEnabled;
 
   const ArticlesPage({Key? key, required this.isFavoriteDialogEnabled}) : super(key: key);
@@ -13,25 +15,14 @@ class ArticlesPage extends StatefulWidget {
 }
 
 class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderStateMixin {
-  final Set<int> _favoriteArticles = {};
   bool _isSearchVisible = false;
   bool _isSearchExpanded = false;
-  bool _showOnlyFavorites = false;
-  String _selectedSearchOption = 'Поиск по смыслу';
 
   // Поля ввода
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _dateFromController = TextEditingController();
   final TextEditingController _dateToController = TextEditingController();
-  bool _searchInText = false; // Только для точного поиска
-
-  // Списки источников и тэгов
-  final List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3'];
-  final List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3'];
-
-  // Выбранные фильтры
-  final Set<String> _selectedSources = {};
-  final Set<String> _selectedTags = {};
+  bool _searchInText = false;
 
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
@@ -47,6 +38,9 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
       parent: _animationController,
       curve: Curves.easeInOut,
     );
+
+    Future.microtask(() =>
+        Provider.of<ArticleProvider>(context, listen: false).loadArticles());
   }
 
   @override
@@ -78,37 +72,16 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
   }
 
   void _setSearchOption(String option) {
-    setState(() {
-      _selectedSearchOption = option;
-      _toggleSearchExpanded();  // Сворачиваем аккордеон после выбора
-    });
+    Provider.of<ArticleProvider>(context, listen: false).setSearchOption(option);
+    _toggleSearchExpanded();
   }
 
-  void _toggleFavorite(int articleId) {
-    setState(() {
-      if (_favoriteArticles.contains(articleId)) {
-        _favoriteArticles.remove(articleId);
-      } else {
-        _favoriteArticles.add(articleId);
-      }
-    });
-  }
-
-  void _toggleShowFavorites() {
-    setState(() {
-      _showOnlyFavorites = !_showOnlyFavorites;
-    });
+  Future<void> _toggleFavorite(String articleId) async {
+    await Provider.of<ArticleProvider>(context, listen: false).toggleFavorite(articleId);
   }
 
   void _resetFilters() {
-    setState(() {
-      _searchController.clear();
-      _dateFromController.clear();
-      _dateToController.clear();
-      _selectedSources.clear();
-      _selectedTags.clear();
-      _searchInText = false;
-    });
+    Provider.of<ArticleProvider>(context, listen: false).resetFilters();
   }
 
   Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
@@ -125,7 +98,9 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     }
   }
 
-  Widget _buildSearchInterface() {
+  Widget _buildSearchInterface(List<String> sources, List<String> tags) {
+    final provider = Provider.of<ArticleProvider>(context);
+    String selectedSearchOption = provider.selectedSearchOption;
     return Visibility(
       visible: _isSearchVisible,
       child: Padding(
@@ -133,110 +108,199 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                labelText: 'Строка поиска',
-                border: OutlineInputBorder(),
+            // Строка поиска
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-            if (_selectedSearchOption != 'Поиск по ID') ...[
-              ExpansionTile(
-                title: const Text('Источники'),
-                children: _sources.map((source) {
-                  return CheckboxListTile(
-                    title: Text(source),
-                    value: _selectedSources.contains(source),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedSources.add(source);
-                        } else {
-                          _selectedSources.remove(source);
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-              ExpansionTile(
-                title: const Text('Тэги'),
-                children: _tags.map((tag) {
-                  return CheckboxListTile(
-                    title: Text(tag),
-                    value: _selectedTags.contains(tag),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedTags.add(tag);
-                        } else {
-                          _selectedTags.remove(tag);
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 12),
-              Row(
+              child: Row(
                 children: [
+                  // Поле ввода
                   Expanded(
                     child: TextField(
-                      controller: _dateFromController,
-                      decoration: const InputDecoration(
-                        labelText: 'Дата С',
-                        border: OutlineInputBorder(),
+                      controller: _searchController,
+                      style: const TextStyle(fontSize: 20),
+                      decoration: InputDecoration(
+                        hintText: 'Строка поиска',
+                        hintStyle: TextStyle(color: Colors.grey[600], fontSize: 20),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                       ),
-                      readOnly: true,
-                      onTap: () => _selectDate(context, _dateFromController),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: _dateToController,
-                      decoration: const InputDecoration(
-                        labelText: 'Дата По',
-                        border: OutlineInputBorder(),
-                      ),
-                      readOnly: true,
-                      onTap: () => _selectDate(context, _dateToController),
+                  // Иконка лупы
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: Icon(
+                      Icons.search,
+                      color: Colors.grey[600],
+                      size: 28,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              if (_selectedSearchOption == 'Точный поиск')
-                CheckboxListTile(
-                  title: const Text('Искать в тексте'),
-                  value: _searchInText,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _searchInText = value ?? false;
-                    });
-                  },
+            ),
+
+            // Чекбокс
+            if (selectedSearchOption == 'Точный поиск') ...[
+              const SizedBox(height: 16),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text(
+                  'Искать в тексте',
+                  style: TextStyle(fontSize: 20),
                 ),
+                value: _searchInText,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _searchInText = value ?? false;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
             ],
-            const SizedBox(height: 12),
+
+            // Фильтры и даты
+            if (selectedSearchOption != 'Поиск по ID') ...[
+              const SizedBox(height: 16),
+
+              // Аккордеон Источники
+              ExpansionTile(
+                title: const Text('Источники', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                children: sources.map((source) {
+                  return CheckboxListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    title: Text(source, style: const TextStyle(fontSize: 20)),
+                    value: provider.selectedSources.contains(source),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        provider.toggleSource(source);
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+
+              // Аккордеон Тэги
+              ExpansionTile(
+                title: const Text('Тэги', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                children: tags.map((tag) {
+                  return CheckboxListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    title: Text(tag, style: const TextStyle(fontSize: 20)),
+                    value: provider.selectedTags.contains(tag),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        provider.toggleTag(tag);
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Поля выбора даты
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _dateFromController,
+                        readOnly: true,
+                        style: const TextStyle(fontSize: 20),
+                        onTap: () => _selectDate(context, _dateFromController),
+                        decoration: const InputDecoration(
+                          labelText: 'Дата С',
+                          labelStyle: TextStyle(fontSize: 20),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _dateToController,
+                        readOnly: true,
+                        style: const TextStyle(fontSize: 20),
+                        onTap: () => _selectDate(context, _dateToController),
+                        decoration: const InputDecoration(
+                          labelText: 'Дата По',
+                          labelStyle: TextStyle(fontSize: 20),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            const SizedBox(height: 16),
+
+            // Кнопки "Найти" и "Сбросить фильтры"
             Row(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Отправка данных на бэкенд будет здесь
-                    print('Ищем: ${_searchController.text}');
-                    print('Источники: ${_selectedSources.toList()}');
-                    print('Тэги: ${_selectedTags.toList()}');
-                    print('Дата с: ${_dateFromController.text}');
-                    print('Дата по: ${_dateToController.text}');
-                    print('Искать в тексте: $_searchInText');
-                  },
-                  child: const Text('Найти'),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                    ),
+                    onPressed: () {
+                      print('Ищем: ${_searchController.text}');
+                      print('Источники: ${provider.selectedSources.toList()}');
+                      print('Тэги: ${provider.selectedTags.toList()}');
+                      print('Дата с: ${_dateFromController.text}');
+                      print('Дата по: ${_dateToController.text}');
+                      print('Искать в тексте: $_searchInText');
+                    },
+                    child: const Text('Найти', style: TextStyle(fontSize: 22, color: Colors.black)),
+                  ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 TextButton(
                   onPressed: _resetFilters,
-                  child: const Text('Сбросить фильтры'),
+                  child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 20)),
                 ),
               ],
             ),
@@ -246,18 +310,22 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
-    final List<Article> displayedArticles = _showOnlyFavorites
-        ? fakeArticles.where((article) {
-      final int articleId = int.tryParse(article.id) ?? article.id.hashCode;
-      return _favoriteArticles.contains(articleId);
-    }).toList()
-        : fakeArticles;
+    return Consumer<ArticleProvider>(
+        builder: (context, provider, child) {
+          final List<String> sources = provider.sources;
+          final List<String> tags = provider.tags;
+          String selectedSearchOption = provider.selectedSearchOption;
+          final List<Article> allArticles = provider.articles;
+          final List<Article> displayedArticles = provider.showOnlyFavorites
+              ? allArticles.where((article) => provider.favoriteArticles.contains(article.id)).toList()
+              : allArticles;
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 80,  // Увеличиваем высоту AppBar
+        toolbarHeight: 80,
         title: Row(
           children: [
             const Text(
@@ -266,25 +334,30 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
             ),
             const SizedBox(width: 10),
             IconButton(
-              icon: Icon(
-                _showOnlyFavorites ? Icons.favorite : Icons.favorite_border,
-                color: _showOnlyFavorites ? Colors.red : Colors.grey,
+              icon: provider.isLoading
+                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  : Icon(
+                provider.showOnlyFavorites ? Icons.favorite : Icons.favorite_border,
+                color: provider.showOnlyFavorites ? Colors.red : Colors.grey,
                 size: 30,
               ),
-              onPressed: _toggleShowFavorites,
+              onPressed: provider.isLoading ? null : provider.toggleShowFavorites,
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, size: 30),  // Увеличиваем размер иконки поиска
+            icon: const Icon(Icons.search, size: 30),
             onPressed: _toggleSearchVisibility,
           ),
         ],
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
-      body: Column(
+      body: provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         children: [
+          // Аккордеон с выбором типа поиска
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
@@ -310,7 +383,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              _selectedSearchOption,
+                              selectedSearchOption,
                               style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                             ),
                             Icon(
@@ -327,7 +400,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       SizeTransition(
                         sizeFactor: _expandAnimation,
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 0),  // Убираем отступ снизу
+                          padding: const EdgeInsets.only(bottom: 0),
                           child: Column(
                             children: [
                               ListTile(
@@ -341,7 +414,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                                 onTap: () => _setSearchOption('Точный поиск'),
                               ),
                               ListTile(
-                                contentPadding: const EdgeInsets.only(top: 8, bottom: 0),  // Уменьшаем нижний отступ
+                                contentPadding: const EdgeInsets.only(top: 8, bottom: 0),
                                 title: const Text('Поиск по ID'),
                                 onTap: () => _setSearchOption('Поиск по ID'),
                               ),
@@ -350,7 +423,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ),
               ),
             ),
@@ -359,13 +432,17 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                 : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 300),
           ),
+
+          // Интерфейс поиска
+          _buildSearchInterface(sources, tags),
+
+          // Список статей
           Expanded(
             child: ListView.builder(
               itemCount: displayedArticles.length,
               itemBuilder: (context, index) {
                 final Article article = displayedArticles[index];
-                final int articleId = int.tryParse(article.id) ?? article.id.hashCode;
-                final isFavorite = _favoriteArticles.contains(articleId);
+                final isFavorite = provider.favoriteArticles.contains(article.id);
 
                 return Card(
                   color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
@@ -416,17 +493,22 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Открыта статья: ${article.title}')),
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ArticleDetailPage(
+                                        article: article,
+                                      ),
+                                    ),
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Theme.of(context).primaryColor,
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 ),
-                                child: const Text('Подробнее', style: TextStyle(color: Colors.black, fontSize: 18)),
-                              ),
+                                child: const Text('Подробнее', style: TextStyle(color: Colors.black, fontSize: 22)),
+                              )
                             ],
                           ),
                         ),
@@ -436,7 +518,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                             color: isFavorite ? Colors.red : Colors.grey,
                             size: 30,
                           ),
-                          onPressed: () => _toggleFavorite(articleId),
+                          onPressed: () async => await _toggleFavorite(article.id),
                         ),
                       ],
                     ),
@@ -447,6 +529,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
           ),
         ],
       ),
+    );
+    },
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'providers/article_provider.dart';
 import 'screens/articles_page.dart';
 import 'screens/digests_page.dart';
 import 'screens/notifications_page.dart';
@@ -7,7 +9,14 @@ import 'screens/settings_page.dart';
 import 'screens/login_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ArticleProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {

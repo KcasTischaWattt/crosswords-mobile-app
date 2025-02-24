@@ -57,7 +57,7 @@ class LoginPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                 ),
                 child: const Text(
-                  'Войти через Т-ID',
+                  'Войти',
                   style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
               ),
