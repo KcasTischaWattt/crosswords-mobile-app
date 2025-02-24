@@ -99,7 +99,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
   Widget _buildSearchInterface(List<String> sources, List<String> tags) {
     final provider = Provider.of<ArticleProvider>(context);
-    String selectedSearchOption = provider.selectedSearchOption;
     return Visibility(
       visible: _isSearchVisible,
       child: Padding(
@@ -149,7 +148,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
             ),
 
             // Чекбокс
-            if (selectedSearchOption == 'Точный поиск') ...[
+            if (provider.selectedSearchOption == 'Точный поиск') ...[
               const SizedBox(height: 16),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
@@ -168,7 +167,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
             ],
 
             // Фильтры и даты
-            if (selectedSearchOption != 'Поиск по ID') ...[
+            if (provider.selectedSearchOption != 'Поиск по ID') ...[
               const SizedBox(height: 16),
 
               // Аккордеон Источники
@@ -316,7 +315,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
         builder: (context, provider, child) {
           final List<String> sources = provider.sources;
           final List<String> tags = provider.tags;
-          String selectedSearchOption = provider.selectedSearchOption;
           final List<Article> allArticles = provider.articles;
           final List<Article> displayedArticles = provider.showOnlyFavorites
               ? allArticles.where((article) => provider.favoriteArticles.contains(article.id)).toList()
@@ -382,7 +380,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              selectedSearchOption,
+                              provider.selectedSearchOption,
                               style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                             ),
                             Icon(
