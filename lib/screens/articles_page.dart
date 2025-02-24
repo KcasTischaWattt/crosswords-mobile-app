@@ -22,7 +22,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _dateFromController = TextEditingController();
   final TextEditingController _dateToController = TextEditingController();
-  bool _searchInText = false;
 
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
@@ -158,10 +157,10 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   'Искать в тексте',
                   style: TextStyle(fontSize: 20),
                 ),
-                value: _searchInText,
+                value: provider.searchInText,
                 onChanged: (bool? value) {
                   setState(() {
-                    _searchInText = value ?? false;
+                    provider.setSearchInText(value ?? false);
                   });
                 },
                 controlAffinity: ListTileControlAffinity.leading,
@@ -292,7 +291,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       print('Тэги: ${provider.selectedTags.toList()}');
                       print('Дата с: ${_dateFromController.text}');
                       print('Дата по: ${_dateToController.text}');
-                      print('Искать в тексте: $_searchInText');
+                      print('Искать в тексте: $provider.searchInText');
                     },
                     child: const Text('Найти', style: TextStyle(fontSize: 22, color: Colors.black)),
                   ),
