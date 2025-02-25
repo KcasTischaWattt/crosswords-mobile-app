@@ -204,7 +204,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   child: TextField(
                     controller: _commentController,
                     decoration: InputDecoration(
-                      hintText: "Оставить зааметку...",
+                      hintText: "Оставить заметку...",
                       filled: true,
                       fillColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                       border: OutlineInputBorder(
