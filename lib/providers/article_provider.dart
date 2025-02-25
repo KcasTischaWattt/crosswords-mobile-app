@@ -10,7 +10,8 @@ class ArticleProvider extends ChangeNotifier {
   List<String> get sources => _sources;
   List<String> get tags => _tags;
   bool _isLoading = false;
-  Set<String> _favoriteArticles = {}; // TODO убрать список ID избранных статей после подключения бэкэнда
+  final Set<String> _favoriteArticles = {}; // TODO убрать список ID избранных статей после подключения бэкэнда
+  final Map<String, List<String>> _comments = {}; // TODO убрать список комментариев после подключения бэкэнда
   bool _showOnlyFavorites = false;
   String _selectedSearchOption = 'Поиск по смыслу';
   Set<String> _selectedSources = {};
@@ -18,6 +19,7 @@ class ArticleProvider extends ChangeNotifier {
   bool _searchInText = false;
   bool _isSearchVisible = false;
   bool _isLoadingMore = false;
+  // TODO не забыть использовать для запроса к API
   int _currentPage = 1;
   final int _pageSize = 10;
 
@@ -136,6 +138,27 @@ class ArticleProvider extends ChangeNotifier {
 
   void toggleSearchVisibility() {
     _isSearchVisible = !_isSearchVisible;
+    notifyListeners();
+  }
+
+  List<String> getComments(String articleId) {
+    return _comments[articleId] ?? [];
+  }
+
+  Future<void> loadComments(String articleId) async {
+    // TODO запрос на сервер
+    await Future.delayed(const Duration(seconds: 1)); // Имитация загрузки с сервера
+    _comments.putIfAbsent(articleId, () => ["Пример комментария"]);
+    notifyListeners();
+  }
+
+  Future<void> addComment(String articleId, String commentText) async {
+    if (commentText.trim().isEmpty) return;
+
+    // TODO запрос на сервер
+    _comments.putIfAbsent(articleId, () => []);
+    _comments[articleId]!.add(commentText);
+
     notifyListeners();
   }
 }

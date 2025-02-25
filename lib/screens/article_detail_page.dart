@@ -14,13 +14,18 @@ class ArticleDetailPage extends StatefulWidget {
 }
 
 class _ArticleDetailPageState extends State<ArticleDetailPage> {
-
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
 
   Future<void> _toggleFavorite() async {
     await Provider.of<ArticleProvider>(context, listen: false).toggleFavorite(widget.article.id);
@@ -157,6 +162,72 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             ),
 
             const SizedBox(height: 20),
+
+            // Заголовок комментариев
+            const Text(
+              'Комментарии',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+
+            // Список комментариев
+            Consumer<ArticleProvider>(
+              builder: (context, provider, child) {
+                final comments = provider.getComments(widget.article.id);
+
+                return comments.isEmpty
+                    ? const Text("Комментариев пока нет.")
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: comments.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(comments[index], style: const TextStyle(fontSize: 18)),
+                    );
+                  },
+                );
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+// Поле ввода комментария
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _commentController,
+                    decoration: InputDecoration(
+                      hintText: "Оставить комментарий...",
+                      filled: true,
+                      fillColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: const Icon(Icons.send, size: 30),
+                  onPressed: () {
+                    final provider = Provider.of<ArticleProvider>(context, listen: false);
+                    provider.addComment(widget.article.id, _commentController.text);
+                    _commentController.clear();
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
             // Кнопка для перехода на оригинальную статью
             ElevatedButton(
               onPressed: () {
