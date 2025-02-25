@@ -4,8 +4,8 @@ import '../data/fake/fake_articles.dart';
 
 class ArticleProvider extends ChangeNotifier {
   List<Article> _articles = [];
-  List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3'];
-  List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3'];
+  List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3', 'Источник 4', 'Источник 5', 'Источник 6'];
+  List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
 
   List<String> get sources => _sources;
   List<String> get tags => _tags;

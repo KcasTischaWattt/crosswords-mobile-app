@@ -174,36 +174,55 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               ExpansionTile(
                 title: const Text('Источники', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                children: provider.sources.map((source) {
-                  return CheckboxListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                    title: Text(source, style: const TextStyle(fontSize: 20)),
-                    value: provider.selectedSources.contains(source),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        provider.toggleSource(source);
-                      });
-                    },
-                  );
-                }).toList(),
+                children: [
+                  SizedBox(
+                    height: provider.sources.length > 3 ? 150 : null,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: provider.sources.map((source) {
+                          return CheckboxListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                            title: Text(source, style: const TextStyle(fontSize: 20)),
+                            value: provider.selectedSources.contains(source),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                provider.toggleSource(source);
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+
 
               // Аккордеон Тэги
               ExpansionTile(
                 title: const Text('Тэги', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                children: provider.tags.map((tag) {
-                  return CheckboxListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                    title: Text(tag, style: const TextStyle(fontSize: 20)),
-                    value: provider.selectedTags.contains(tag),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        provider.toggleTag(tag);
-                      });
-                    },
-                  );
-                }).toList(),
+                children: [
+                  SizedBox(
+                    height: provider.tags.length > 3 ? 150 : null, // Ограничиваем высоту
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: provider.tags.map((tag) {
+                          return CheckboxListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                            title: Text(tag, style: const TextStyle(fontSize: 20)),
+                            value: provider.selectedTags.contains(tag),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                provider.toggleTag(tag);
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 16),
