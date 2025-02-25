@@ -163,9 +163,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
             const SizedBox(height: 20),
 
-            // Заголовок комментариев
+            // Заголовок заметок
             const Text(
-              'Комментарии',
+              'Заметки',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
@@ -175,7 +175,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 final comments = provider.getComments(widget.article.id);
 
                 return comments.isEmpty
-                    ? const Text("Комментариев пока нет.")
+                    ? const Text("Заметок пока нет.")
                     : ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -204,7 +204,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   child: TextField(
                     controller: _commentController,
                     decoration: InputDecoration(
-                      hintText: "Оставить комментарий...",
+                      hintText: "Оставить зааметку...",
                       filled: true,
                       fillColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                       border: OutlineInputBorder(
