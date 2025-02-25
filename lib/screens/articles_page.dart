@@ -69,7 +69,9 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
   void _onScroll() {
     final provider = Provider.of<ArticleProvider>(context, listen: false);
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !provider.isLoadingMore &&
+        !provider.isLoading) {
       provider.loadMoreArticles();
     }
   }
@@ -104,6 +106,37 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     }
   }
 
+  Widget _buildFilterExpansionTile({
+    required String title,
+    required List<String> items,
+    required Set<String> selectedItems,
+    required Function(String) onToggle,
+  }) {
+    return ExpansionTile(
+      title: Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+      tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+      children: [
+        SizedBox(
+          height: items.length > 3 ? 150 : null,
+          child: SingleChildScrollView(
+            child: Column(
+              children: items.map((item) {
+                return CheckboxListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                  title: Text(item, style: const TextStyle(fontSize: 20)),
+                  value: selectedItems.contains(item),
+                  onChanged: (bool? value) {
+                    setState(() => onToggle(item));
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSearchInterface() {
     final provider = Provider.of<ArticleProvider>(context);
     return Visibility(
@@ -134,7 +167,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       ),
                     ),
                   ),
-                  // Иконка лупы
                   Padding(
                     padding: const EdgeInsets.only(right: 16),
                     child: Icon(
@@ -157,11 +189,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   style: TextStyle(fontSize: 20),
                 ),
                 value: provider.searchInText,
-                onChanged: (bool? value) {
-                  setState(() {
-                    provider.setSearchInText(value ?? false);
-                  });
-                },
+                onChanged: (bool? value) => provider.setSearchInText(value ?? false),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
             ],
@@ -171,58 +199,17 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               const SizedBox(height: 16),
 
               // Аккордеон Источники
-              ExpansionTile(
-                title: const Text('Источники', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                children: [
-                  SizedBox(
-                    height: provider.sources.length > 3 ? 150 : null,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: provider.sources.map((source) {
-                          return CheckboxListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                            title: Text(source, style: const TextStyle(fontSize: 20)),
-                            value: provider.selectedSources.contains(source),
-                            onChanged: (bool? value) {
-                              setState(() {
-                                provider.toggleSource(source);
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
+              _buildFilterExpansionTile(
+                title: 'Источники',
+                items: provider.sources,
+                selectedItems: provider.selectedSources,
+                onToggle: provider.toggleSource,
               ),
-
-
-              // Аккордеон Тэги
-              ExpansionTile(
-                title: const Text('Тэги', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-                children: [
-                  SizedBox(
-                    height: provider.tags.length > 3 ? 150 : null, // Ограничиваем высоту
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: provider.tags.map((tag) {
-                          return CheckboxListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                            title: Text(tag, style: const TextStyle(fontSize: 20)),
-                            value: provider.selectedTags.contains(tag),
-                            onChanged: (bool? value) {
-                              setState(() {
-                                provider.toggleTag(tag);
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
+              _buildFilterExpansionTile(
+                title: 'Тэги',
+                items: provider.tags,
+                selectedItems: provider.selectedTags,
+                onToggle: provider.toggleTag,
               ),
 
               const SizedBox(height: 16),
@@ -446,11 +433,9 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   itemCount: displayedArticles.length + (provider.isLoadingMore ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index == displayedArticles.length) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: CircularProgressIndicator(),
-                        ),
+                      return const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(child: CircularProgressIndicator()),
                       );
                     }
                     final Article article = displayedArticles[index];

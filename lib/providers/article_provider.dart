@@ -34,7 +34,6 @@ class ArticleProvider extends ChangeNotifier {
 
   Future<void> loadArticles() async {
     _currentPage = 1;
-    _articles.clear();
     notifyListeners();
 
     _isLoading = true;
@@ -45,7 +44,7 @@ class ArticleProvider extends ChangeNotifier {
     // TODO загрузка данных
     List<Article> newArticles = fakeArticles.toList();
 
-    _articles = newArticles;
+    _articles.replaceRange(0, _articles.length, newArticles);
     _currentPage++;
 
     _isLoading = false;
