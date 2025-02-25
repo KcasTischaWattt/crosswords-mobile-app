@@ -42,7 +42,10 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
     Future.microtask(() {
       if (!mounted) return;
-      Provider.of<ArticleProvider>(context, listen: false).loadArticles();
+      final provider = Provider.of<ArticleProvider>(context, listen: false);
+      if (provider.articles.isEmpty) {
+        provider.loadArticles();
+      }
     });
   }
 
@@ -115,13 +118,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               decoration: BoxDecoration(
                 color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 25),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
               ),
               child: Row(
                 children: [
@@ -220,13 +216,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       decoration: BoxDecoration(
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 25),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
                       ),
                       child: TextField(
                         controller: _dateFromController,
@@ -248,13 +237,6 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       decoration: BoxDecoration(
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 25),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
                       ),
                       child: TextField(
                         controller: _dateToController,
@@ -351,6 +333,9 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               ),
             ],
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            shadowColor: Colors.transparent,
           ),
           body: provider.isLoading
               ? const Center(child: CircularProgressIndicator())
