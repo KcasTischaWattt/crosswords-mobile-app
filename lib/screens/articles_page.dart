@@ -67,7 +67,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
   void _onScroll() {
     final provider = Provider.of<ArticleProvider>(context, listen: false);
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      provider.loadArticles();
+      provider.loadMoreArticles();
     }
   }
 
