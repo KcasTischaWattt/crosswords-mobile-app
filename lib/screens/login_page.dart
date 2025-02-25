@@ -42,9 +42,13 @@ class LoginPage extends StatelessWidget {
                 color: Colors.grey,
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Добро пожаловать в Умный Кропус СМИ',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              const SizedBox(
+                width: double.infinity,
+                child: Text(
+                  'Добро пожаловать в Умный Кропус СМИ',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 40),
               ElevatedButton(
