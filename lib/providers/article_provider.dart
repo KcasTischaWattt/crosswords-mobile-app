@@ -16,6 +16,9 @@ class ArticleProvider extends ChangeNotifier {
   Set<String> _selectedTags = {};
   bool _searchInText = false;
   bool _isSearchVisible = false;
+  bool _isLoadingMore = false;
+  int _currentPage = 1;
+  final int _pageSize = 10;
 
   List<Article> get articles => _articles;
   bool get isLoading => _isLoading;
@@ -26,16 +29,27 @@ class ArticleProvider extends ChangeNotifier {
   Set<String> get selectedTags => _selectedTags;
   bool get searchInText => _searchInText;
   bool get isSearchVisible => _isSearchVisible;
+  bool get isLoadingMore => _isLoadingMore;
 
 
   // TODO загрузка данных
-  Future<void> loadArticles() async {
-    _isLoading = true;
+  Future<void> loadArticles({bool refresh = false}) async {
+    if (refresh) {
+      _currentPage = 1;
+      _articles.clear();
+      notifyListeners();
+    }
+
+    if (_isLoadingMore || _isLoading) return;
+
+    if (_currentPage == 1){
+      _isLoading = true;
+    }
     notifyListeners();
 
     await Future.delayed(const Duration(seconds: 1)); // Имитация задержки
 
-    _articles = [
+    List<Article> newArticles = [
       Article(
         id: "1",
         title: "Оборот разработчиков ПО в ноябре вырос на 28,9% г/г - Росстат",
@@ -99,6 +113,9 @@ class ArticleProvider extends ChangeNotifier {
         url: "https://www.interfax.ru/business/it-export-asia",
       ),
     ];
+
+    _articles.addAll(newArticles);
+    _currentPage++;
 
     _isLoading = false;
     notifyListeners();

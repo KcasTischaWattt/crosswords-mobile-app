@@ -24,6 +24,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
@@ -36,6 +37,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
       parent: _animationController,
       curve: Curves.easeInOut,
     );
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
 
     Future.microtask(() {
       if (!mounted) return;
@@ -49,6 +52,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     _searchController.dispose();
     _dateFromController.dispose();
     _dateToController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -58,6 +62,13 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
       _isSearchExpanded = false;
       _animationController.reset();
     });
+  }
+
+  void _onScroll() {
+    final provider = Provider.of<ArticleProvider>(context, listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      provider.loadArticles();
+    }
   }
 
   void _toggleSearchExpanded() {
@@ -427,8 +438,17 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               // Список статей
               Expanded(
                 child: ListView.builder(
-                  itemCount: displayedArticles.length,
+                  controller: _scrollController,
+                  itemCount: displayedArticles.length + (provider.isLoadingMore ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index == displayedArticles.length) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
                     final Article article = displayedArticles[index];
                     final isFavorite = provider.favoriteArticles.contains(article.id);
 
