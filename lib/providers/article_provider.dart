@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/models/article.dart';
+import '../data/models/note.dart';
 import '../data/fake/fake_articles.dart';
 
 class ArticleProvider extends ChangeNotifier {
@@ -11,7 +12,7 @@ class ArticleProvider extends ChangeNotifier {
   List<String> get tags => _tags;
   bool _isLoading = false;
   final Set<String> _favoriteArticles = {}; // TODO убрать список ID избранных статей после подключения бэкэнда
-  final Map<String, List<String>> _comments = {}; // TODO убрать список комментариев после подключения бэкэнда
+  List<Note> _notes = [];
   bool _showOnlyFavorites = false;
   String _selectedSearchOption = 'Поиск по смыслу';
   Set<String> _selectedSources = {};
@@ -33,6 +34,12 @@ class ArticleProvider extends ChangeNotifier {
   bool get searchInText => _searchInText;
   bool get isSearchVisible => _isSearchVisible;
   bool get isLoadingMore => _isLoadingMore;
+  List<Note> get notes => _notes;
+
+  // TODO переделать систему получения заметок
+  List<Note> getNotesForArticle(int articleId) {
+    return _notes.where((note) => note.articleId == articleId).toList();
+  }
 
   Future<void> loadArticles() async {
     _currentPage = 1;
@@ -141,24 +148,40 @@ class ArticleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<String> getComments(String articleId) {
-    return _comments[articleId] ?? [];
-  }
+  // TODO заагрузка заметок
+  Future<void> loadNotes(int articleId) async {
+    _isLoading = true;
+    notifyListeners();
 
-  Future<void> loadComments(String articleId) async {
-    // TODO запрос на сервер
-    await Future.delayed(const Duration(seconds: 1)); // Имитация загрузки с сервера
-    _comments.putIfAbsent(articleId, () => ["Пример комментария"]);
+    _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> addComment(String articleId, String commentText) async {
-    if (commentText.trim().isEmpty) return;
+  // Метод для добавления заметки
+  Future<void> addNote(int articleId, String text) async {
+    if (text.trim().isEmpty) return;
 
-    // TODO запрос на сервер
-    _comments.putIfAbsent(articleId, () => []);
-    _comments[articleId]!.add(commentText);
+    final newNote = Note(
+      id: DateTime.now().millisecondsSinceEpoch, // Временный ID
+      text: text,
+      user: "User1", // TODO Заглушка, потом заменить на userId
+      articleId: articleId,
+      createdAt: DateTime.now().toIso8601String(),
+      updatedAt: DateTime.now().toIso8601String(),
+    );
 
+    _notes.add(newNote);
     notifyListeners();
+
+    // TODO Отправить данные на сервер
+  }
+
+  // Метод для удаления заметки
+  Future<void> deleteNote(int noteId) async {
+    _notes.removeWhere((note) => note.id == noteId);
+    notifyListeners();
+
+    // TODO Отправить запрос на удаление заметки на сервер
+    // await ApiService.deleteNote(noteId);
   }
 }

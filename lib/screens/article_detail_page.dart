@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '../providers/article_provider.dart';
 import '../data/models/article.dart';
+import '../data/models/note.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -172,15 +173,16 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             // Список комментариев
             Consumer<ArticleProvider>(
               builder: (context, provider, child) {
-                final comments = provider.getComments(widget.article.id);
+                final notes = provider.getNotesForArticle(int.parse(widget.article.id));
 
-                return comments.isEmpty
+                return notes.isEmpty
                     ? const Text("Заметок пока нет.")
                     : ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: comments.length,
+                  itemCount: notes.length,
                   itemBuilder: (context, index) {
+                    final note = notes[index];
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 6),
                       padding: const EdgeInsets.all(12),
@@ -188,16 +190,15 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(comments[index], style: const TextStyle(fontSize: 18)),
+                      child: Text(note.text, style: const TextStyle(fontSize: 18)),
                     );
                   },
                 );
               },
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
-// Поле ввода комментария
             Row(
               children: [
                 Expanded(
@@ -219,7 +220,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   icon: const Icon(Icons.send, size: 30),
                   onPressed: () {
                     final provider = Provider.of<ArticleProvider>(context, listen: false);
-                    provider.addComment(widget.article.id, _commentController.text);
+                    provider.addNote(int.parse(widget.article.id), _commentController.text);
                     _commentController.clear();
                   },
                 ),
