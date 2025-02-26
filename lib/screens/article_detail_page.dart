@@ -6,6 +6,7 @@ import '../providers/article_provider.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
 import 'package:flutter/services.dart';
+import 'widgets/fade_background.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -60,58 +61,54 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
-        return GestureDetector(
-          onTap: () => Navigator.pop(context), // Закрытие при тапе вне меню
-          child: Container(
-            color: Colors.black.withValues(alpha: 125), // Затемнение фона
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildMenuItem(
-                        icon: Icons.content_copy,
-                        text: "Копировать",
-                        onTap: () {
-                          Clipboard.setData(ClipboardData(text: note.text));
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Заметка скопирована")),
-                          );
-                        },
-                      ),
-                      _buildMenuItem(
-                        icon: Icons.edit,
-                        text: "Редактировать",
-                        onTap: () {
-                          Navigator.pop(context);
-                          // TODO: Реализация редактирования
-                        },
-                      ),
-                      _buildMenuItem(
-                        icon: Icons.delete,
-                        text: "Удалить",
-                        iconColor: Colors.red,
-                        onTap: () {
-                          Navigator.pop(context);
-                          _confirmDelete(context, note.id);
-                        },
-                      ),
-                    ],
-                  ),
+        return FadeBackground(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 10),
-              ],
-            ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildMenuItem(
+                      icon: Icons.content_copy,
+                      text: "Копировать",
+                      onTap: () {
+                        Clipboard.setData(ClipboardData(text: note.text));
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Заметка скопирована")),
+                        );
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.edit,
+                      text: "Редактировать",
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Реализация редактирования
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.delete,
+                      text: "Удалить",
+                      iconColor: Colors.red,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _confirmDelete(context, note.id);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
           ),
         );
       },
