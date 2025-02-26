@@ -41,26 +41,27 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   void _showNoteOptions(BuildContext context, Note note) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text("Редактировать"),
+                leading: const Icon(Icons.edit, size: 28),
+                title: const Text("Редактировать", style: TextStyle(fontSize: 20)),
                 onTap: () {
-                  // TODO: Добавить логику редактирования
                   Navigator.pop(context);
+                  // TODO: Реализация редактирования
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text("Удалить", style: TextStyle(color: Colors.red)),
+                leading: const Icon(Icons.delete, size: 28, color: Colors.red),
+                title: const Text("Удалить", style: TextStyle(fontSize: 20, color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
                   _confirmDelete(context, note.id);
@@ -83,14 +84,14 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Отмена"),
+              child: const Text("Отмена", style: TextStyle(fontSize: 18)),
             ),
             TextButton(
               onPressed: () {
                 Provider.of<ArticleProvider>(context, listen: false).deleteNote(noteId);
                 Navigator.pop(context);
               },
-              child: const Text("Удалить", style: TextStyle(color: Colors.red)),
+              child: const Text("Удалить", style: TextStyle(fontSize: 18, color: Colors.red)),
             ),
           ],
         );
@@ -236,7 +237,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
-            // Список комментариев
+            // Список заметок
             Consumer<ArticleProvider>(
               builder: (context, provider, child) {
                 final notes = provider.getNotesForArticle(int.parse(widget.article.id));
