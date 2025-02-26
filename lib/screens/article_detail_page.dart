@@ -293,7 +293,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     final note = notes[index];
                     return GestureDetector(
                       onLongPress: () {
-                        _showNoteOptions(context, note); // Теперь меню открывается при долгом нажатии
+                        _showNoteOptions(context, note);
                       },
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 6),
