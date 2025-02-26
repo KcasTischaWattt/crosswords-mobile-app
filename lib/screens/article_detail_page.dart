@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '../providers/article_provider.dart';
 import '../data/models/article.dart';
@@ -30,6 +31,11 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   Future<void> _toggleFavorite() async {
     await Provider.of<ArticleProvider>(context, listen: false).toggleFavorite(widget.article.id);
+  }
+
+  String _formatDateTime(String dateTime) {
+    final DateTime parsedDate = DateTime.parse(dateTime);
+    return DateFormat('dd/MM/yyyy HH:mm').format(parsedDate);
   }
 
   @override
@@ -190,7 +196,22 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(note.text, style: const TextStyle(fontSize: 18)),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          Text(note.text, style: const TextStyle(fontSize: 18)),
+                      const SizedBox(height: 1),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Text(
+                            note.updatedAt != note.createdAt
+                                ? "изм. ${_formatDateTime(note.updatedAt)}"
+                                : _formatDateTime(note.createdAt),
+                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          ),
+                        ),
+                      ],
+                      ),
                     );
                   },
                 );
