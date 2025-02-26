@@ -5,6 +5,7 @@ import 'package:velocity_x/velocity_x.dart';
 import '../providers/article_provider.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
+import 'package:flutter/services.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -38,6 +39,21 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     return DateFormat('dd/MM/yyyy HH:mm').format(parsedDate);
   }
 
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String text,
+    Color iconColor = Colors.black,
+    Color textColor = Colors.black,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, size: 28),
+      title: Text(text, style: TextStyle(fontSize: 20)),
+      onTap: onTap,
+    );
+  }
+
+
   void _showNoteOptions(BuildContext context, Note note) {
     showModalBottomSheet(
       context: context,
@@ -45,29 +61,46 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      isScrollControlled: true,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.edit, size: 28),
-                title: const Text("Редактировать", style: TextStyle(fontSize: 20)),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: Реализация редактирования
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete, size: 28, color: Colors.red),
-                title: const Text("Удалить", style: TextStyle(fontSize: 20, color: Colors.red)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _confirmDelete(context, note.id);
-                },
-              ),
-            ],
+        return SafeArea(
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildMenuItem(
+                  icon: Icons.content_copy,
+                  text: "Копировать",
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: note.text));
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Заметка скопирована")),
+                    );
+                  },
+                ),
+                _buildMenuItem(
+                  icon: Icons.edit,
+                  text: "Редактировать",
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Реализация редактирования
+                  },
+                ),
+                _buildMenuItem(
+                  icon: Icons.delete,
+                  text: "Удалить",
+                  iconColor: Colors.red,
+                  textColor: Colors.red,
+                  onTap: () {
+                    Navigator.pop(context);
+                    _confirmDelete(context, note.id);
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
