@@ -57,48 +57,59 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   void _showNoteOptions(BuildContext context, Note note) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
-        return SafeArea(
+        return GestureDetector(
+          onTap: () => Navigator.pop(context), // Закрытие при тапе вне меню
           child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            color: Colors.black.withValues(alpha: 125), // Затемнение фона
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _buildMenuItem(
-                  icon: Icons.content_copy,
-                  text: "Копировать",
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(text: note.text));
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Заметка скопирована")),
-                    );
-                  },
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildMenuItem(
+                        icon: Icons.content_copy,
+                        text: "Копировать",
+                        onTap: () {
+                          Clipboard.setData(ClipboardData(text: note.text));
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Заметка скопирована")),
+                          );
+                        },
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.edit,
+                        text: "Редактировать",
+                        onTap: () {
+                          Navigator.pop(context);
+                          // TODO: Реализация редактирования
+                        },
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.delete,
+                        text: "Удалить",
+                        iconColor: Colors.red,
+                        onTap: () {
+                          Navigator.pop(context);
+                          _confirmDelete(context, note.id);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                _buildMenuItem(
-                  icon: Icons.edit,
-                  text: "Редактировать",
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: Реализация редактирования
-                  },
-                ),
-                _buildMenuItem(
-                  icon: Icons.delete,
-                  text: "Удалить",
-                  iconColor: Colors.red,
-                  textColor: Colors.red,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _confirmDelete(context, note.id);
-                  },
-                ),
+                const SizedBox(height: 10),
               ],
             ),
           ),
