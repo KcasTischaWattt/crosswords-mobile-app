@@ -38,6 +38,66 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     return DateFormat('dd/MM/yyyy HH:mm').format(parsedDate);
   }
 
+  void _showNoteOptions(BuildContext context, Note note) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text("Редактировать"),
+                onTap: () {
+                  // TODO: Добавить логику редактирования
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text("Удалить", style: TextStyle(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmDelete(context, note.id);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _confirmDelete(BuildContext context, int noteId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Удалить заметку?"),
+          content: const Text("Вы уверены, что хотите удалить эту заметку?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Отмена"),
+            ),
+            TextButton(
+              onPressed: () {
+                Provider.of<ArticleProvider>(context, listen: false).deleteNote(noteId);
+                Navigator.pop(context);
+              },
+              child: const Text("Удалить", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
@@ -197,20 +257,39 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          Text(note.text, style: const TextStyle(fontSize: 18)),
-                      const SizedBox(height: 1),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Text(
-                            note.updatedAt != note.createdAt
-                                ? "изм. ${_formatDateTime(note.updatedAt)}"
-                                : _formatDateTime(note.createdAt),
-                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Текст заметки
+                              Expanded(
+                                child: Text(
+                                  note.text,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ),
+                              // Кнопка с тремя точками
+                              IconButton(
+                                icon: const Icon(Icons.more_vert),
+                                onPressed: () {
+                                  _showNoteOptions(context, note);
+                                },
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 1),
+                          // Дата заметки в правом нижнем углу
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Text(
+                              note.updatedAt != note.createdAt
+                                  ? "изм. ${_formatDateTime(note.updatedAt)}"
+                                  : _formatDateTime(note.createdAt),
+                              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
