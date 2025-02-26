@@ -291,47 +291,45 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   itemCount: notes.length,
                   itemBuilder: (context, index) {
                     final note = notes[index];
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Текст заметки
-                              Expanded(
-                                child: Text(
-                                  note.text,
-                                  style: const TextStyle(fontSize: 18),
+                    return GestureDetector(
+                      onLongPress: () {
+                        _showNoteOptions(context, note); // Теперь меню открывается при долгом нажатии
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Текст заметки
+                                Expanded(
+                                  child: Text(
+                                    note.text,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
                                 ),
-                              ),
-                              // Кнопка с тремя точками
-                              IconButton(
-                                icon: const Icon(Icons.more_vert),
-                                onPressed: () {
-                                  _showNoteOptions(context, note);
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 1),
-                          // Дата заметки в правом нижнем углу
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(
-                              note.updatedAt != note.createdAt
-                                  ? "изм. ${_formatDateTime(note.updatedAt)}"
-                                  : _formatDateTime(note.createdAt),
-                              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                              ],
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 1),
+                            // Дата заметки в правом нижнем углу
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                note.updatedAt != note.createdAt
+                                    ? "изм. ${_formatDateTime(note.updatedAt)}"
+                                    : _formatDateTime(note.createdAt),
+                                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
