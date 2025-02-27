@@ -11,6 +11,19 @@ class ExpandingTextField extends StatefulWidget {
 
 class _ExpandingTextFieldState extends State<ExpandingTextField> {
   final int maxLinesBeforeScroll = 5;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +38,11 @@ class _ExpandingTextFieldState extends State<ExpandingTextField> {
           maxHeight: maxLinesBeforeScroll * 24.0,
         ),
         child: Scrollbar(
+          controller: _scrollController,
           child: SingleChildScrollView(
+            controller: _scrollController,
             physics: const BouncingScrollPhysics(),
+            primary: false,
             child: TextField(
               controller: widget.controller,
               keyboardType: TextInputType.multiline,
