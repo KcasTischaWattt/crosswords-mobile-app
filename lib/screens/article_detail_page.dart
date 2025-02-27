@@ -170,22 +170,19 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         final timeWidth = timePainter.width;
 
         if (lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
-          return RichText(
-            text: TextSpan(
-              style: noteStyle,
-              children: [
-                TextSpan(text: note.text),
-                const TextSpan(text: " "),
-                WidgetSpan(
-                  child: Text(
-                    timeText,
-                    style: timeStyle,
-                  ),
-                  alignment: PlaceholderAlignment.baseline,
-                  baseline: TextBaseline.alphabetic,
+          return Row(
+            children: [
+              Expanded(
+                child: Text(
+                  note.text,
+                  style: noteStyle,
                 ),
-              ],
-            ),
+              ),
+              Text(
+                timeText,
+                style: timeStyle,
+              ),
+            ],
           );
         } else {
           return Column(
