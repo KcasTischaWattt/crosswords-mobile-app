@@ -168,7 +168,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,7 +361,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             Row(
               children: [
                 Expanded(
-                  child: ExpandingTextField(controller: _commentController)
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: ExpandingTextField(controller: _commentController),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 IconButton(
