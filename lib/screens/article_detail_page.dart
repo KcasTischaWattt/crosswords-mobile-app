@@ -273,6 +273,24 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
             const SizedBox(height: 20),
 
+            // Кнопка для перехода на оригинальную статью
+            ElevatedButton(
+              onPressed: () {
+                // Переход на оригинальную статью
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Переход по ссылке: ${widget.article.url}'),
+                ));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Читать оригинал', style: TextStyle(color: Colors.black, fontSize: 20)),
+            ),
+
+            const SizedBox(height: 20),
+
             // Заголовок заметок
             const Text(
               'Заметки',
@@ -285,7 +303,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 final notes = provider.getNotesForArticle(int.parse(widget.article.id));
 
                 return notes.isEmpty
-                    ? const Text("Заметок пока нет.")
+                    ? const Text("Заметок пока нет")
                     : ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -355,24 +373,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   },
                 ),
               ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // Кнопка для перехода на оригинальную статью
-            ElevatedButton(
-              onPressed: () {
-                // Переход на оригинальную статью
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Переход по ссылке: ${widget.article.url}'),
-                ));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('Читать оригинал', style: TextStyle(color: Colors.black, fontSize: 20)),
             ),
           ],
         ),
