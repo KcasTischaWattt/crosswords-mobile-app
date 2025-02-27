@@ -303,7 +303,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         if (_editingNote != null) {
           _showExitEditDialog(context);
         } else if (_commentController.text.isNotEmpty) {
-
+          _showCreateEditDialog(context);
         } else {
           Navigator.pop(context, result);
         }
