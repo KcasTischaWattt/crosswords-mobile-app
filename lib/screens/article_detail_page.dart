@@ -7,6 +7,7 @@ import '../data/models/article.dart';
 import '../data/models/note.dart';
 import 'package:flutter/services.dart';
 import 'widgets/fade_background.dart';
+import 'widgets/ExpandingTextField.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -342,18 +343,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _commentController,
-                    decoration: InputDecoration(
-                      hintText: "Оставить заметку...",
-                      filled: true,
-                      fillColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
+                  child: ExpandingTextField(controller: _commentController)
                 ),
                 const SizedBox(width: 10),
                 IconButton(
