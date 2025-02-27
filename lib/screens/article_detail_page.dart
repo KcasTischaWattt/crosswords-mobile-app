@@ -175,7 +175,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget buildNoteContent(Note note) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final noteStyle = TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodyLarge!.color);
+        final noteStyle = TextStyle(
+          fontSize: 18,
+          color: Theme.of(context).textTheme.bodyLarge!.color,
+        );
         final noteSpan = TextSpan(text: note.text, style: noteStyle);
 
         final textPainter = TextPainter(
@@ -201,22 +204,31 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         timePainter.layout();
         final timeWidth = timePainter.width;
 
+        // Если достаточно места, используем Stack для оверлея даты
         if (lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
-          return Row(
+          return Stack(
             children: [
-              Expanded(
+              // Текст с правым паддингом, чтобы не заходил под дату
+              Padding(
+                padding: EdgeInsets.only(right: timeWidth + 8),
                 child: Text(
                   note.text,
                   style: noteStyle,
                 ),
               ),
-              Text(
-                timeText,
-                style: timeStyle,
+              // Дата, размещённая в правом нижнем углу
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Text(
+                  timeText,
+                  style: timeStyle,
+                ),
               ),
             ],
           );
         } else {
+          // Если места недостаточно – выводим дату отдельной строкой
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
