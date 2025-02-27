@@ -105,7 +105,16 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                       text: "Удалить",
                       onTap: () {
                         Navigator.pop(context);
-                        _confirmDelete(context, note.id);
+                        _showConfirmationDialog(
+                          context: context,
+                          title: "Удалить заметку?",
+                          content: "Вы уверены, что хотите удалить эту заметку?",
+                          cancelText: "Отмена",
+                          confirmText: "Удалить",
+                          onConfirm: () {
+                            Provider.of<ArticleProvider>(context, listen: false).deleteNote(note.id);
+                          },
+                        );
                       },
                     ),
                   ],
@@ -119,110 +128,31 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
-  void _confirmDelete(BuildContext context, int noteId) {
+  void _showConfirmationDialog({
+    required BuildContext context,
+    required String title,
+    required String content,
+    required String cancelText,
+    required String confirmText,
+    required VoidCallback onConfirm,
+  }) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Удалить заметку?"),
-          content: const Text("Вы уверены, что хотите удалить эту заметку?"),
+          title: Text(title),
+          content: Text(content),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Отмена", style: TextStyle(fontSize: 18)),
+              child: Text(cancelText, style: const TextStyle(fontSize: 18)),
             ),
             TextButton(
               onPressed: () {
-                Provider.of<ArticleProvider>(context, listen: false).deleteNote(noteId);
+                onConfirm();
                 Navigator.pop(context);
               },
-              child: const Text("Удалить", style: TextStyle(fontSize: 18, color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showCancelEditDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Отменить редактирование?"),
-          content: const Text("Изменения не будут сохранены."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Нет", style: TextStyle(fontSize: 18)),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _editingNote = null;
-                  _commentController.clear();
-                });
-                Navigator.pop(context);
-              },
-              child: const Text("Да", style: TextStyle(fontSize: 18, color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showExitEditDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Отменить редактирование?"),
-          content: const Text("Вы действительно хотите выйти? Изменения не будут сохранены."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Остаться", style: TextStyle(fontSize: 18)),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _editingNote = null;
-                  _commentController.clear();
-                });
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text("Выйти", style: TextStyle(fontSize: 18, color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showCreateEditDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Отменить создание документа?"),
-          content: const Text("Вы действительно хотите выйти? Изменения не будут сохранены."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Остаться", style: TextStyle(fontSize: 18)),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _editingNote = null;
-                  _commentController.clear();
-                });
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text("Выйти", style: TextStyle(fontSize: 18, color: Colors.red)),
+              child: Text(confirmText, style: const TextStyle(fontSize: 18, color: Colors.red)),
             ),
           ],
         );
@@ -301,9 +231,37 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         if (_editingNote != null) {
-          _showExitEditDialog(context);
+          _showConfirmationDialog(
+            context: context,
+            title: "Отменить редактирование?",
+            content: "Вы действительно хотите выйти? Изменения не будут сохранены.",
+            cancelText: "Остаться",
+            confirmText: "Выйти",
+            onConfirm: () {
+              setState(() {
+                _editingNote = null;
+                _commentController.clear();
+              });
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+          );
         } else if (_commentController.text.isNotEmpty) {
-          _showCreateEditDialog(context);
+          _showConfirmationDialog(
+            context: context,
+            title: "Отменить создание документа?",
+            content: "Вы действительно хотите выйти? Изменения не будут сохранены.",
+            cancelText: "Остаться",
+            confirmText: "Выйти",
+            onConfirm: () {
+              setState(() {
+                _editingNote = null;
+                _commentController.clear();
+              });
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+          );
         } else {
           Navigator.pop(context, result);
         }
@@ -547,7 +505,19 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     IconButton(
                       icon: const Icon(Icons.close, size: 30),
                       onPressed: () {
-                        _showCancelEditDialog(context);
+                        _showConfirmationDialog(
+                          context: context,
+                          title: "Отменить редактирование?",
+                          content: "Изменения не будут сохранены.",
+                          cancelText: "Нет",
+                          confirmText: "Да",
+                          onConfirm: () {
+                            setState(() {
+                              _editingNote = null;
+                              _commentController.clear();
+                            });
+                          },
+                        );
                       },
                     ),
                   Expanded(
