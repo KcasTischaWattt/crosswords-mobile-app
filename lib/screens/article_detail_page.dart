@@ -20,6 +20,7 @@ class ArticleDetailPage extends StatefulWidget {
 
 class _ArticleDetailPageState extends State<ArticleDetailPage> {
   final TextEditingController _commentController = TextEditingController();
+  bool _isNotesExpanded = true;
 
   @override
   void initState() {
@@ -44,8 +45,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget _buildMenuItem({
     required IconData icon,
     required String text,
-    Color iconColor = Colors.black,
-    Color textColor = Colors.black,
     required VoidCallback onTap,
   }) {
     return ListTile(
@@ -99,7 +98,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     _buildMenuItem(
                       icon: Icons.delete,
                       text: "Удалить",
-                      iconColor: Colors.red,
                       onTap: () {
                         Navigator.pop(context);
                         _confirmDelete(context, note.id);
@@ -292,19 +290,41 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             const SizedBox(height: 20),
 
             // Заголовок заметок
-            const Text(
-              'Заметки',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Заметки',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                Consumer<ArticleProvider>(
+                  builder: (context, provider, child) {
+                    final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+                    return notes.isNotEmpty
+                        ? IconButton(
+                      icon: Icon(_isNotesExpanded ? Icons.expand_less : Icons.expand_more),
+                      onPressed: () {
+                        setState(() {
+                          _isNotesExpanded = !_isNotesExpanded;
+                        });
+                      },
+                    )
+                        : SizedBox.shrink();
+                  },
+                ),
+              ],
             ),
 
             // Список заметок
             Consumer<ArticleProvider>(
               builder: (context, provider, child) {
                 final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+                if (notes.isEmpty) {
+                  return const Text("Заметок пока нет.");
+                }
 
-                return notes.isEmpty
-                    ? const Text("Заметок пока нет")
-                    : ListView.builder(
+                return _isNotesExpanded
+                    ? ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: notes.length,
@@ -327,7 +347,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Текст заметки
                                 Expanded(
                                   child: Text(
                                     note.text,
@@ -337,7 +356,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                               ],
                             ),
                             const SizedBox(height: 1),
-                            // Дата заметки в правом нижнем углу
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Text(
@@ -352,6 +370,27 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                       ),
                     );
                   },
+                )
+                    : GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isNotesExpanded = true;
+                    });
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Всего заметок: ${notes.length}',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 );
               },
             ),
