@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'dart:ui' as ui;
 import 'package:velocity_x/velocity_x.dart';
 import '../providers/article_provider.dart';
 import '../data/models/article.dart';
@@ -135,6 +136,70 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             ),
           ],
         );
+      },
+    );
+  }
+
+  Widget buildNoteContent(Note note) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final noteStyle = TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodyLarge!.color);
+        final noteSpan = TextSpan(text: note.text, style: noteStyle);
+
+        final textPainter = TextPainter(
+          text: noteSpan,
+          textDirection: ui.TextDirection.ltr,
+          maxLines: null,
+        );
+        textPainter.layout(maxWidth: constraints.maxWidth);
+
+        final lines = textPainter.computeLineMetrics();
+        final lastLineWidth = lines.isNotEmpty ? lines.last.width : 0.0;
+
+        final timeText = note.updatedAt != note.createdAt
+            ? "изм. ${_formatDateTime(note.updatedAt)}"
+            : _formatDateTime(note.createdAt);
+        final timeStyle = TextStyle(fontSize: 14, color: Colors.grey[600]);
+        final timeSpan = TextSpan(text: timeText, style: timeStyle);
+
+        final timePainter = TextPainter(
+          text: timeSpan,
+          textDirection: ui.TextDirection.ltr,
+        );
+        timePainter.layout();
+        final timeWidth = timePainter.width;
+
+        if (lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
+          return RichText(
+            text: TextSpan(
+              style: noteStyle,
+              children: [
+                TextSpan(text: note.text),
+                const TextSpan(text: " "),
+                WidgetSpan(
+                  child: Text(
+                    timeText,
+                    style: timeStyle,
+                  ),
+                  alignment: PlaceholderAlignment.baseline,
+                  baseline: TextBaseline.alphabetic,
+                ),
+              ],
+            ),
+          );
+        } else {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(note.text, style: noteStyle),
+              const SizedBox(height: 4),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Text(timeText, style: timeStyle),
+              ),
+            ],
+          );
+        }
       },
     );
   }
@@ -341,32 +406,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    note.text,
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 1),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Text(
-                                note.updatedAt != note.createdAt
-                                    ? "изм. ${_formatDateTime(note.updatedAt)}"
-                                    : _formatDateTime(note.createdAt),
-                                style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: buildNoteContent(note),
                       ),
                     );
                   },
