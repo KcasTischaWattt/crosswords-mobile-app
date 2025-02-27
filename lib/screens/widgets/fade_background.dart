@@ -25,9 +25,7 @@ class _FadeBackgroundState extends State<FadeBackground> with SingleTickerProvid
 
   @override
   void dispose() {
-    _controller.reverse().then((_) {
-      _controller.dispose();
-    });
+    _controller.dispose();
     super.dispose();
   }
 
