@@ -172,6 +172,35 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  void _showExitEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Отменить редактирование?"),
+          content: const Text("Вы действительно хотите выйти? Изменения не будут сохранены."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Остаться", style: TextStyle(fontSize: 18)),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _editingNote = null;
+                  _commentController.clear();
+                });
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text("Выйти", style: TextStyle(fontSize: 18, color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget buildNoteContent(Note note) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -238,274 +267,285 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
     final bool isFavorite = provider.favoriteArticles.contains(widget.article.id);
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 80,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Детали статьи',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: provider.isLoading
-                ? const CircularProgressIndicator()
-                : Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? Colors.red : Colors.grey,
-              size: 30,
-            ),
-            onPressed: provider.isLoading ? null : _toggleFavorite,
+    return PopScope(
+      canPop: _editingNote == null,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (_editingNote != null) {
+          _showExitEditDialog(context);
+        } else {
+          Navigator.pop(context, result);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 80,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          elevation: 0,
+          centerTitle: true,
+          title: const Text(
+            'Детали статьи',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Дата и источник
-            '${widget.article.date} | ${widget.article.source}'
-                .text
-                .xl
-                .color(Theme.of(context).textTheme.bodySmall!.color!)
-                .make(),
-            const SizedBox(height: 8),
-
-            // Заголовок статьи
-            widget.article.title.text.bold.xl3.make(),
-            const SizedBox(height: 16),
-
-            // Тэги
-            Wrap(
-              spacing: 8,
-              children: widget.article.tags.map((tag) {
-                return Chip(
-                  label: Text(
-                    tag,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  backgroundColor: const Color(0xFF517ECF),
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-
-            // Аккордеон краткого содержания
-            Container(
-              decoration: BoxDecoration(
-                color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900]) as Color,
-                borderRadius: BorderRadius.circular(12),
+          actions: [
+            IconButton(
+              icon: provider.isLoading
+                  ? const CircularProgressIndicator()
+                  : Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : Colors.grey,
+                size: 30,
               ),
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  dividerColor: Colors.transparent,
-                  expansionTileTheme: ExpansionTileThemeData(
-                    collapsedIconColor: Theme.of(context).iconTheme.color,
-                    iconColor: Theme.of(context).iconTheme.color,
-                    backgroundColor: Colors.transparent,
-                  ),
+              onPressed: provider.isLoading ? null : _toggleFavorite,
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Дата и источник
+              '${widget.article.date} | ${widget.article.source}'
+                  .text
+                  .xl
+                  .color(Theme.of(context).textTheme.bodySmall!.color!)
+                  .make(),
+              const SizedBox(height: 8),
+
+              // Заголовок статьи
+              widget.article.title.text.bold.xl3.make(),
+              const SizedBox(height: 16),
+
+              // Тэги
+              Wrap(
+                spacing: 8,
+                children: widget.article.tags.map((tag) {
+                  return Chip(
+                    label: Text(
+                      tag,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    backgroundColor: const Color(0xFF517ECF),
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+
+              // Аккордеон краткого содержания
+              Container(
+                decoration: BoxDecoration(
+                  color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900]) as Color,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: ExpansionTile(
-                  tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  title: Row(
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    dividerColor: Colors.transparent,
+                    expansionTileTheme: ExpansionTileThemeData(
+                      collapsedIconColor: Theme.of(context).iconTheme.color,
+                      iconColor: Theme.of(context).iconTheme.color,
+                      backgroundColor: Colors.transparent,
+                    ),
+                  ),
+                  child: ExpansionTile(
+                    tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    title: Row(
+                      children: [
+                        Icon(
+                          Icons.book,
+                          size: 24,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Краткое содержание',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                     children: [
-                      Icon(
-                        Icons.book,
-                        size: 24,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Краткое содержание',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.white),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12),
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          widget.article.summary,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.white),
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(12),
-                          bottomRight: Radius.circular(12),
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        widget.article.summary,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                widget.article.text,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  widget.article.text,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Кнопка для перехода на оригинальную статью
-            ElevatedButton(
-              onPressed: () {
-                // Переход на оригинальную статью
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Переход по ссылке: ${widget.article.url}'),
-                ));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('Читать оригинал', style: TextStyle(color: Colors.black, fontSize: 20)),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Заголовок заметок
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Заметки',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              // Кнопка для перехода на оригинальную статью
+              ElevatedButton(
+                onPressed: () {
+                  // Переход на оригинальную статью
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Переход по ссылке: ${widget.article.url}'),
+                  ));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                Consumer<ArticleProvider>(
-                  builder: (context, provider, child) {
-                    final notes = provider.getNotesForArticle(int.parse(widget.article.id));
-                    return notes.isNotEmpty
-                        ? IconButton(
-                      icon: Icon(_isNotesExpanded ? Icons.expand_less : Icons.expand_more),
-                      onPressed: () {
-                        setState(() {
-                          _isNotesExpanded = !_isNotesExpanded;
-                        });
+                child: const Text('Читать оригинал', style: TextStyle(color: Colors.black, fontSize: 20)),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Заголовок заметок
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Заметки',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  Consumer<ArticleProvider>(
+                    builder: (context, provider, child) {
+                      final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+                      return notes.isNotEmpty
+                          ? IconButton(
+                        icon: Icon(_isNotesExpanded ? Icons.expand_less : Icons.expand_more),
+                        onPressed: () {
+                          setState(() {
+                            _isNotesExpanded = !_isNotesExpanded;
+                          });
+                        },
+                      )
+                          : SizedBox.shrink();
+                    },
+                  ),
+                ],
+              ),
+
+              // Список заметок
+              Consumer<ArticleProvider>(
+                builder: (context, provider, child) {
+                  final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+                  if (notes.isEmpty) {
+                    return const Text("Заметок пока нет.");
+                  }
+
+                  return AnimatedSize(
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    child: _isNotesExpanded
+                        ? ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: notes.length,
+                      itemBuilder: (context, index) {
+                        final note = notes[index];
+                        return GestureDetector(
+                          onLongPress: () {
+                            _showNoteOptions(context, note);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: buildNoteContent(note),
+                          ),
+                        );
                       },
                     )
-                        : SizedBox.shrink();
-                  },
-                ),
-              ],
-            ),
-
-            // Список заметок
-            Consumer<ArticleProvider>(
-              builder: (context, provider, child) {
-                final notes = provider.getNotesForArticle(int.parse(widget.article.id));
-                if (notes.isEmpty) {
-                  return const Text("Заметок пока нет.");
-                }
-
-                return AnimatedSize(
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
-                  child: _isNotesExpanded
-                      ? ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: notes.length,
-                    itemBuilder: (context, index) {
-                      final note = notes[index];
-                      return GestureDetector(
-                        onLongPress: () {
-                          _showNoteOptions(context, note);
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: buildNoteContent(note),
+                        : GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isNotesExpanded = true;
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      );
-                    },
-                  )
-                      : GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isNotesExpanded = true;
-                      });
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Всего заметок: ${notes.length}',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
+                        child: Text(
+                          'Всего заметок: ${notes.length}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 10),
+
+              Row(
+                children: [
+                  if (_editingNote != null)
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 30),
+                      onPressed: () {
+                        _showCancelEditDialog(context);
+                      },
+                    ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ExpandingTextField(controller: _commentController),
+                    ),
                   ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 10),
-
-            Row(
-              children: [
-                if (_editingNote != null)
+                  const SizedBox(width: 10),
                   IconButton(
-                    icon: const Icon(Icons.close, size: 30),
+                    icon: Icon(_editingNote == null ? Icons.send : Icons.check, size: 30),
                     onPressed: () {
-                      _showCancelEditDialog(context);
+                      final provider = Provider.of<ArticleProvider>(context, listen: false);
+                      if (_editingNote != null) {
+                        provider.updateNote(_editingNote!.id, _commentController.text);
+                        setState(() {
+                          _editingNote = null;
+                        });
+                      } else {
+                        provider.addNote(int.parse(widget.article.id), _commentController.text);
+                        _commentController.clear();
+                      }
+                      _commentController.clear();
                     },
                   ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: ExpandingTextField(controller: _commentController),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: Icon(_editingNote == null ? Icons.send : Icons.check, size: 30),
-                  onPressed: () {
-                    final provider = Provider.of<ArticleProvider>(context, listen: false);
-                    if (_editingNote != null) {
-                      provider.updateNote(_editingNote!.id, _commentController.text);
-                      setState(() {
-                        _editingNote = null;
-                      });
-                    } else {
-                      provider.addNote(int.parse(widget.article.id), _commentController.text);
-                      _commentController.clear();
-                    }
-                    _commentController.clear();
-                  },
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
