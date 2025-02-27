@@ -175,10 +175,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget buildNoteContent(Note note) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final noteStyle = TextStyle(
-          fontSize: 18,
-          color: Theme.of(context).textTheme.bodyLarge!.color,
-        );
+        final noteStyle = TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodyLarge!.color);
         final noteSpan = TextSpan(text: note.text, style: noteStyle);
 
         final textPainter = TextPainter(
@@ -189,6 +186,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         textPainter.layout(maxWidth: constraints.maxWidth);
 
         final lines = textPainter.computeLineMetrics();
+        final linesCount = lines.length;
         final lastLineWidth = lines.isNotEmpty ? lines.last.width : 0.0;
 
         final timeText = note.updatedAt != note.createdAt
@@ -204,31 +202,22 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         timePainter.layout();
         final timeWidth = timePainter.width;
 
-        // Если достаточно места, используем Stack для оверлея даты
-        if (lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
-          return Stack(
+        if (linesCount == 1 && lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
+          return Row(
             children: [
-              // Текст с правым паддингом, чтобы не заходил под дату
-              Padding(
-                padding: EdgeInsets.only(right: timeWidth + 8),
+              Expanded(
                 child: Text(
                   note.text,
                   style: noteStyle,
                 ),
               ),
-              // Дата, размещённая в правом нижнем углу
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Text(
-                  timeText,
-                  style: timeStyle,
-                ),
+              Text(
+                timeText,
+                style: timeStyle,
               ),
             ],
           );
         } else {
-          // Если места недостаточно – выводим дату отдельной строкой
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
