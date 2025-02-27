@@ -201,6 +201,35 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  void _showCreateEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Отменить создание документа?"),
+          content: const Text("Вы действительно хотите выйти? Изменения не будут сохранены."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Остаться", style: TextStyle(fontSize: 18)),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _editingNote = null;
+                  _commentController.clear();
+                });
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text("Выйти", style: TextStyle(fontSize: 18, color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget buildNoteContent(Note note) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -268,11 +297,13 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     final provider = Provider.of<ArticleProvider>(context);
     final bool isFavorite = provider.favoriteArticles.contains(widget.article.id);
     return PopScope(
-      canPop: _editingNote == null,
+      canPop: _editingNote == null && _commentController.text.isEmpty,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         if (_editingNote != null) {
           _showExitEditDialog(context);
+        } else if (_commentController.text.isNotEmpty) {
+
         } else {
           Navigator.pop(context, result);
         }
