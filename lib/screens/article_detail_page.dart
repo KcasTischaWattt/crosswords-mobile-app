@@ -8,7 +8,7 @@ import '../data/models/article.dart';
 import '../data/models/note.dart';
 import 'package:flutter/services.dart';
 import 'widgets/fade_background.dart';
-import 'widgets/ExpandingTextField.dart';
+import 'widgets/expanding_text_field.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
