@@ -418,47 +418,51 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   return const Text("Заметок пока нет.");
                 }
 
-                return _isNotesExpanded
-                    ? ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: notes.length,
-                  itemBuilder: (context, index) {
-                    final note = notes[index];
-                    return GestureDetector(
-                      onLongPress: () {
-                        _showNoteOptions(context, note);
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                          borderRadius: BorderRadius.circular(12),
+                return AnimatedSize(
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                  child: _isNotesExpanded
+                      ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final note = notes[index];
+                      return GestureDetector(
+                        onLongPress: () {
+                          _showNoteOptions(context, note);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: buildNoteContent(note),
                         ),
-                        child: buildNoteContent(note),
+                      );
+                    },
+                  )
+                      : GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isNotesExpanded = true;
+                      });
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                )
-                    : GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isNotesExpanded = true;
-                    });
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'Всего заметок: ${notes.length}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
+                      child: Text(
+                        'Всего заметок: ${notes.length}',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 );
