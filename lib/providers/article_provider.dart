@@ -176,6 +176,13 @@ class ArticleProvider extends ChangeNotifier {
     // TODO Отправить данные на сервер
   }
 
+  void updateNote(int noteId, String newText) {
+    final index = _notes.indexWhere((note) => note.id == noteId);
+    if (index == -1) return;
+    _notes[index] = _notes[index].copyWith(text: newText, updatedAt: DateTime.now().toIso8601String());
+    notifyListeners();
+  }
+
   // Метод для удаления заметки
   Future<void> deleteNote(int noteId) async {
     _notes.removeWhere((note) => note.id == noteId);

@@ -36,4 +36,15 @@ class Note {
       'updatedAt': updatedAt,
     };
   }
+
+  Note copyWith({required String text, required String updatedAt}) {
+    return Note(
+      id: id,
+      text: text,
+      user: user,
+      articleId: articleId,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
 }

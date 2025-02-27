@@ -21,6 +21,7 @@ class ArticleDetailPage extends StatefulWidget {
 
 class _ArticleDetailPageState extends State<ArticleDetailPage> {
   final TextEditingController _commentController = TextEditingController();
+  Note? _editingNote;
   bool _isNotesExpanded = true;
 
   @override
@@ -92,8 +93,11 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                       icon: Icons.edit,
                       text: "Редактировать",
                       onTap: () {
+                        setState(() {
+                          _editingNote = note;
+                          _commentController.text = note.text;
+                        });
                         Navigator.pop(context);
-                        // TODO: Реализация редактирования
                       },
                     ),
                     _buildMenuItem(
@@ -133,6 +137,34 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 Navigator.pop(context);
               },
               child: const Text("Удалить", style: TextStyle(fontSize: 18, color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCancelEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Отменить редактирование?"),
+          content: const Text("Изменения не будут сохранены."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Нет", style: TextStyle(fontSize: 18)),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _editingNote = null;
+                  _commentController.clear();
+                });
+                Navigator.pop(context);
+              },
+              child: const Text("Да", style: TextStyle(fontSize: 18, color: Colors.red)),
             ),
           ],
         );
@@ -436,6 +468,13 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
             Row(
               children: [
+                if (_editingNote != null)
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 30),
+                    onPressed: () {
+                      _showCancelEditDialog(context);
+                    },
+                  ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 10),
@@ -444,10 +483,18 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 ),
                 const SizedBox(width: 10),
                 IconButton(
-                  icon: const Icon(Icons.send, size: 30),
+                  icon: Icon(_editingNote == null ? Icons.send : Icons.check, size: 30),
                   onPressed: () {
                     final provider = Provider.of<ArticleProvider>(context, listen: false);
-                    provider.addNote(int.parse(widget.article.id), _commentController.text);
+                    if (_editingNote != null) {
+                      provider.updateNote(_editingNote!.id, _commentController.text);
+                      setState(() {
+                        _editingNote = null;
+                      });
+                    } else {
+                      provider.addNote(int.parse(widget.article.id), _commentController.text);
+                      _commentController.clear();
+                    }
                     _commentController.clear();
                   },
                 ),
