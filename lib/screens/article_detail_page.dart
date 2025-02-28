@@ -248,7 +248,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 _commentController.clear();
               });
               Navigator.pop(context);
-              Navigator.pop(context);
             },
           );
         } else if (_commentController.text.isNotEmpty) {
@@ -263,7 +262,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 _editingNote = null;
                 _commentController.clear();
               });
-              Navigator.pop(context);
               Navigator.pop(context);
             },
           );
