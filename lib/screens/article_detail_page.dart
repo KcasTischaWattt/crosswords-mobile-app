@@ -103,6 +103,26 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                       icon: Icons.edit,
                       text: "Редактировать",
                       onTap: () {
+                        if (_commentController.text.trim().isNotEmpty) {
+                          Navigator.pop(context);
+                          _showConfirmationDialog(
+                            context: context,
+                            title: "Отменить введенный текст?",
+                            content: "Вы начали ввод новой заметки. Если начнете редактировать, введенный текст будет утерян.",
+                            cancelText: "Остаться",
+                            confirmText: "Редактировать",
+                            onConfirm: () {
+                              setState(() {
+                                _commentController.clear();
+                                _editingNote = note;
+                                _commentController.text = note.text;
+                              });
+                            },
+                          );
+
+                          return;
+                        }
+
                         setState(() {
                           _editingNote = note;
                           _commentController.text = note.text;
