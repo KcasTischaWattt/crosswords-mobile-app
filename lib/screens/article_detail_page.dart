@@ -23,13 +23,18 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   final TextEditingController _commentController = TextEditingController();
   Note? _editingNote;
   bool _isNotesExpanded = true;
+  bool _hasTextChanged = false;
 
   @override
   void initState() {
     super.initState();
 
     _commentController.addListener(() {
-      setState(() {});
+      if (_editingNote == null) return;
+
+      setState(() {
+        _hasTextChanged = _commentController.text.trim() != _editingNote!.text.trim();
+      });
     });
   }
 
@@ -513,6 +518,16 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     IconButton(
                       icon: const Icon(Icons.close, size: 30),
                       onPressed: () {
+                        if (_editingNote == null) return;
+
+                        if (!_hasTextChanged) {
+                          setState(() {
+                            _editingNote = null;
+                            _commentController.clear();
+                          });
+                          return;
+                        }
+
                         _showConfirmationDialog(
                           context: context,
                           title: "Отменить редактирование?",
@@ -539,16 +554,30 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     icon: Icon(_editingNote == null ? Icons.send : Icons.check, size: 30),
                     onPressed: () {
                       final provider = Provider.of<ArticleProvider>(context, listen: false);
+
                       if (_editingNote != null) {
-                        provider.updateNote(_editingNote!.id, _commentController.text);
-                        setState(() {
-                          _editingNote = null;
+                        if (!_hasTextChanged) {
+                          setState(() {
+                            _editingNote = null;
+                            _commentController.clear();
+                          });
+                          return;
+                        }
+
+                        provider.updateNote(_editingNote!.id, _commentController.text.trim());
+
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          setState(() {
+                            _editingNote = null;
+                            _commentController.clear();
+                          });
                         });
+
                       } else {
                         provider.addNote(int.parse(widget.article.id), _commentController.text);
                         _commentController.clear();
                       }
-                      _commentController.clear();
                     },
                   ),
                 ],
