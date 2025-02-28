@@ -27,10 +27,15 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   void initState() {
     super.initState();
+
+    _commentController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
+    _commentController.removeListener(() {});
     _commentController.dispose();
     super.dispose();
   }
