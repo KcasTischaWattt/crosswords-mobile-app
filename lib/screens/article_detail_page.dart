@@ -62,7 +62,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) {
+      builder: (BuildContext bottomSheetContext) {
         return FadeBackground(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -104,17 +104,22 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                       icon: Icons.delete,
                       text: "Удалить",
                       onTap: () {
-                        Navigator.pop(context);
-                        _showConfirmationDialog(
-                          context: context,
-                          title: "Удалить заметку?",
-                          content: "Вы уверены, что хотите удалить эту заметку?",
-                          cancelText: "Отмена",
-                          confirmText: "Удалить",
-                          onConfirm: () {
-                            Provider.of<ArticleProvider>(context, listen: false).deleteNote(note.id);
-                          },
-                        );
+                        Navigator.pop(bottomSheetContext);
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          _showConfirmationDialog(
+                            context: context,
+                            title: "Удалить заметку?",
+                            content: "Вы уверены, что хотите удалить эту заметку?",
+                            cancelText: "Отмена",
+                            confirmText: "Удалить",
+                            onConfirm: () {
+                              Provider.of<ArticleProvider>(context,
+                                  listen: false)
+                                  .deleteNote(note.id);
+                            },
+                          );
+                        });
                       },
                     ),
                   ],
