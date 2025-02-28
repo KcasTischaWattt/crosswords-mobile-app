@@ -258,7 +258,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         } else if (_commentController.text.isNotEmpty) {
           _showConfirmationDialog(
             context: context,
-            title: "Отменить создание документа?",
+            title: "Отменить создание заметки?",
             content: "Вы действительно хотите выйти? Изменения не будут сохранены.",
             cancelText: "Остаться",
             confirmText: "Выйти",
