@@ -12,8 +12,8 @@ import 'widgets/expanding_text_field.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
-  const ArticleDetailPage({super.key, required this.article});
 
+  const ArticleDetailPage({super.key, required this.article});
 
   @override
   _ArticleDetailPageState createState() => _ArticleDetailPageState();
@@ -33,7 +33,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       if (_editingNote == null) return;
 
       setState(() {
-        _hasTextChanged = _commentController.text.trim() != _editingNote!.text.trim();
+        _hasTextChanged =
+            _commentController.text.trim() != _editingNote!.text.trim();
       });
     });
   }
@@ -46,7 +47,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
 
   Future<void> _toggleFavorite() async {
-    await Provider.of<ArticleProvider>(context, listen: false).toggleFavorite(widget.article.id);
+    await Provider.of<ArticleProvider>(context, listen: false)
+        .toggleFavorite(widget.article.id);
   }
 
   String _formatDateTime(String dateTime) {
@@ -66,7 +68,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
-
   void _showNoteOptions(BuildContext context, Note note) {
     showModalBottomSheet(
       context: context,
@@ -82,7 +83,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -108,7 +111,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                           _showConfirmationDialog(
                             context: context,
                             title: "Отменить введенный текст?",
-                            content: "Вы начали ввод новой заметки. Если начнете редактировать, введенный текст будет утерян.",
+                            content:
+                                "Вы начали ввод новой заметки. Если начнете редактировать, введенный текст будет утерян.",
                             cancelText: "Остаться",
                             confirmText: "Редактировать",
                             onConfirm: () {
@@ -140,12 +144,13 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                           _showConfirmationDialog(
                             context: context,
                             title: "Удалить заметку?",
-                            content: "Вы уверены, что хотите удалить эту заметку?",
+                            content:
+                                "Вы уверены, что хотите удалить эту заметку?",
                             cancelText: "Отмена",
                             confirmText: "Удалить",
                             onConfirm: () {
                               Provider.of<ArticleProvider>(context,
-                                  listen: false)
+                                      listen: false)
                                   .deleteNote(note.id);
                             },
                           );
@@ -187,7 +192,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 onConfirm();
                 Navigator.pop(context);
               },
-              child: Text(confirmText, style: const TextStyle(fontSize: 18, color: Colors.red)),
+              child: Text(confirmText,
+                  style: const TextStyle(fontSize: 18, color: Colors.red)),
             ),
           ],
         );
@@ -198,7 +204,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget buildNoteContent(Note note) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final noteStyle = TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodyLarge!.color);
+        final noteStyle = TextStyle(
+            fontSize: 18, color: Theme.of(context).textTheme.bodyLarge!.color);
         final noteSpan = TextSpan(text: note.text, style: noteStyle);
 
         final textPainter = TextPainter(
@@ -225,7 +232,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         timePainter.layout();
         final timeWidth = timePainter.width;
 
-        if (linesCount == 1 && lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
+        if (linesCount == 1 &&
+            lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
           return Row(
             children: [
               Expanded(
@@ -260,7 +268,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
-    final bool isFavorite = provider.favoriteArticles.contains(widget.article.id);
+    final bool isFavorite =
+        provider.favoriteArticles.contains(widget.article.id);
     return PopScope(
       canPop: _editingNote == null && _commentController.text.isEmpty,
       onPopInvokedWithResult: (didPop, result) async {
@@ -269,7 +278,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           _showConfirmationDialog(
             context: context,
             title: "Отменить редактирование?",
-            content: "Вы действительно хотите выйти? Изменения не будут сохранены.",
+            content:
+                "Вы действительно хотите выйти? Изменения не будут сохранены.",
             cancelText: "Остаться",
             confirmText: "Выйти",
             onConfirm: () {
@@ -284,7 +294,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           _showConfirmationDialog(
             context: context,
             title: "Отменить создание заметки?",
-            content: "Вы действительно хотите выйти? Изменения не будут сохранены.",
+            content:
+                "Вы действительно хотите выйти? Изменения не будут сохранены.",
             cancelText: "Остаться",
             confirmText: "Выйти",
             onConfirm: () {
@@ -314,10 +325,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               icon: provider.isLoading
                   ? const CircularProgressIndicator()
                   : Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : Colors.grey,
-                size: 30,
-              ),
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Colors.grey,
+                      size: 30,
+                    ),
               onPressed: provider.isLoading ? null : _toggleFavorite,
             ),
           ],
@@ -346,10 +357,12 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   return Chip(
                     label: Text(
                       tag,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     backgroundColor: const Color(0xFF517ECF),
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   );
                 }).toList(),
               ),
@@ -358,7 +371,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               // Аккордеон краткого содержания
               Container(
                 decoration: BoxDecoration(
-                  color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900]) as Color,
+                  color: (Theme.of(context)
+                          .bottomNavigationBarTheme
+                          .backgroundColor ??
+                      Colors.grey[900]) as Color,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Theme(
@@ -371,7 +387,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     ),
                   ),
                   child: ExpansionTile(
-                    tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    tilePadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     title: Row(
                       children: [
                         Icon(
@@ -382,14 +399,18 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                         const SizedBox(width: 8),
                         const Text(
                           'Краткое содержание',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.white),
+                          color: (Theme.of(context)
+                                  .bottomNavigationBarTheme
+                                  .backgroundColor ??
+                              Colors.white),
                           borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(12),
                             bottomRight: Radius.circular(12),
@@ -411,7 +432,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               const SizedBox(height: 16),
 
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.circular(12),
@@ -437,10 +459,13 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Читать оригинал', style: TextStyle(color: Colors.black, fontSize: 20)),
+                child: const Text('Читать оригинал',
+                    style: TextStyle(color: Colors.black, fontSize: 20)),
               ),
 
               const SizedBox(height: 20),
@@ -455,16 +480,19 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   ),
                   Consumer<ArticleProvider>(
                     builder: (context, provider, child) {
-                      final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+                      final notes = provider
+                          .getNotesForArticle(int.parse(widget.article.id));
                       return notes.isNotEmpty
                           ? IconButton(
-                        icon: Icon(_isNotesExpanded ? Icons.expand_less : Icons.expand_more),
-                        onPressed: () {
-                          setState(() {
-                            _isNotesExpanded = !_isNotesExpanded;
-                          });
-                        },
-                      )
+                              icon: Icon(_isNotesExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more),
+                              onPressed: () {
+                                setState(() {
+                                  _isNotesExpanded = !_isNotesExpanded;
+                                });
+                              },
+                            )
                           : SizedBox.shrink();
                     },
                   ),
@@ -474,7 +502,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               // Список заметок
               Consumer<ArticleProvider>(
                 builder: (context, provider, child) {
-                  final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+                  final notes =
+                      provider.getNotesForArticle(int.parse(widget.article.id));
                   if (notes.isEmpty) {
                     return const Text("Заметок пока нет.");
                   }
@@ -484,48 +513,54 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     curve: Curves.easeInOut,
                     child: _isNotesExpanded
                         ? ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: notes.length,
-                      itemBuilder: (context, index) {
-                        final note = notes[index];
-                        return GestureDetector(
-                          onLongPress: () {
-                            _showNoteOptions(context, note);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: buildNoteContent(note),
-                          ),
-                        );
-                      },
-                    )
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: notes.length,
+                            itemBuilder: (context, index) {
+                              final note = notes[index];
+                              return GestureDetector(
+                                onLongPress: () {
+                                  _showNoteOptions(context, note);
+                                },
+                                child: Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 6),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .bottomNavigationBarTheme
+                                        .backgroundColor,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: buildNoteContent(note),
+                                ),
+                              );
+                            },
+                          )
                         : GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isNotesExpanded = true;
-                        });
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Всего заметок: ${notes.length}',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
+                            onTap: () {
+                              setState(() {
+                                _isNotesExpanded = true;
+                              });
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .bottomNavigationBarTheme
+                                    .backgroundColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                'Всего заметок: ${notes.length}',
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                   );
                 },
               ),
@@ -571,9 +606,11 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   ),
                   const SizedBox(width: 10),
                   IconButton(
-                    icon: Icon(_editingNote == null ? Icons.send : Icons.check, size: 30),
+                    icon: Icon(_editingNote == null ? Icons.send : Icons.check,
+                        size: 30),
                     onPressed: () {
-                      final provider = Provider.of<ArticleProvider>(context, listen: false);
+                      final provider =
+                          Provider.of<ArticleProvider>(context, listen: false);
 
                       if (_editingNote != null) {
                         if (!_hasTextChanged) {
@@ -584,7 +621,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                           return;
                         }
 
-                        provider.updateNote(_editingNote!.id, _commentController.text.trim());
+                        provider.updateNote(
+                            _editingNote!.id, _commentController.text.trim());
 
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (!mounted) return;
@@ -593,9 +631,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                             _commentController.clear();
                           });
                         });
-
                       } else {
-                        provider.addNote(int.parse(widget.article.id), _commentController.text);
+                        provider.addNote(int.parse(widget.article.id),
+                            _commentController.text);
                         _commentController.clear();
                       }
                     },

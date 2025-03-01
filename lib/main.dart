@@ -52,14 +52,16 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.light,
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
         primaryColor: const Color(0xFFFFD700),
-        textTheme: GoogleFonts.latoTextTheme().apply(
-          bodyColor: Colors.black,
-          displayColor: Colors.black,
-        ).copyWith(
-          bodyLarge: TextStyle(fontSize: 18),
-          bodyMedium: TextStyle(fontSize: 16),
-          bodySmall: TextStyle(fontSize: 14),
-        ),
+        textTheme: GoogleFonts.latoTextTheme()
+            .apply(
+              bodyColor: Colors.black,
+              displayColor: Colors.black,
+            )
+            .copyWith(
+              bodyLarge: TextStyle(fontSize: 18),
+              bodyMedium: TextStyle(fontSize: 16),
+              bodySmall: TextStyle(fontSize: 14),
+            ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color(0xFFFFFFFF),
           selectedItemColor: Color(0xFF474389),
@@ -70,14 +72,16 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF121212),
         primaryColor: const Color(0xFFFFD700),
-        textTheme: GoogleFonts.latoTextTheme().apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white,
-        ).copyWith(
-          bodyLarge: TextStyle(fontSize: 18),
-          bodyMedium: TextStyle(fontSize: 16),
-          bodySmall: TextStyle(fontSize: 14),
-        ),
+        textTheme: GoogleFonts.latoTextTheme()
+            .apply(
+              bodyColor: Colors.white,
+              displayColor: Colors.white,
+            )
+            .copyWith(
+              bodyLarge: TextStyle(fontSize: 18),
+              bodyMedium: TextStyle(fontSize: 16),
+              bodySmall: TextStyle(fontSize: 14),
+            ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color(0xFF1F1F1F),
           selectedItemColor: Colors.white,
@@ -87,10 +91,13 @@ class _MyAppState extends State<MyApp> {
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: isAuthenticated
           ? MainApp(
-        toggleTheme: _toggleTheme,
-        isFavoriteDialogEnabled: isFavoriteDialogEnabled,
-      )
-          : LoginPage(onLogin: _login, toggleTheme: _toggleTheme, isDarkMode: isDarkMode),
+              toggleTheme: _toggleTheme,
+              isFavoriteDialogEnabled: isFavoriteDialogEnabled,
+            )
+          : LoginPage(
+              onLogin: _login,
+              toggleTheme: _toggleTheme,
+              isDarkMode: isDarkMode),
     );
   }
 }

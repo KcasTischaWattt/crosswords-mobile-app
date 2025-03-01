@@ -8,7 +8,9 @@ class DigestProvider extends ChangeNotifier {
   String _selectedCategory = 'Все дайджесты';
 
   List<Digest> get digests => _digests;
+
   bool get isLoading => _isLoading;
+
   String get selectedCategory => _selectedCategory;
 
   void setCategory(String category) {
