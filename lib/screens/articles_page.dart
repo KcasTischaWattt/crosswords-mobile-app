@@ -317,7 +317,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               children: [
                 const Text(
                   'Статьи',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 10),
                 IconButton(
@@ -351,11 +351,13 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               AnimatedCrossFade(
                 firstChild: const SizedBox.shrink(),
                 secondChild: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: GestureDetector(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: GestureDetector(
                     onTap: _toggleSearchExpanded,
                     child: Container(
-                      padding: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                         borderRadius: BorderRadius.circular(8),
@@ -417,6 +419,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                     ),
                   ),
                 ),
+              ),
                 crossFadeState: provider.isSearchVisible
                     ? CrossFadeState.showSecond
                     : CrossFadeState.showFirst,
@@ -457,7 +460,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                                   Text(
                                     article.title,
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Theme.of(context).textTheme.bodyLarge!.color,
                                     ),
@@ -471,7 +474,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                                       ),
                                       const SizedBox(width: 15),
                                       Baseline(
-                                        baseline: 14,
+                                        baseline: 12,
                                         baselineType: TextBaseline.alphabetic,
                                         child: Text(
                                           article.date,
