@@ -5,7 +5,7 @@ import '../providers/article_provider.dart';
 import '../data/models/article.dart';
 import '../screens/article_detail_page.dart';
 
-class ArticlesPage extends StatefulWidget  {
+class ArticlesPage extends StatefulWidget {
   final bool isFavoriteDialogEnabled;
 
   const ArticlesPage({super.key, required this.isFavoriteDialogEnabled});
@@ -14,7 +14,8 @@ class ArticlesPage extends StatefulWidget  {
   _ArticlesPageState createState() => _ArticlesPageState();
 }
 
-class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderStateMixin {
+class _ArticlesPageState extends State<ArticlesPage>
+    with SingleTickerProviderStateMixin {
   bool _isSearchExpanded = false;
 
   // Поля ввода
@@ -60,7 +61,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
   }
 
   void _toggleSearchVisibility() {
-    Provider.of<ArticleProvider>(context, listen: false).toggleSearchVisibility();
+    Provider.of<ArticleProvider>(context, listen: false)
+        .toggleSearchVisibility();
     setState(() {
       _isSearchExpanded = false;
       _animationController.reset();
@@ -69,7 +71,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
   void _onScroll() {
     final provider = Provider.of<ArticleProvider>(context, listen: false);
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
         !provider.isLoadingMore &&
         !provider.isLoading) {
       provider.loadMoreArticles();
@@ -78,23 +81,28 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
   void _toggleSearchExpanded() {
     _isSearchExpanded = !_isSearchExpanded;
-    _isSearchExpanded ? _animationController.forward() : _animationController.reverse();
+    _isSearchExpanded
+        ? _animationController.forward()
+        : _animationController.reverse();
   }
 
   void _setSearchOption(String option) {
-    Provider.of<ArticleProvider>(context, listen: false).setSearchOption(option);
+    Provider.of<ArticleProvider>(context, listen: false)
+        .setSearchOption(option);
     _toggleSearchExpanded();
   }
 
   Future<void> _toggleFavorite(String articleId) async {
-    await Provider.of<ArticleProvider>(context, listen: false).toggleFavorite(articleId);
+    await Provider.of<ArticleProvider>(context, listen: false)
+        .toggleFavorite(articleId);
   }
 
   void _resetFilters() {
     Provider.of<ArticleProvider>(context, listen: false).resetFilters();
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -113,7 +121,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     required Function(String) onToggle,
   }) {
     return ExpansionTile(
-      title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      title: Text(title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       children: [
         SizedBox(
@@ -149,7 +158,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
             // Строка поиска
             Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                color:
+                    Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -161,9 +171,11 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       style: const TextStyle(fontSize: 16),
                       decoration: InputDecoration(
                         hintText: 'Строка поиска',
-                        hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                        hintStyle:
+                            TextStyle(color: Colors.grey[600], fontSize: 16),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 8),
                       ),
                     ),
                   ),
@@ -189,7 +201,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   style: TextStyle(fontSize: 14),
                 ),
                 value: provider.searchInText,
-                onChanged: (bool? value) => provider.setSearchInText(value ?? false),
+                onChanged: (bool? value) =>
+                    provider.setSearchInText(value ?? false),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
             ],
@@ -220,7 +233,9 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                        color: Theme.of(context)
+                            .bottomNavigationBarTheme
+                            .backgroundColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
@@ -232,7 +247,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                           labelText: 'Дата С',
                           labelStyle: TextStyle(fontSize: 14),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
                         ),
                       ),
                     ),
@@ -241,7 +257,9 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                        color: Theme.of(context)
+                            .bottomNavigationBarTheme
+                            .backgroundColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
@@ -253,7 +271,8 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                           labelText: 'Дата По',
                           labelStyle: TextStyle(fontSize: 14),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
                         ),
                       ),
                     ),
@@ -284,13 +303,15 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       print('Дата по: ${_dateToController.text}');
                       print('Искать в тексте: $provider.searchInText');
                     },
-                    child: const Text('Найти', style: TextStyle(fontSize: 18, color: Colors.black)),
+                    child: const Text('Найти',
+                        style: TextStyle(fontSize: 18, color: Colors.black)),
                   ),
                 ),
                 const SizedBox(width: 12),
                 TextButton(
                   onPressed: _resetFilters,
-                  child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 16)),
+                  child: const Text('Сбросить фильтры',
+                      style: TextStyle(fontSize: 16)),
                 ),
               ],
             ),
@@ -300,14 +321,16 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Consumer<ArticleProvider>(
       builder: (context, provider, child) {
         final List<Article> allArticles = provider.articles;
         final List<Article> displayedArticles = provider.showOnlyFavorites
-            ? allArticles.where((article) => provider.favoriteArticles.contains(article.id)).toList()
+            ? allArticles
+                .where(
+                    (article) => provider.favoriteArticles.contains(article.id))
+                .toList()
             : allArticles;
 
         return Scaffold(
@@ -322,13 +345,21 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                 const SizedBox(width: 10),
                 IconButton(
                   icon: provider.isLoading
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2))
                       : Icon(
-                    provider.showOnlyFavorites ? Icons.favorite : Icons.favorite_border,
-                    color: provider.showOnlyFavorites ? Colors.red : Colors.grey,
-                    size: 24,
-                  ),
-                  onPressed: provider.isLoading ? null : provider.toggleShowFavorites,
+                          provider.showOnlyFavorites
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: provider.showOnlyFavorites
+                              ? Colors.red
+                              : Colors.grey,
+                          size: 24,
+                        ),
+                  onPressed:
+                      provider.isLoading ? null : provider.toggleShowFavorites,
                 ),
               ],
             ),
@@ -346,189 +377,241 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
           body: provider.isLoading
               ? const Center(child: CircularProgressIndicator())
               : Column(
-            children: [
-              // Аккордеон с выбором типа поиска
-              AnimatedCrossFade(
-                firstChild: const SizedBox.shrink(),
-                secondChild: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: GestureDetector(
-                    onTap: _toggleSearchExpanded,
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
+                  children: [
+                    // Аккордеон с выбором типа поиска
+                    AnimatedCrossFade(
+                      firstChild: const SizedBox.shrink(),
+                      secondChild: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 8),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: GestureDetector(
                             onTap: _toggleSearchExpanded,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  provider.selectedSearchOption,
-                                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .bottomNavigationBarTheme
+                                    .backgroundColor,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  width: 1,
                                 ),
-                                Icon(
-                                  _isSearchExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                                  size: 24,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Visibility(
-                            visible: _isSearchExpanded,
-                            child: const SizedBox(height: 8),
-                          ),
-                          SizeTransition(
-                            sizeFactor: _expandAnimation,
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 0),
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 6),
-                                    title: const Text('Поиск по смыслу'),
-                                    onTap: () => _setSearchOption('Поиск по смыслу'),
-                                  ),
-                                  ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 6),
-                                    title: const Text('Точный поиск'),
-                                    onTap: () => _setSearchOption('Точный поиск'),
-                                  ),
-                                  ListTile(
-                                    contentPadding: const EdgeInsets.only(top: 6, bottom: 0),
-                                    title: const Text('Поиск по ID'),
-                                    onTap: () => _setSearchOption('Поиск по ID'),
-                                  ),
-                                ],
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-                crossFadeState: provider.isSearchVisible
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 300),
-              ),
-
-              // Интерфейс поиска
-              _buildSearchInterface(),
-
-              // Список статей
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: displayedArticles.length + (provider.isLoadingMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == displayedArticles.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final Article article = displayedArticles[index];
-                    final isFavorite = provider.favoriteArticles.contains(article.id);
-
-                    return Card(
-                      color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    article.title,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                                  GestureDetector(
+                                    onTap: _toggleSearchExpanded,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          provider.selectedSearchOption,
+                                          style: const TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Icon(
+                                          _isSearchExpanded
+                                              ? Icons.keyboard_arrow_up
+                                              : Icons.keyboard_arrow_down,
+                                          size: 24,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Источник: ${article.source}',
-                                        style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
-                                      ),
-                                      const SizedBox(width: 15),
-                                      Baseline(
-                                        baseline: 12,
-                                        baselineType: TextBaseline.alphabetic,
-                                        child: Text(
-                                          article.date,
-                                          style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
-                                        ),
-                                      ),
-                                    ],
+                                  Visibility(
+                                    visible: _isSearchExpanded,
+                                    child: const SizedBox(height: 8),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    article.summary,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ArticleDetailPage(
-                                            article: article,
+                                  SizeTransition(
+                                    sizeFactor: _expandAnimation,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 0),
+                                      child: Column(
+                                        children: [
+                                          ListTile(
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 6),
+                                            title:
+                                                const Text('Поиск по смыслу'),
+                                            onTap: () => _setSearchOption(
+                                                'Поиск по смыслу'),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).primaryColor,
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                          ListTile(
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 6),
+                                            title: const Text('Точный поиск'),
+                                            onTap: () => _setSearchOption(
+                                                'Точный поиск'),
+                                          ),
+                                          ListTile(
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    top: 6, bottom: 0),
+                                            title: const Text('Поиск по ID'),
+                                            onTap: () =>
+                                                _setSearchOption('Поиск по ID'),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    child: const Text('Подробнее', style: TextStyle(color: Colors.black, fontSize: 18)),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(
-                                isFavorite ? Icons.favorite : Icons.favorite_border,
-                                color: isFavorite ? Colors.red : Colors.grey,
-                                size: 24,
-                              ),
-                              onPressed: () async => await _toggleFavorite(article.id),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    );
-                  },
+                      crossFadeState: provider.isSearchVisible
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      duration: const Duration(milliseconds: 300),
+                    ),
+
+                    // Интерфейс поиска
+                    _buildSearchInterface(),
+
+                    // Список статей
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: displayedArticles.length +
+                            (provider.isLoadingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == displayedArticles.length) {
+                            return const Padding(
+                              padding: EdgeInsets.all(12),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+                          final Article article = displayedArticles[index];
+                          final isFavorite =
+                              provider.favoriteArticles.contains(article.id);
+
+                          return Card(
+                            color: Theme.of(context)
+                                .bottomNavigationBarTheme
+                                .backgroundColor,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 1),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          article.title,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .color,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Источник: ${article.source}',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .color),
+                                            ),
+                                            const SizedBox(width: 15),
+                                            Baseline(
+                                              baseline: 12,
+                                              baselineType:
+                                                  TextBaseline.alphabetic,
+                                              child: Text(
+                                                article.date,
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall!
+                                                        .color),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          article.summary,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ArticleDetailPage(
+                                                  article: article,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Theme.of(context).primaryColor,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 8),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
+                                          ),
+                                          child: const Text('Подробнее',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 18)),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      isFavorite
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color:
+                                          isFavorite ? Colors.red : Colors.grey,
+                                      size: 24,
+                                    ),
+                                    onPressed: () async =>
+                                        await _toggleFavorite(article.id),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         );
       },
     );
