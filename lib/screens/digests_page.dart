@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '../data/fake/fake_digests.dart';
+import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 
-class DigestsPage extends StatelessWidget {
-  const DigestsPage({Key? key}) : super(key: key);
+class DigestsPage extends StatefulWidget {
+  const DigestsPage({super.key});
+
+  @override
+  _DigestsPageState createState() => _DigestsPageState();
+}
+
+class _DigestsPageState extends State<DigestsPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<DigestProvider>(context, listen: false).loadDigests();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<DigestProvider>(context);
+    final digests = provider.digests;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
@@ -17,6 +36,12 @@ class DigestsPage extends StatelessWidget {
           'Дайджесты',
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
