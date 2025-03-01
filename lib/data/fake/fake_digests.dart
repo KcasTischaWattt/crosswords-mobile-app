@@ -1,4 +1,5 @@
 import '../models/digest.dart';
+import '../models/subscribe_options.dart';
 
 List<Digest> fakeDigests = [
   Digest(
@@ -19,7 +20,11 @@ List<Digest> fakeDigests = [
       'https://www.kommersant.ru/doc/7476685',
       'https://www.kommersant.ru/doc/7462627'
     ],
-    subscribed: true,
+    subscribeOptions: SubscribeOptions(
+      subscribed: true,
+      sendToMail: true,
+      mobileNotifications: false,
+    ),
   ),
   Digest(
     id: 2,
@@ -37,6 +42,10 @@ List<Digest> fakeDigests = [
       'https://www.kommersant.ru/doc/7462654',
       'https://www.kommersant.ru/doc/7462763'
     ],
-    subscribed: true,
+    subscribeOptions: SubscribeOptions(
+      subscribed: true,
+      sendToMail: true,
+      mobileNotifications: true,
+    ),
   ),
 ];

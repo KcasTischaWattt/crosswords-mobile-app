@@ -1,3 +1,5 @@
+import 'subscribe_options.dart';
+
 class Digest {
   final int id;
   final String title;
@@ -6,7 +8,7 @@ class Digest {
   final List<String> tags;
   final String date;
   final List<String> urls;
-  final bool subscribed;
+  final SubscribeOptions subscribeOptions;
 
   Digest({
     required this.id,
@@ -16,7 +18,7 @@ class Digest {
     required this.tags,
     required this.date,
     required this.urls,
-    required this.subscribed,
+    required this.subscribeOptions,
   });
 
   // Метод для преобразования JSON в объект Digest
@@ -29,7 +31,7 @@ class Digest {
       tags: List<String>.from(json['tags']),
       date: json['date'],
       urls: List<String>.from(json['urls']),
-      subscribed: json['subscribed'],
+      subscribeOptions: SubscribeOptions.fromJson(json['subscribeOptions']),
     );
   }
 
@@ -43,7 +45,7 @@ class Digest {
       'tags': tags,
       'date': date,
       'urls': urls,
-      'subscribed': subscribed,
+      'subscribeOptions': subscribeOptions.toJson(),
     };
   }
 }
