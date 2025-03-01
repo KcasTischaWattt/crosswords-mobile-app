@@ -30,7 +30,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 250),
       vsync: this,
     );
     _expandAnimation = CurvedAnimation(
@@ -113,17 +113,17 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     required Function(String) onToggle,
   }) {
     return ExpansionTile(
-      title: Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-      tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+      title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       children: [
         SizedBox(
-          height: items.length > 3 ? 150 : null,
+          height: items.length > 3 ? 140 : null,
           child: SingleChildScrollView(
             child: Column(
               children: items.map((item) {
                 return CheckboxListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                  title: Text(item, style: const TextStyle(fontSize: 20)),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+                  title: Text(item, style: const TextStyle(fontSize: 14)),
                   value: selectedItems.contains(item),
                   onChanged: (bool? value) {
                     setState(() => onToggle(item));
@@ -142,7 +142,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
     return Visibility(
       visible: provider.isSearchVisible,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -150,7 +150,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
@@ -158,12 +158,12 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   Expanded(
                     child: TextField(
                       controller: _searchController,
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 16),
                       decoration: InputDecoration(
                         hintText: 'Строка поиска',
-                        hintStyle: TextStyle(color: Colors.grey[600], fontSize: 20),
+                        hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                       ),
                     ),
                   ),
@@ -172,7 +172,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                     child: Icon(
                       Icons.search,
                       color: Colors.grey[600],
-                      size: 28,
+                      size: 24,
                     ),
                   ),
                 ],
@@ -186,7 +186,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                 contentPadding: EdgeInsets.zero,
                 title: const Text(
                   'Искать в тексте',
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 14),
                 ),
                 value: provider.searchInText,
                 onChanged: (bool? value) => provider.setSearchInText(value ?? false),
@@ -221,18 +221,18 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                     child: Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
                         controller: _dateFromController,
                         readOnly: true,
-                        style: const TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 16),
                         onTap: () => _selectDate(context, _dateFromController),
                         decoration: const InputDecoration(
                           labelText: 'Дата С',
-                          labelStyle: TextStyle(fontSize: 20),
+                          labelStyle: TextStyle(fontSize: 14),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                         ),
                       ),
                     ),
@@ -242,18 +242,18 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                     child: Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
                         controller: _dateToController,
                         readOnly: true,
-                        style: const TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 16),
                         onTap: () => _selectDate(context, _dateToController),
                         decoration: const InputDecoration(
                           labelText: 'Дата По',
-                          labelStyle: TextStyle(fontSize: 20),
+                          labelStyle: TextStyle(fontSize: 14),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                         ),
                       ),
                     ),
@@ -274,7 +274,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                     onPressed: () {
                       print('Ищем: ${_searchController.text}');
@@ -284,13 +284,13 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       print('Дата по: ${_dateToController.text}');
                       print('Искать в тексте: $provider.searchInText');
                     },
-                    child: const Text('Найти', style: TextStyle(fontSize: 22, color: Colors.black)),
+                    child: const Text('Найти', style: TextStyle(fontSize: 18, color: Colors.black)),
                   ),
                 ),
                 const SizedBox(width: 12),
                 TextButton(
                   onPressed: _resetFilters,
-                  child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 20)),
+                  child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 16)),
                 ),
               ],
             ),
@@ -312,12 +312,12 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
         return Scaffold(
           appBar: AppBar(
-            toolbarHeight: 80,
+            toolbarHeight: 60,
             title: Row(
               children: [
                 const Text(
                   'Статьи',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 10),
                 IconButton(
@@ -326,7 +326,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                       : Icon(
                     provider.showOnlyFavorites ? Icons.favorite : Icons.favorite_border,
                     color: provider.showOnlyFavorites ? Colors.red : Colors.grey,
-                    size: 30,
+                    size: 24,
                   ),
                   onPressed: provider.isLoading ? null : provider.toggleShowFavorites,
                 ),
@@ -334,7 +334,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.search, size: 30),
+                icon: const Icon(Icons.search, size: 24),
                 onPressed: _toggleSearchVisibility,
               ),
             ],
@@ -351,11 +351,11 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
               AnimatedCrossFade(
                 firstChild: const SizedBox.shrink(),
                 secondChild: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: GestureDetector(
                     onTap: _toggleSearchExpanded,
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
                         borderRadius: BorderRadius.circular(8),
@@ -374,11 +374,11 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                               children: [
                                 Text(
                                   provider.selectedSearchOption,
-                                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                                 ),
                                 Icon(
                                   _isSearchExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                                  size: 28,
+                                  size: 24,
                                 ),
                               ],
                             ),
@@ -394,17 +394,17 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                               child: Column(
                                 children: [
                                   ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 6),
                                     title: const Text('Поиск по смыслу'),
                                     onTap: () => _setSearchOption('Поиск по смыслу'),
                                   ),
                                   ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 6),
                                     title: const Text('Точный поиск'),
                                     onTap: () => _setSearchOption('Точный поиск'),
                                   ),
                                   ListTile(
-                                    contentPadding: const EdgeInsets.only(top: 8, bottom: 0),
+                                    contentPadding: const EdgeInsets.only(top: 6, bottom: 0),
                                     title: const Text('Поиск по ID'),
                                     onTap: () => _setSearchOption('Поиск по ID'),
                                   ),
@@ -434,7 +434,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                   itemBuilder: (context, index) {
                     if (index == displayedArticles.length) {
                       return const Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(12),
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
@@ -443,10 +443,10 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
 
                     return Card(
                       color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(8),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -457,12 +457,12 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                                   Text(
                                     article.title,
                                     style: TextStyle(
-                                      fontSize: 24,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Theme.of(context).textTheme.bodyLarge!.color,
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 8),
                                   Row(
                                     children: [
                                       Text(
@@ -480,7 +480,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 8),
                                   Text(
                                     article.summary,
                                     maxLines: 2,
@@ -501,10 +501,10 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Theme.of(context).primaryColor,
-                                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                     ),
-                                    child: const Text('Подробнее', style: TextStyle(color: Colors.black, fontSize: 22)),
+                                    child: const Text('Подробнее', style: TextStyle(color: Colors.black, fontSize: 18)),
                                   )
                                 ],
                               ),
@@ -513,7 +513,7 @@ class _ArticlesPageState extends State<ArticlesPage> with SingleTickerProviderSt
                               icon: Icon(
                                 isFavorite ? Icons.favorite : Icons.favorite_border,
                                 color: isFavorite ? Colors.red : Colors.grey,
-                                size: 30,
+                                size: 24,
                               ),
                               onPressed: () async => await _toggleFavorite(article.id),
                             ),
