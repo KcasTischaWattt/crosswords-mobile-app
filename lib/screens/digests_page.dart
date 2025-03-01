@@ -58,41 +58,50 @@ class _DigestsPageState extends State<DigestsPage> {
   Widget _buildCategoryButtons(DigestProvider provider) {
     final categories = ["Все дайджесты", "Подписки", "Приватные"];
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: categories.map((category) {
+    return SizedBox(
+      height: 50,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
           final isSelected = provider.selectedCategory == category;
-          return ChoiceChip(
-            label: Text(category),
-            selected: isSelected,
-            onSelected: (_) => provider.setCategory(category),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: ChoiceChip(
+              label: Text(category),
+              selected: isSelected,
+              onSelected: (_) => provider.setCategory(category),
+            ),
           );
-        }).toList(),
+        }
       ),
     );
   }
 
   Widget _buildSubscriptionsRow() {
     return SizedBox(
-      height: 80,
+      height: 90,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 10,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.grey[300],
-                  child: Icon(Icons.person, size: 30, color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 4),
-                Text("Подписка $index", style: const TextStyle(fontSize: 12)),
-              ],
+            child: SizedBox(
+              width: 80,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey[300],
+                    child: Icon(Icons.person, size: 30, color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 4),
+                  Text("Дайджест $index", style: const TextStyle(fontSize: 12)),
+                ],
+              ),
             ),
           );
         },
