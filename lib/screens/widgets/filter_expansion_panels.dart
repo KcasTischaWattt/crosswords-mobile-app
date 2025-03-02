@@ -37,6 +37,7 @@ class _FilterExpansionPanelsState extends State<FilterExpansionPanels> {
             },
             body: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
+              constraints: const BoxConstraints(maxHeight: 140),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: SingleChildScrollView(
                 child: Column(
@@ -75,6 +76,7 @@ class _FilterExpansionPanelsState extends State<FilterExpansionPanels> {
             },
             body: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
+              constraints: const BoxConstraints(maxHeight: 140),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: SingleChildScrollView(
                 child: Column(
