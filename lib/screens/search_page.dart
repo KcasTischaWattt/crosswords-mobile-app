@@ -90,9 +90,7 @@ class _SearchPageState extends State<SearchPage> {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
               child: GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _isSearchExpanded = !_isSearchExpanded;
-                  });
+                  toggleSearchExpansion();
                 },
                 child: Container(
                   padding: const EdgeInsets.all(12),
