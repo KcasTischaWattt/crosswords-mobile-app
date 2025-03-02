@@ -149,6 +149,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
 
+            const SizedBox(height: 12),
 
             // Строка поиска
             Container(
