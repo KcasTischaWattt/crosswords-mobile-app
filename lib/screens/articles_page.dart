@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/article_provider.dart';
 import '../data/models/article.dart';
 import '../screens/article_detail_page.dart';
+import 'widgets/filter_expansion_panels.dart';
 
 class ArticlesPage extends StatefulWidget {
   final bool isFavoriteDialogEnabled;
@@ -114,72 +115,6 @@ class _ArticlesPageState extends State<ArticlesPage>
     }
   }
 
-  Widget _buildFilterExpansionTile({
-    required String title,
-    required List<String> items,
-    required Set<String> selectedItems,
-    required Function(String) onToggle,
-  }) {
-    return Container(
-      // Задаём фон контейнера, совпадающий с фоном приложения.
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: ExpansionPanelList.radio(
-        elevation: 0,
-        // Убираем внутренние отступы, если они не требуются
-        expandedHeaderPadding: EdgeInsets.zero,
-        children: [
-          ExpansionPanelRadio(
-            value: title,
-            canTapOnHeader: true,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            headerBuilder: (BuildContext context, bool isExpanded) {
-              return ListTile(
-                // Устанавливаем тот же цвет фона для заголовка.
-                tileColor: Theme.of(context).scaffoldBackgroundColor,
-                title: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              );
-            },
-            body: Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SizedBox(
-                  height: items.length > 3 ? 140 : null,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: items.map((item) {
-                        return CheckboxListTile(
-                          contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 6),
-                          title: Text(
-                            item,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          value: selectedItems.contains(item),
-                          onChanged: (bool? value) {
-                            setState(() {
-                              onToggle(item);
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSearchInterface() {
     final provider = Provider.of<ArticleProvider>(context);
     return Visibility(
@@ -245,19 +180,7 @@ class _ArticlesPageState extends State<ArticlesPage>
             if (provider.selectedSearchOption != 'Поиск по ID') ...[
               const SizedBox(height: 16),
 
-              // Аккордеон Источники
-              _buildFilterExpansionTile(
-                title: 'Источники',
-                items: provider.sources,
-                selectedItems: provider.selectedSources,
-                onToggle: provider.toggleSource,
-              ),
-              _buildFilterExpansionTile(
-                title: 'Тэги',
-                items: provider.tags,
-                selectedItems: provider.selectedTags,
-                onToggle: provider.toggleTag,
-              ),
+              const FilterExpansionPanels(),
 
               const SizedBox(height: 16),
 
