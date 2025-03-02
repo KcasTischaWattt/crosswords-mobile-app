@@ -27,6 +27,8 @@ class _ArticlesPageState extends State<ArticlesPage>
   late Animation<double> _expandAnimation;
   late ScrollController _scrollController;
 
+  String? _openedAccordion;
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +68,12 @@ class _ArticlesPageState extends State<ArticlesPage>
     setState(() {
       _isSearchExpanded = false;
       _animationController.reset();
+    });
+  }
+
+  void _toggleAccordion(String identifier) {
+    setState(() {
+      _openedAccordion = _openedAccordion == identifier ? null : identifier;
     });
   }
 
@@ -115,18 +123,26 @@ class _ArticlesPageState extends State<ArticlesPage>
   }
 
   Widget _buildFilterExpansionTile({
+    required String identifier,
     required String title,
     required List<String> items,
     required Set<String> selectedItems,
     required Function(String) onToggle,
   }) {
     return ExpansionTile(
+      key: ValueKey('$identifier-${_openedAccordion == identifier}'),
       title: Text(title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      initiallyExpanded: _openedAccordion == identifier,
+      onExpansionChanged: (expanded) {
+        setState(() {
+          _openedAccordion = expanded ? identifier : null;
+        });
+      },
       tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       children: [
         SizedBox(
-          height: items.length > 3 ? 140 : null,
+          height: items.length > 3 ? 140.0 : null,
           child: SingleChildScrollView(
             child: Column(
               children: items.map((item) {
@@ -213,12 +229,14 @@ class _ArticlesPageState extends State<ArticlesPage>
 
               // Аккордеон Источники
               _buildFilterExpansionTile(
+                identifier: 'sources',
                 title: 'Источники',
                 items: provider.sources,
                 selectedItems: provider.selectedSources,
                 onToggle: provider.toggleSource,
               ),
               _buildFilterExpansionTile(
+                identifier: 'tags',
                 title: 'Тэги',
                 items: provider.tags,
                 selectedItems: provider.selectedTags,
@@ -387,7 +405,7 @@ class _ArticlesPageState extends State<ArticlesPage>
                         child: SizedBox(
                           width: double.infinity,
                           child: GestureDetector(
-                            onTap: _toggleSearchExpanded,
+                            onTap: () => _toggleAccordion("search"),
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
@@ -417,7 +435,7 @@ class _ArticlesPageState extends State<ArticlesPage>
                                               fontWeight: FontWeight.bold),
                                         ),
                                         Icon(
-                                          _isSearchExpanded
+                                          _openedAccordion == "search"
                                               ? Icons.keyboard_arrow_up
                                               : Icons.keyboard_arrow_down,
                                           size: 24,
@@ -425,45 +443,34 @@ class _ArticlesPageState extends State<ArticlesPage>
                                       ],
                                     ),
                                   ),
-                                  Visibility(
-                                    visible: _isSearchExpanded,
-                                    child: const SizedBox(height: 8),
-                                  ),
-                                  SizeTransition(
-                                    sizeFactor: _expandAnimation,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 0),
-                                      child: Column(
-                                        children: [
-                                          ListTile(
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 6),
-                                            title:
-                                                const Text('Поиск по смыслу'),
-                                            onTap: () => _setSearchOption(
-                                                'Поиск по смыслу'),
-                                          ),
-                                          ListTile(
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 6),
-                                            title: const Text('Точный поиск'),
-                                            onTap: () => _setSearchOption(
-                                                'Точный поиск'),
-                                          ),
-                                          ListTile(
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    top: 6, bottom: 0),
-                                            title: const Text('Поиск по ID'),
-                                            onTap: () =>
-                                                _setSearchOption('Поиск по ID'),
-                                          ),
-                                        ],
-                                      ),
+                                  if (_openedAccordion == "search")
+                                    Column(
+                                      children: [
+                                        ListTile(
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 6),
+                                          title: const Text('Поиск по смыслу'),
+                                          onTap: () => _setSearchOption(
+                                              'Поиск по смыслу'),
+                                        ),
+                                        ListTile(
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 6),
+                                          title: const Text('Точный поиск'),
+                                          onTap: () =>
+                                              _setSearchOption('Точный поиск'),
+                                        ),
+                                        ListTile(
+                                          contentPadding: const EdgeInsets.only(
+                                              top: 6, bottom: 0),
+                                          title: const Text('Поиск по ID'),
+                                          onTap: () =>
+                                              _setSearchOption('Поиск по ID'),
+                                        ),
+                                      ],
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
