@@ -120,29 +120,63 @@ class _ArticlesPageState extends State<ArticlesPage>
     required Set<String> selectedItems,
     required Function(String) onToggle,
   }) {
-    return ExpansionTile(
-      title: Text(title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-      tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      children: [
-        SizedBox(
-          height: items.length > 3 ? 140 : null,
-          child: SingleChildScrollView(
-            child: Column(
-              children: items.map((item) {
-                return CheckboxListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                  title: Text(item, style: const TextStyle(fontSize: 14)),
-                  value: selectedItems.contains(item),
-                  onChanged: (bool? value) {
-                    setState(() => onToggle(item));
-                  },
-                );
-              }).toList(),
+    return Container(
+      // Задаём фон контейнера, совпадающий с фоном приложения.
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: ExpansionPanelList.radio(
+        elevation: 0,
+        // Убираем внутренние отступы, если они не требуются
+        expandedHeaderPadding: EdgeInsets.zero,
+        children: [
+          ExpansionPanelRadio(
+            value: title,
+            canTapOnHeader: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return ListTile(
+                // Устанавливаем тот же цвет фона для заголовка.
+                tileColor: Theme.of(context).scaffoldBackgroundColor,
+                title: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            },
+            body: Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SizedBox(
+                  height: items.length > 3 ? 140 : null,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: items.map((item) {
+                        return CheckboxListTile(
+                          contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 6),
+                          title: Text(
+                            item,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          value: selectedItems.contains(item),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              onToggle(item);
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
