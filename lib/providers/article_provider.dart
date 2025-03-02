@@ -8,22 +8,27 @@ class ArticleProvider extends ChangeNotifier {
   List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3', 'Источник 4', 'Источник 5', 'Источник 6'];
   List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
 
-  List<String> get sources => _sources;
-  List<String> get tags => _tags;
-  bool _isLoading = false;
   final Set<String> _favoriteArticles = {}; // TODO убрать список ID избранных статей после подключения бэкэнда
-  List<Note> _notes = [];
+  final List<Note> _notes = [];
+  bool _isLoading = false;
   bool _showOnlyFavorites = false;
-  String _selectedSearchOption = 'Поиск по смыслу';
-  Set<String> _selectedSources = {};
-  Set<String> _selectedTags = {};
-  bool _searchInText = false;
   bool _isSearchVisible = false;
   bool _isLoadingMore = false;
   // TODO не забыть использовать для запроса к API
   int _currentPage = 1;
   final int _pageSize = 10;
 
+  // Поля поиска
+  String _selectedSearchOption = 'Поиск по смыслу';
+  String _searchQuery = '';
+  String _dateFrom = '';
+  String _dateTo = '';
+  Set<String> _selectedSources = {};
+  Set<String> _selectedTags = {};
+  bool _searchInText = false;
+
+  List<String> get sources => _sources;
+  List<String> get tags => _tags;
   List<Article> get articles => _articles;
   bool get isLoading => _isLoading;
   Set<String> get favoriteArticles => _favoriteArticles;
@@ -35,6 +40,9 @@ class ArticleProvider extends ChangeNotifier {
   bool get isSearchVisible => _isSearchVisible;
   bool get isLoadingMore => _isLoadingMore;
   List<Note> get notes => _notes;
+  String get searchQuery => _searchQuery;
+  String get dateFrom => _dateFrom;
+  String get dateTo => _dateTo;
 
   // TODO переделать систему получения заметок
   List<Note> getNotesForArticle(int articleId) {
