@@ -78,7 +78,13 @@ class _SearchPageState extends State<SearchPage> {
     final provider = Provider.of<ArticleProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Поиск статей'),
+        toolbarHeight: 80,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        title: const Text(
+          'Темы дайджестов',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6),
