@@ -131,6 +131,7 @@ class _DigestsPageState extends State<DigestsPage> {
                     .color(
                       Theme.of(context).textTheme.bodyLarge!.color!,
                     )
+                    .size(12)
                     .make(),
 
                 const SizedBox(height: 8),
@@ -154,12 +155,14 @@ class _DigestsPageState extends State<DigestsPage> {
                 const SizedBox(height: 8),
 
                 // Текст дайджеста
-                digest.text.text
-                    .color(Theme.of(context).textTheme.bodyMedium!.color!)
-                    .size(24)
-                    .maxLines(4)
-                    .ellipsis
-                    .make(),
+                Text(
+                  digest.text,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
 
                 const SizedBox(height: 8),
 
