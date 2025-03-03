@@ -21,7 +21,15 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Темы дайджестов')),
+      appBar: AppBar(
+        toolbarHeight: 80,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        title: const Text(
+          'Темы дайджестов',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: Column(
         children: [
           // Кнопка "Только подписки"
