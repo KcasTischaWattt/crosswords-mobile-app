@@ -313,12 +313,14 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 60,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          elevation: 0,
-          centerTitle: true,
-          title: const Text(
-            'Детали статьи',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          title: Row(
+            children: [
+              const Text(
+                'Детали статьи',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              // const SizedBox(width: 10),
+            ],
           ),
           actions: [
             IconButton(
@@ -328,13 +330,17 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   height: 24,
                   child: CircularProgressIndicator(strokeWidth: 2))
                   : Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : Colors.grey,
-                      size: 24,
-                    ),
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : Colors.grey,
+                size: 24,
+              ),
               onPressed: provider.isLoading ? null : _toggleFavorite,
             ),
           ],
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          shadowColor: Colors.transparent,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
