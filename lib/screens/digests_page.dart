@@ -226,9 +226,6 @@ class _DigestsPageState extends State<DigestsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 60,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
         title: const Text(
           'Дайджесты',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -239,6 +236,10 @@ class _DigestsPageState extends State<DigestsPage> {
             onPressed: () {},
           ),
         ],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shadowColor: Colors.transparent,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
