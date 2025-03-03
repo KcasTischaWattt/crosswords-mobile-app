@@ -81,7 +81,7 @@ class _SearchPageState extends State<SearchPage> {
         title: const Text('Поиск статей'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(6),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -149,7 +149,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             // Строка поиска
             Container(
