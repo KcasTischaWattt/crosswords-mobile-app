@@ -313,14 +313,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 60,
-          title: Row(
-            children: [
-              const Text(
-                'Детали статьи',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              // const SizedBox(width: 10),
-            ],
+          title: Text(
+            'Детали статьи',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(
