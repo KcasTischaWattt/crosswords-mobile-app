@@ -154,8 +154,8 @@ class _MainAppState extends State<MainApp> {
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedFontSize: 18,
-        unselectedFontSize: 16,
+        selectedFontSize: 14,
+        unselectedFontSize: 12,
         iconSize: 24,
         items: const [
           BottomNavigationBarItem(
