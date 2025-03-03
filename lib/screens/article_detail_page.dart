@@ -313,6 +313,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 60,
+          centerTitle: true,
           title: Text(
             'Детали статьи',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
