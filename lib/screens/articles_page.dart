@@ -135,7 +135,7 @@ class _ArticlesPageState extends State<ArticlesPage>
                     .bottomNavigationBarTheme
                     .backgroundColor,
                 margin: const EdgeInsets.symmetric(
-                    vertical: 8, horizontal: 1),
+                    vertical: 6, horizontal: 1),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 child: Padding(

@@ -119,7 +119,7 @@ class _DigestsPageState extends State<DigestsPage> {
         final digest = digests[index];
         return Card(
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: const EdgeInsets.symmetric(vertical: 6),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
