@@ -112,7 +112,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                             context: context,
                             title: "Отменить введенный текст?",
                             content:
-                                "Вы начали ввод новой заметки. Если начнете редактировать, введенный текст будет утерян.",
+                                "Вы начали ввод новой заметки. Если начнете редактирование, введенный текст будет утерян.",
                             cancelText: "Остаться",
                             confirmText: "Редактировать",
                             onConfirm: () {
