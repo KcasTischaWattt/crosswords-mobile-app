@@ -4,6 +4,7 @@ import 'package:velocity_x/velocity_x.dart';
 import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 import 'all_digest_topics_page.dart';
+import 'package:flutter/gestures.dart';
 
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
@@ -176,19 +177,13 @@ class _DigestsPageState extends State<DigestsPage> {
       ));
       spans.add(const TextSpan(text: " и ", style: TextStyle(fontWeight: FontWeight.normal)));
 
-      spans.add(WidgetSpan(
-        child: GestureDetector(
-          onTap: () {
+      spans.add(TextSpan(
+        text: "ещё ${sources.length - 2}",
+        style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline, color: textColor),
+        recognizer: TapGestureRecognizer()
+          ..onTap = () {
             _showSourcesPopup(context, sources);
           },
-          child: Text(
-            "ещё ${sources.length - 2}",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-                color: textColor),
-          ),
-        ),
       ));
     }
 
