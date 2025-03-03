@@ -83,7 +83,7 @@ class _SearchPageState extends State<SearchPage> {
         elevation: 0,
         title: const Text(
           'Темы дайджестов',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
