@@ -25,7 +25,7 @@ class _DigestsPageState extends State<DigestsPage> {
     final categories = ["Все дайджесты", "Подписки", "Приватные"];
 
     return SizedBox(
-      height: 50,
+      height: 40,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: categories.length,
@@ -33,7 +33,7 @@ class _DigestsPageState extends State<DigestsPage> {
             final category = categories[index];
             final isSelected = provider.selectedCategory == category;
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: ChoiceChip(
                 label: Text(category),
                 selected: isSelected,
@@ -53,7 +53,6 @@ class _DigestsPageState extends State<DigestsPage> {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: 10,
-            padding: const EdgeInsets.only(right: 50),
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -121,9 +120,9 @@ class _DigestsPageState extends State<DigestsPage> {
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           margin: const EdgeInsets.symmetric(vertical: 6),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
