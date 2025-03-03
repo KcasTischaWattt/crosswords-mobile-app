@@ -119,7 +119,7 @@ class _DigestsPageState extends State<DigestsPage> {
       for (int i = 0; i < sources.length; i++) {
         spans.add(TextSpan(
           text: sources[i],
-          style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ));
         if (i < sources.length - 1) {
           spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
@@ -128,19 +128,19 @@ class _DigestsPageState extends State<DigestsPage> {
     } else {
       spans.add(TextSpan(
         text: sources[0],
-        style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ));
       spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
 
       spans.add(TextSpan(
         text: sources[1],
-        style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ));
       spans.add(const TextSpan(text: " и ", style: TextStyle(fontWeight: FontWeight.normal)));
 
       spans.add(TextSpan(
         text: "ещё ${sources.length - 2}",
-        style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ));
     }
 
