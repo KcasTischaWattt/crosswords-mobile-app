@@ -33,7 +33,7 @@ class _DigestsPageState extends State<DigestsPage> {
         elevation: 0,
         title: const Text(
           'Дайджесты',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
