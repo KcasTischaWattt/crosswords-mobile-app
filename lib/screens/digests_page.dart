@@ -106,6 +106,8 @@ class _DigestsPageState extends State<DigestsPage> {
   Widget _buildSourcesText(List<String> sources) {
     if (sources.isEmpty) return const SizedBox.shrink();
 
+    final textColor = Theme.of(context).textTheme.bodyLarge!.color!;
+
     List<InlineSpan> spans = [
       const TextSpan(
         text: "Источники: ",
@@ -145,7 +147,7 @@ class _DigestsPageState extends State<DigestsPage> {
     return RichText(
       text: TextSpan(
         children: spans,
-        style: const TextStyle(fontSize: 14, color: Colors.black),
+        style: TextStyle(fontSize: 14, color: textColor),
       ),
     );
   }
