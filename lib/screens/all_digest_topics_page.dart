@@ -13,8 +13,9 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   final List<Map<String, dynamic>> _fakeTopics = List.generate(
     15,
         (index) => {
-      "title": "Тема $index",
-      "isSubscribed": index % 3 == 0,
+          "title": "Тема $index",
+          "isSubscribed": index % 3 == 0,
+          "isNotified": index % 4 == 0,
     },
   );
 
@@ -72,19 +73,23 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(topic["isSubscribed"] ? Icons.notifications_active : Icons.notifications_none),
+                        icon: Icon(topic["isNotified"] ? Icons.notifications_active : Icons.notifications_none),
                         onPressed: () {
                           setState(() {
-                            topic["isSubscribed"] = !topic["isSubscribed"];
+                            topic["isNotified"] = !topic["isNotified"];
                           });
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.add_circle_outline),
+                        icon: Icon(
+                          topic["isSubscribed"]
+                              ? Icons.check_circle
+                              : Icons.add_circle_outline,
+                        ),
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Добавлен в избранное: ${topic["title"]}")),
-                          );
+                          setState(() {
+                            topic["isSubscribed"] = !topic["isSubscribed"];
+                          });
                         },
                       ),
                     ],
