@@ -102,6 +102,54 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  // Строки с источниками
+  Widget _buildSourcesText(List<String> sources) {
+    if (sources.isEmpty) return const SizedBox.shrink();
+
+    List<InlineSpan> spans = [
+      const TextSpan(
+        text: "Источники: ",
+        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+      ),
+    ];
+
+    if (sources.length <= 3) {
+      for (int i = 0; i < sources.length; i++) {
+        spans.add(TextSpan(
+          text: sources[i],
+          style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+        ));
+        if (i < sources.length - 1) {
+          spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
+        }
+      }
+    } else {
+      spans.add(TextSpan(
+        text: sources[0],
+        style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+      ));
+      spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
+
+      spans.add(TextSpan(
+        text: sources[1],
+        style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+      ));
+      spans.add(const TextSpan(text: " и ", style: TextStyle(fontWeight: FontWeight.normal)));
+
+      spans.add(TextSpan(
+        text: "ещё ${sources.length - 2}",
+        style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+      ));
+    }
+
+    return RichText(
+      text: TextSpan(
+        children: spans,
+        style: const TextStyle(fontSize: 14, color: Colors.black),
+      ),
+    );
+  }
+
   Widget _buildDigestList(DigestProvider provider, List<Digest> digests) {
     if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -137,20 +185,7 @@ class _DigestsPageState extends State<DigestsPage> {
                 const SizedBox(height: 8),
 
                 // Источники
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: digest.sources.map((source) {
-                    return Chip(
-                      label: Text(
-                        source,
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      backgroundColor: const Color(0xFF517ECF),
-                    );
-                  }).toList(),
-                ),
+                _buildSourcesText(digest.sources),
 
                 const SizedBox(height: 8),
 
