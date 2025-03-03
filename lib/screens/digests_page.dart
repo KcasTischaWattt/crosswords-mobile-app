@@ -25,7 +25,7 @@ class _DigestsPageState extends State<DigestsPage> {
     final categories = ["Все дайджесты", "Подписки", "Приватные"];
 
     return SizedBox(
-      height: 40,
+      height: 50,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: categories.length,
@@ -153,9 +153,10 @@ class _DigestsPageState extends State<DigestsPage> {
 
                 const SizedBox(height: 8),
 
-                // Текст дайджеста (обрезаем на несколько строк)
+                // Текст дайджеста
                 digest.text.text
                     .color(Theme.of(context).textTheme.bodyMedium!.color!)
+                    .size(24)
                     .maxLines(4)
                     .ellipsis
                     .make(),
@@ -171,25 +172,28 @@ class _DigestsPageState extends State<DigestsPage> {
                       label: Text(
                         tag,
                         style: const TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
                       ),
                       backgroundColor: Theme.of(context).primaryColor,
                     );
                   }).toList(),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
 
                 // Дата и кнопка Подробнее
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     digest.date.text
+                        .size(14)
                         .color(Theme.of(context).textTheme.bodySmall!.color!)
                         .make(),
                     ElevatedButton(
                       onPressed: () {
-                        // Переход на страницу деталей дайджеста
+                        // TODO Переход на страницу деталей дайджеста
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content:
@@ -199,7 +203,7 @@ class _DigestsPageState extends State<DigestsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).primaryColor,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                            horizontal: 12, vertical: 8),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),
