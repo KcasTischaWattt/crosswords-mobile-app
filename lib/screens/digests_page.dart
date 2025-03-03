@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
-import '../data/fake/fake_digests.dart';
 import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
+import 'all_digest_topics_page.dart';
 
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
@@ -120,8 +120,9 @@ class _DigestsPageState extends State<DigestsPage> {
           child: TextButton(
             onPressed: () {
               // Действие при нажатии
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Открыть все подписки")),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AllDigestTopicsPage()),
               );
             },
             child: const Text(
