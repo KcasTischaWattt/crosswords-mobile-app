@@ -16,7 +16,6 @@ class ArticlesPage extends StatefulWidget {
 
 class _ArticlesPageState extends State<ArticlesPage>
     with SingleTickerProviderStateMixin {
-
   late ScrollController _scrollController;
 
   @override
@@ -116,133 +115,130 @@ class _ArticlesPageState extends State<ArticlesPage>
           body: provider.isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
-            controller: _scrollController,
-            itemCount: displayedArticles.length +
-                (provider.isLoadingMore ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == displayedArticles.length) {
-                return const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              final Article article = displayedArticles[index];
-              final isFavorite =
-              provider.favoriteArticles.contains(article.id);
+                  controller: _scrollController,
+                  itemCount: displayedArticles.length +
+                      (provider.isLoadingMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == displayedArticles.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final Article article = displayedArticles[index];
+                    final isFavorite =
+                        provider.favoriteArticles.contains(article.id);
 
-              return Card(
-                color: Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .backgroundColor,
-                margin: const EdgeInsets.symmetric(
-                    vertical: 6, horizontal: 1),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                    return Card(
+                      color: Theme.of(context)
+                          .bottomNavigationBarTheme
+                          .backgroundColor,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 6, horizontal: 1),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              article.title,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .color,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Text(
-                                  'Источник: ${article.source}',
-                                  style: TextStyle(
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    article.title,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .textTheme
-                                          .bodySmall!
-                                          .color),
-                                ),
-                                const SizedBox(width: 15),
-                                Baseline(
-                                  baseline: 12,
-                                  baselineType:
-                                  TextBaseline.alphabetic,
-                                  child: Text(
-                                    article.date,
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall!
-                                            .color),
+                                          .bodyLarge!
+                                          .color,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              article.summary,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ArticleDetailPage(
-                                          article: article,
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Источник: ${article.source}',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .color),
                                         ),
+                                      ),
+                                      const SizedBox(width: 15),
+                                      Baseline(
+                                        baseline: 12,
+                                        baselineType: TextBaseline.alphabetic,
+                                        child: Text(
+                                          article.date,
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .color),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                Theme.of(context).primaryColor,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.circular(8)),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    article.summary,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ArticleDetailPage(
+                                            article: article,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 8),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                    ),
+                                    child: const Text('Подробнее',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 18)),
+                                  )
+                                ],
                               ),
-                              child: const Text('Подробнее',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18)),
-                            )
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isFavorite ? Colors.red : Colors.grey,
+                                size: 24,
+                              ),
+                              onPressed: () async =>
+                                  await _toggleFavorite(article.id),
+                            ),
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(
-                          isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          color:
-                          isFavorite ? Colors.red : Colors.grey,
-                          size: 24,
-                        ),
-                        onPressed: () async =>
-                        await _toggleFavorite(article.id),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         );
       },
     );
