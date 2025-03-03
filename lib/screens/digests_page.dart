@@ -36,9 +36,13 @@ class _DigestsPageState extends State<DigestsPage> {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: ChoiceChip(
-                label: Text(category),
+                label: Text(
+                  category,
+                  style: const TextStyle(fontSize: 12),
+                ),
                 selected: isSelected,
                 onSelected: (_) => provider.setCategory(category),
+                visualDensity: VisualDensity.compact,
               ),
             );
           }),
@@ -47,7 +51,7 @@ class _DigestsPageState extends State<DigestsPage> {
 
   Widget _buildSubscriptionsRow() {
     return SizedBox(
-      height: 90,
+      height: 80,
       child: Row(children: [
         // Карусель подписок
         Expanded(
@@ -58,18 +62,20 @@ class _DigestsPageState extends State<DigestsPage> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
-                  width: 80,
+                  width: 60,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircleAvatar(
-                        radius: 30,
+                        radius: 20,
                         backgroundColor: Colors.grey[300],
                         child: Icon(Icons.person,
-                            size: 30, color: Colors.grey[600]),
+                            size: 20, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 4),
                       Text("Дайджест $index",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                           style: const TextStyle(fontSize: 12)),
                     ],
                   ),
@@ -79,23 +85,26 @@ class _DigestsPageState extends State<DigestsPage> {
           ),
         ),
 
+        // Кнопка все
         Container(
           width: 60,
           height: 80,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-          ),
+          decoration: BoxDecoration(),
           child: TextButton(
             onPressed: () {
-              // Действие при нажатии
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AllDigestTopicsPage()),
+                MaterialPageRoute(
+                    builder: (context) => const AllDigestTopicsPage()),
               );
             },
             child: const Text(
               "Все",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue),
             ),
           ),
         ),
@@ -124,9 +133,9 @@ class _DigestsPageState extends State<DigestsPage> {
                   style: const TextStyle(fontWeight: FontWeight.normal),
                 ),
                 ...sources.sublist(2).map((source) => Text(
-                  source,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                )),
+                      source,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )),
               ],
             ),
           ),
@@ -161,7 +170,8 @@ class _DigestsPageState extends State<DigestsPage> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ));
         if (i < sources.length - 1) {
-          spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
+          spans.add(const TextSpan(
+              text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
         }
       }
     } else {
@@ -169,17 +179,22 @@ class _DigestsPageState extends State<DigestsPage> {
         text: sources[0],
         style: const TextStyle(fontWeight: FontWeight.bold),
       ));
-      spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
+      spans.add(const TextSpan(
+          text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
 
       spans.add(TextSpan(
         text: sources[1],
         style: const TextStyle(fontWeight: FontWeight.bold),
       ));
-      spans.add(const TextSpan(text: " и ", style: TextStyle(fontWeight: FontWeight.normal)));
+      spans.add(const TextSpan(
+          text: " и ", style: TextStyle(fontWeight: FontWeight.normal)));
 
       spans.add(TextSpan(
         text: "ещё ${sources.length - 2}",
-        style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline, color: textColor),
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.underline,
+            color: textColor),
         recognizer: TapGestureRecognizer()
           ..onTap = () {
             _showSourcesPopup(context, sources);
@@ -212,8 +227,7 @@ class _DigestsPageState extends State<DigestsPage> {
         return Card(
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           margin: const EdgeInsets.symmetric(vertical: 6),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -237,9 +251,7 @@ class _DigestsPageState extends State<DigestsPage> {
                 // Текст дайджеста
                 Text(
                   digest.text,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
