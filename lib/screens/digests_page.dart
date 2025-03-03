@@ -21,38 +21,6 @@ class _DigestsPageState extends State<DigestsPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<DigestProvider>(context);
-    final digests = provider.digests;
-
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 80,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        title: const Text(
-          'Дайджесты',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildCategoryButtons(provider),
-          _buildSubscriptionsRow(),
-          Expanded(child: _buildDigestList(provider, digests)),
-        ],
-      ),
-    );
-  }
-
   Widget _buildCategoryButtons(DigestProvider provider) {
     final categories = ["Все дайджесты", "Подписки", "Приватные"];
 
@@ -248,6 +216,38 @@ class _DigestsPageState extends State<DigestsPage> {
           ),
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<DigestProvider>(context);
+    final digests = provider.digests;
+
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 80,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        title: const Text(
+          'Дайджесты',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCategoryButtons(provider),
+          _buildSubscriptionsRow(),
+          Expanded(child: _buildDigestList(provider, digests)),
+        ],
+      ),
     );
   }
 }
