@@ -78,7 +78,7 @@ class _SearchPageState extends State<SearchPage> {
     final provider = Provider.of<ArticleProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 80,
+        toolbarHeight: 60,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         title: const Text(
