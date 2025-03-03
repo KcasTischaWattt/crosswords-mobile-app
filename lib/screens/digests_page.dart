@@ -102,6 +102,44 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  // тултип с источниками
+  void _showSourcesPopup(BuildContext context, List<String> sources) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Все источники"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text(
+                  sources[0],
+                  style: const TextStyle(fontWeight: FontWeight.normal),
+                ),
+                Text(
+                  sources[1],
+                  style: const TextStyle(fontWeight: FontWeight.normal),
+                ),
+                ...sources.sublist(2).map((source) => Text(
+                  source,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                )),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Закрыть"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Строки с источниками
   Widget _buildSourcesText(List<String> sources) {
     if (sources.isEmpty) return const SizedBox.shrink();
@@ -138,9 +176,19 @@ class _DigestsPageState extends State<DigestsPage> {
       ));
       spans.add(const TextSpan(text: " и ", style: TextStyle(fontWeight: FontWeight.normal)));
 
-      spans.add(TextSpan(
-        text: "ещё ${sources.length - 2}",
-        style: const TextStyle(fontWeight: FontWeight.bold),
+      spans.add(WidgetSpan(
+        child: GestureDetector(
+          onTap: () {
+            _showSourcesPopup(context, sources);
+          },
+          child: Text(
+            "ещё ${sources.length - 2}",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+                color: textColor),
+          ),
+        ),
       ));
     }
 
