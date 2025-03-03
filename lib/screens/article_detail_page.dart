@@ -312,7 +312,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 80,
+          toolbarHeight: 60,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           elevation: 0,
           centerTitle: true,
@@ -323,11 +323,14 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           actions: [
             IconButton(
               icon: provider.isLoading
-                  ? const CircularProgressIndicator()
+                  ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2))
                   : Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: isFavorite ? Colors.red : Colors.grey,
-                      size: 30,
+                      size: 24,
                     ),
               onPressed: provider.isLoading ? null : _toggleFavorite,
             ),
@@ -460,12 +463,12 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
                   padding:
-                      const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(8)),
                 ),
                 child: const Text('Читать оригинал',
-                    style: TextStyle(color: Colors.black, fontSize: 20)),
+                    style: TextStyle(color: Colors.black, fontSize: 18)),
               ),
 
               const SizedBox(height: 20),
