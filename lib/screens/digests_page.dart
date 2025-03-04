@@ -5,6 +5,7 @@ import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 import 'all_digest_topics_page.dart';
 import 'package:flutter/gestures.dart';
+import 'digest_search_page.dart';
 
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
@@ -376,7 +377,12 @@ class _DigestsPageState extends State<DigestsPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DigestSearchPage()),
+              );
+            },
           ),
         ],
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
