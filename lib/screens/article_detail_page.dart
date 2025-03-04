@@ -322,6 +322,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+
+
   /// Обработка нажатия кнопки "Назад"
   void _handlePop(BuildContext context, bool didPop, dynamic result) {
     if (didPop) return;
@@ -646,6 +648,14 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Сброс режима редактирования
+  void _resetEditing() {
+    setState(() {
+      _editingNote = null;
+      _commentController.clear();
+    });
+  }
+
   /// Сохранение или обновление заметки
   void _saveOrUpdateNote(ArticleProvider provider) {
     final text = _commentController.text.trim();
@@ -654,10 +664,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     if (_editingNote != null) {
       // Обновление существующей заметки
       if (!_hasTextChanged) {
-        setState(() {
-          _editingNote = null;
-          _commentController.clear();
-        });
+        _resetEditing();
         return;
       }
 
