@@ -322,32 +322,26 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
-
+  void _showExitConfirmationDialog(BuildContext context) {
+    _showConfirmationDialog(
+      context: context,
+      title: _editingNote != null ? "Отменить редактирование?" : "Отменить создание заметки?",
+      content: "Изменения не будут сохранены.",
+      cancelText: "Остаться",
+      confirmText: "Выйти",
+      onConfirm: () {
+        _resetEditing();
+        Navigator.pop(context);
+      },
+    );
+  }
 
   /// Обработка нажатия кнопки "Назад"
   void _handlePop(BuildContext context, bool didPop, dynamic result) {
     if (didPop) return;
 
     if (_editingNote != null || _commentController.text.isNotEmpty) {
-      String title = _editingNote != null
-          ? "Отменить редактирование?"
-          : "Отменить создание заметки?";
-      String content = "Изменения не будут сохранены.";
-
-      _showConfirmationDialog(
-        context: context,
-        title: title,
-        content: content,
-        cancelText: "Остаться",
-        confirmText: "Выйти",
-        onConfirm: () {
-          setState(() {
-            _editingNote = null;
-            _commentController.clear();
-          });
-          Navigator.pop(context);
-        },
-      );
+      _showExitConfirmationDialog(context);
     } else {
       Navigator.pop(context, result);
     }
