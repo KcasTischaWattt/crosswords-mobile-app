@@ -74,6 +74,8 @@ class _FilterExpansionPanelsState extends State<FilterExpansionPanels> {
       child: ExpansionPanelList.radio(
         elevation: 0,
         expandedHeaderPadding: EdgeInsets.zero,
+        dividerColor: Colors.transparent,
+        materialGapSize: 1,
         children: [
           _buildExpansionPanel(
             value: 'sources',
