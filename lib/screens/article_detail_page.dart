@@ -230,9 +230,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   /// Возвращает форматированную строку времени
   String _getTimeText(Note note) {
-    return note.updatedAt != note.createdAt
-        ? "изм. ${_formatDateTime(DateTime.parse(note.updatedAt))}"
-        : _formatDateTime(DateTime.parse(note.createdAt));
+    final createdAt = DateTime.parse(note.createdAt);
+    final updatedAt = DateTime.parse(note.updatedAt);
+    return createdAt == updatedAt ? _formatDateTime(createdAt) : "изм. ${_formatDateTime(updatedAt)}";
   }
 
   /// Построение однострочного макета, если время и текст помещаются в строку
