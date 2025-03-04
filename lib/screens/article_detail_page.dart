@@ -46,16 +46,18 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     super.dispose();
   }
 
+  /// Переключение избранного
   Future<void> _toggleFavorite() async {
     await Provider.of<ArticleProvider>(context, listen: false)
         .toggleFavorite(widget.article.id);
   }
 
+  /// Форматирование даты и времени
   String _formatDateTime(String dateTime) {
-    final DateTime parsedDate = DateTime.parse(dateTime);
-    return DateFormat('dd/MM/yyyy HH:mm').format(parsedDate);
+    return DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(dateTime));
   }
 
+  /// Виджет пунктов меню
   Widget _buildMenuItem({
     required IconData icon,
     required String text,
@@ -68,6 +70,99 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Виджет меню
+  Widget _buildMenu(BuildContext context, BuildContext bottomSheetContext, Note note) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildMenuItem(
+            icon: Icons.content_copy,
+            text: "Копировать",
+            onTap: () => _copyNoteText(context, note),
+          ),
+          _buildMenuItem(
+            icon: Icons.edit,
+            text: "Редактировать",
+            onTap: () => _editNote(context, note),
+          ),
+          _buildMenuItem(
+            icon: Icons.delete,
+            text: "Удалить",
+            onTap: () => _confirmDeleteNote(context, bottomSheetContext, note),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Копирование текста заметки
+  void _copyNoteText(BuildContext context, Note note) {
+    Clipboard.setData(ClipboardData(text: note.text));
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Заметка скопирована")),
+    );
+  }
+
+  /// Подтверждение входа в режим редактирования
+  void _confirmEnterEditMode(BuildContext context, Note note) {
+    Navigator.pop(context);
+    _showConfirmationDialog(
+      context: context,
+      title: "Начать редактирование?",
+      content: "Введенный текст будет утерян.",
+      cancelText: "Отмена",
+      confirmText: "Редактировать",
+      onConfirm: () {
+        setState(() {
+          _editingNote = note;
+          _commentController.text = note.text;
+        });
+      },
+    );
+  }
+
+  /// Редактирование заметки
+  void _editNote(BuildContext context, Note note) {
+    if (_commentController.text.trim().isNotEmpty) {
+      _confirmEnterEditMode(context, note);
+      return;
+    }
+    setState(() {
+      _editingNote = note;
+      _commentController.text = note.text;
+    });
+    Navigator.pop(context);
+  }
+
+  /// Подтверждение удаления заметки
+  void _confirmDeleteNote(BuildContext context, BuildContext bottomSheetContext, Note note) {
+    Navigator.pop(bottomSheetContext);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _showConfirmationDialog(
+        context: context,
+        title: "Удалить заметку?",
+        content: "Вы уверены, что хотите удалить эту заметку?",
+        cancelText: "Отмена",
+        confirmText: "Удалить",
+        onConfirm: () {
+          Provider.of<ArticleProvider>(context, listen: false)
+              .deleteNote(note.id);
+        },
+      );
+    });
+  }
+
+  /// Отображение опций заметки
   void _showNoteOptions(BuildContext context, Note note) {
     showModalBottomSheet(
       context: context,
@@ -78,88 +173,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildMenuItem(
-                      icon: Icons.content_copy,
-                      text: "Копировать",
-                      onTap: () {
-                        Clipboard.setData(ClipboardData(text: note.text));
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Заметка скопирована")),
-                        );
-                      },
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.edit,
-                      text: "Редактировать",
-                      onTap: () {
-                        if (_commentController.text.trim().isNotEmpty) {
-                          Navigator.pop(context);
-                          _showConfirmationDialog(
-                            context: context,
-                            title: "Отменить введенный текст?",
-                            content:
-                                "Вы начали ввод новой заметки. Если начнете редактирование, введенный текст будет утерян.",
-                            cancelText: "Остаться",
-                            confirmText: "Редактировать",
-                            onConfirm: () {
-                              setState(() {
-                                _commentController.clear();
-                                _editingNote = note;
-                                _commentController.text = note.text;
-                              });
-                            },
-                          );
-
-                          return;
-                        }
-
-                        setState(() {
-                          _editingNote = note;
-                          _commentController.text = note.text;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.delete,
-                      text: "Удалить",
-                      onTap: () {
-                        Navigator.pop(bottomSheetContext);
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (!mounted) return;
-                          _showConfirmationDialog(
-                            context: context,
-                            title: "Удалить заметку?",
-                            content:
-                                "Вы уверены, что хотите удалить эту заметку?",
-                            cancelText: "Отмена",
-                            confirmText: "Удалить",
-                            onConfirm: () {
-                              Provider.of<ArticleProvider>(context,
-                                      listen: false)
-                                  .deleteNote(note.id);
-                            },
-                          );
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
+              _buildMenu(context, bottomSheetContext, note),
               const SizedBox(height: 10),
             ],
           ),
@@ -168,6 +182,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Показ диалога подтверждения действия
   void _showConfirmationDialog({
     required BuildContext context,
     required String title,
@@ -199,6 +214,18 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         );
       },
     );
+  }
+
+  TextPainter _createTextPainter({
+    required String text,
+    required TextStyle style,
+    double? maxWidth,
+  }) {
+    return TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: ui.TextDirection.ltr,
+      maxLines: null,
+    )..layout(maxWidth: maxWidth ?? double.infinity);
   }
 
   Widget buildNoteContent(Note note) {
@@ -322,14 +349,14 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             IconButton(
               icon: provider.isLoading
                   ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2))
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2))
                   : Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : Colors.grey,
-                size: 24,
-              ),
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Colors.grey,
+                      size: 24,
+                    ),
               onPressed: provider.isLoading ? null : _toggleFavorite,
             ),
           ],
