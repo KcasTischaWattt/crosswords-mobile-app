@@ -54,8 +54,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
 
   /// Форматирование даты и времени
-  String _formatDateTime(String dateTime) {
-    return DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(dateTime));
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('dd/MM/yyyy HH:mm').format(dateTime);
   }
 
   /// Виджет пунктов меню
@@ -74,6 +74,12 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   /// Виджет меню
   Widget _buildMenu(
       BuildContext context, BuildContext bottomSheetContext, Note note) {
+    final menuItems = [
+      {'icon': Icons.content_copy, 'text': "Копировать", 'action': () => _copyNoteText(context, note)},
+      {'icon': Icons.edit, 'text': "Редактировать", 'action': () => _editNote(context, note)},
+      {'icon': Icons.delete, 'text': "Удалить", 'action': () => _confirmDeleteNote(context, bottomSheetContext, note)},
+    ];
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -84,23 +90,13 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildMenuItem(
-            icon: Icons.content_copy,
-            text: "Копировать",
-            onTap: () => _copyNoteText(context, note),
-          ),
-          _buildMenuItem(
-            icon: Icons.edit,
-            text: "Редактировать",
-            onTap: () => _editNote(context, note),
-          ),
-          _buildMenuItem(
-            icon: Icons.delete,
-            text: "Удалить",
-            onTap: () => _confirmDeleteNote(context, bottomSheetContext, note),
-          ),
-        ],
+        children: menuItems.map((item) {
+          return _buildMenuItem(
+            icon: item['icon'] as IconData,
+            text: item['text'] as String,
+            onTap: item['action'] as VoidCallback,
+          );
+        }).toList(),
       ),
     );
   }
@@ -235,8 +231,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   /// Возвращает форматированную строку времени
   String _getTimeText(Note note) {
     return note.updatedAt != note.createdAt
-        ? "изм. ${_formatDateTime(note.updatedAt)}"
-        : _formatDateTime(note.createdAt);
+        ? "изм. ${_formatDateTime(DateTime.parse(note.updatedAt))}"
+        : _formatDateTime(DateTime.parse(note.createdAt));
   }
 
   /// Построение однострочного макета, если время и текст помещаются в строку
