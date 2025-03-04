@@ -210,40 +210,26 @@ class _DigestsPageState extends State<DigestsPage> {
     int tagLimit = screenWidth <= 350 ? 2 : 3;
     int renderedTags = tags.length > tagLimit ? tagLimit - 1 : tags.length;
 
-    List<Widget> tagWidgets = [];
-
-    for (int i = 0; i < renderedTags; i++) {
-      tagWidgets.add(Chip(
-        label: Text(
-          tags[i],
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-      ));
-    }
-
-    if (tags.length > tagLimit) {
-      tagWidgets.add(Chip(
-        label: Text(
-          "Ещё ${tags.length - renderedTags}",
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-      ));
-    }
-
     return Wrap(
       spacing: 8,
       runSpacing: 4,
-      children: tagWidgets,
+      children: [
+        ...tags.take(renderedTags).map((tag) => Chip(
+          label: Text(tag,
+              style: const TextStyle(
+                  color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+          backgroundColor: Theme.of(context).primaryColor,
+        )),
+        if (tags.length > tagLimit)
+          Chip(
+            label: Text(
+              "Ещё ${tags.length - renderedTags}",
+              style: const TextStyle(
+                  color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+      ],
     );
   }
 
