@@ -218,7 +218,11 @@ class _SearchPageState extends State<SearchPage> {
             if (provider.selectedSearchOption != 'Поиск по ID') ...[
               const SizedBox(height: 16),
 
-              const FilterExpansionPanels(),
+              Consumer<ArticleProvider>(
+                builder: (context, provider, child) {
+                  return FilterExpansionPanels(provider: provider);
+                },
+              ),
 
               const SizedBox(height: 16),
 

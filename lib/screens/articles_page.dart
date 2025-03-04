@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/article_provider.dart';
 import '../data/models/article.dart';
 import 'article_detail_page.dart';
-import 'search_page.dart';
+import 'article_search_page.dart';
 
 class ArticlesPage extends StatefulWidget {
   final bool isFavoriteDialogEnabled;

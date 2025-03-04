@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/article_provider.dart';
+import '../../providers/abstract/filter_provider.dart';
 
 class FilterExpansionPanels extends StatefulWidget {
-  const FilterExpansionPanels({super.key});
+
+  final FilterProvider provider;
+
+  const FilterExpansionPanels({super.key, required this.provider});
 
   @override
   State<FilterExpansionPanels> createState() => _FilterExpansionPanelsState();
@@ -12,7 +15,7 @@ class FilterExpansionPanels extends StatefulWidget {
 class _FilterExpansionPanelsState extends State<FilterExpansionPanels> {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ArticleProvider>(context);
+    final provider = widget.provider;
 
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,

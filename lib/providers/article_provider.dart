@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
 import '../data/fake/fake_articles.dart';
+import 'abstract/filter_provider.dart';
 
-class ArticleProvider extends ChangeNotifier {
+class ArticleProvider extends ChangeNotifier implements FilterProvider {
   List<Article> _articles = [];
   List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3', 'Источник 4', 'Источник 5', 'Источник 6'];
   List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
@@ -23,19 +24,23 @@ class ArticleProvider extends ChangeNotifier {
   String _searchQuery = '';
   String _dateFrom = '';
   String _dateTo = '';
-  Set<String> _selectedSources = {};
-  Set<String> _selectedTags = {};
+  List<String> _selectedSources = [];
+  List<String> _selectedTags = [];
   bool _searchInText = false;
 
+  @override
   List<String> get sources => _sources;
+  @override
   List<String> get tags => _tags;
   List<Article> get articles => _articles;
   bool get isLoading => _isLoading;
   Set<String> get favoriteArticles => _favoriteArticles;
   bool get showOnlyFavorites => _showOnlyFavorites;
   String get selectedSearchOption => _selectedSearchOption;
-  Set<String> get selectedSources => _selectedSources;
-  Set<String> get selectedTags => _selectedTags;
+  @override
+  List<String> get selectedSources => _selectedSources;
+  @override
+  List<String> get selectedTags => _selectedTags;
   bool get searchInText => _searchInText;
   bool get isSearchVisible => _isSearchVisible;
   bool get isLoadingMore => _isLoadingMore;
@@ -121,6 +126,7 @@ class ArticleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   void toggleSource(String source) {
     if (_selectedSources.contains(source)) {
       _selectedSources.remove(source);
@@ -130,6 +136,7 @@ class ArticleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   void toggleTag(String tag) {
     if (_selectedTags.contains(tag)) {
       _selectedTags.remove(tag);
@@ -148,6 +155,9 @@ class ArticleProvider extends ChangeNotifier {
     _selectedSources.clear();
     _selectedTags.clear();
     _searchInText = false;
+    _searchQuery = '';
+    _dateFrom = '';
+    _dateTo = '';
     notifyListeners();
   }
 
