@@ -38,7 +38,7 @@ class _DigestsPageState extends State<DigestsPage> {
               child: ChoiceChip(
                 label: Text(
                   category,
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 14),
                 ),
                 selected: isSelected,
                 onSelected: (_) => provider.setCategory(category),
@@ -62,15 +62,15 @@ class _DigestsPageState extends State<DigestsPage> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
-                  width: 60,
+                  width: 80,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircleAvatar(
-                        radius: 20,
+                        radius: 25,
                         backgroundColor: Colors.grey[300],
                         child: Icon(Icons.person,
-                            size: 20, color: Colors.grey[600]),
+                            size: 25, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 4),
                       Text("Дайджест $index",
@@ -123,20 +123,12 @@ class _DigestsPageState extends State<DigestsPage> {
             width: double.maxFinite,
             child: ListView(
               shrinkWrap: true,
-              children: [
-                Text(
-                  sources[0],
-                  style: const TextStyle(fontWeight: FontWeight.normal),
-                ),
-                Text(
-                  sources[1],
-                  style: const TextStyle(fontWeight: FontWeight.normal),
-                ),
-                ...sources.sublist(2).map((source) => Text(
-                      source,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )),
-              ],
+              children: sources
+                  .map((source) => Text(
+                source,
+                style: const TextStyle(fontWeight: FontWeight.normal),
+              ))
+                  .toList(),
             ),
           ),
           actions: [
