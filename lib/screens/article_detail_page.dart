@@ -325,386 +325,381 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Обработка нажатия кнопки "Назад"
+  void _handlePop(BuildContext context, bool didPop, dynamic result) {
+    if (didPop) return;
+
+    if (_editingNote != null || _commentController.text.isNotEmpty) {
+      String title = _editingNote != null
+          ? "Отменить редактирование?"
+          : "Отменить создание заметки?";
+      String content = "Изменения не будут сохранены.";
+
+      _showConfirmationDialog(
+        context: context,
+        title: title,
+        content: content,
+        cancelText: "Остаться",
+        confirmText: "Выйти",
+        onConfirm: () {
+          setState(() {
+            _editingNote = null;
+            _commentController.clear();
+          });
+          Navigator.pop(context);
+        },
+      );
+    } else {
+      Navigator.pop(context, result);
+    }
+  }
+
+  /// Построение AppBar
+  AppBar _buildAppBar(
+      BuildContext context, bool isFavorite, ArticleProvider provider) {
+    return AppBar(
+      toolbarHeight: 60,
+      centerTitle: true,
+      title: Text(
+        'Детали статьи',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+      actions: [
+        IconButton(
+          icon: provider.isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2))
+              : Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.grey,
+                  size: 24,
+                ),
+          onPressed: provider.isLoading ? null : _toggleFavorite,
+        ),
+      ],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+    );
+  }
+
+  /// Построение информации о статье
+  Widget _buildArticleContent(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        '${widget.article.date} | ${widget.article.source}'
+            .text
+            .xl
+            .color(Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey)
+            .make(),
+        const SizedBox(height: 8),
+        widget.article.title.text.bold.xl3.make(),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 8,
+          children: widget.article.tags
+              .map((tag) => Chip(
+                  label: Text(tag,
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  backgroundColor: const Color(0xFF517ECF)))
+              .toList(),
+        ),
+        const SizedBox(height: 16),
+        _buildSummaryExpansionTile(context),
+        const SizedBox(height: 16),
+        _buildArticleText(context),
+        const SizedBox(height: 20),
+        _buildReadOriginalButton(context),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  /// Построение краткого содержания статьи
+  Widget _buildSummaryExpansionTile(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+            Colors.grey[900]) as Color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          expansionTileTheme: ExpansionTileThemeData(
+            collapsedIconColor: Theme.of(context).iconTheme.color,
+            iconColor: Theme.of(context).iconTheme.color,
+            backgroundColor: Colors.transparent,
+          ),
+        ),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          title: Row(
+            children: [
+              Icon(
+                Icons.book,
+                size: 24,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Краткое содержание',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: (Theme.of(context)
+                        .bottomNavigationBarTheme
+                        .backgroundColor ??
+                    Colors.white),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                widget.article.summary,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Построение текста статьи
+  Widget _buildArticleText(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        widget.article.text,
+        style: TextStyle(
+          fontSize: 18,
+          color: Theme.of(context).textTheme.bodyLarge!.color,
+        ),
+      ),
+    );
+  }
+
+  /// Построение кнопки "Читать оригинал"
+  Widget _buildReadOriginalButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Переход по ссылке: ${widget.article.url}'),
+        ));
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: const Text('Читать оригинал',
+          style: TextStyle(color: Colors.black, fontSize: 18)),
+    );
+  }
+
+  /// Построение списка заметок
+  Widget _buildNotesSection(BuildContext context, ArticleProvider provider) {
+    final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+    if (notes.isEmpty) return const Text("Заметок пока нет.");
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildNotesHeader(context, notes.length),
+        ClipRect(
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+            child: _isNotesExpanded
+                ? _buildNotesList(context, notes)
+                : _buildCollapsedNotes(context, notes.length),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Построение заголовка заметок
+  Widget _buildNotesHeader(BuildContext context, int notesCount) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text('Заметки',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        IconButton(
+          icon: Icon(_isNotesExpanded ? Icons.expand_less : Icons.expand_more),
+          onPressed: () => setState(() => _isNotesExpanded = !_isNotesExpanded),
+        ),
+      ],
+    );
+  }
+
+  /// Построение развёрнутого списка заметок
+  Widget _buildNotesList(BuildContext context, List<Note> notes) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: notes.length,
+        itemBuilder: (context, index) {
+          final note = notes[index];
+          return GestureDetector(
+            onLongPress: () {
+              _showNoteOptions(context, note);
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color:
+                    Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: buildNoteContent(note),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Построение свёрнутого списка заметок
+  Widget _buildCollapsedNotes(BuildContext context, int notesCount) {
+    return GestureDetector(
+      onTap: () => setState(() => _isNotesExpanded = true),
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          'Всего заметок: $notesCount',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommentInput(BuildContext context, ArticleProvider provider) {
+    return Row(
+      children: [
+        if (_editingNote != null)
+          IconButton(
+              icon: const Icon(Icons.close, size: 30),
+              onPressed: _cancelEditing),
+        Expanded(child: ExpandingTextField(controller: _commentController)),
+        const SizedBox(width: 10),
+        IconButton(
+            icon:
+                Icon(_editingNote == null ? Icons.send : Icons.check, size: 30),
+            onPressed: () => _saveOrUpdateNote(provider)),
+      ],
+    );
+  }
+
+  /// Отмена редактирования заметки
+  void _cancelEditing() {
+    if (_editingNote == null) return;
+
+    if (!_hasTextChanged) {
+      setState(() {
+        _editingNote = null;
+        _commentController.clear();
+      });
+      return;
+    }
+
+    _showConfirmationDialog(
+      context: context,
+      title: "Отменить редактирование?",
+      content: "Изменения не будут сохранены.",
+      cancelText: "Нет",
+      confirmText: "Да",
+      onConfirm: () {
+        setState(() {
+          _editingNote = null;
+          _commentController.clear();
+        });
+      },
+    );
+  }
+
+  /// Сохранение или обновление заметки
+  void _saveOrUpdateNote(ArticleProvider provider) {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+
+    if (_editingNote != null) {
+      // Обновление существующей заметки
+      if (!_hasTextChanged) {
+        setState(() {
+          _editingNote = null;
+          _commentController.clear();
+        });
+        return;
+      }
+
+      provider.updateNote(_editingNote!.id, text);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() {
+          _editingNote = null;
+          _commentController.clear();
+        });
+      });
+    } else {
+      // Добавление новой заметки
+      provider.addNote(int.parse(widget.article.id), text);
+      _commentController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
     final bool isFavorite =
         provider.favoriteArticles.contains(widget.article.id);
     return PopScope(
-      canPop: _editingNote == null && _commentController.text.isEmpty,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        if (_editingNote != null) {
-          _showConfirmationDialog(
-            context: context,
-            title: "Отменить редактирование?",
-            content:
-                "Вы действительно хотите выйти? Изменения не будут сохранены.",
-            cancelText: "Остаться",
-            confirmText: "Выйти",
-            onConfirm: () {
-              setState(() {
-                _editingNote = null;
-                _commentController.clear();
-              });
-              Navigator.pop(context);
-            },
-          );
-        } else if (_commentController.text.isNotEmpty) {
-          _showConfirmationDialog(
-            context: context,
-            title: "Отменить создание заметки?",
-            content:
-                "Вы действительно хотите выйти? Изменения не будут сохранены.",
-            cancelText: "Остаться",
-            confirmText: "Выйти",
-            onConfirm: () {
-              setState(() {
-                _editingNote = null;
-                _commentController.clear();
-              });
-              Navigator.pop(context);
-            },
-          );
-        } else {
-          Navigator.pop(context, result);
-        }
-      },
+        canPop: _editingNote == null && _commentController.text.isEmpty,
+        onPopInvokedWithResult: (didPop, result) => _handlePop(context, didPop, result),
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 60,
-          centerTitle: true,
-          title: Text(
-            'Детали статьи',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          actions: [
-            IconButton(
-              icon: provider.isLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : Colors.grey,
-                      size: 24,
-                    ),
-              onPressed: provider.isLoading ? null : _toggleFavorite,
-            ),
-          ],
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ),
+        appBar: _buildAppBar(context, isFavorite, provider),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Дата и источник
-              '${widget.article.date} | ${widget.article.source}'
-                  .text
-                  .xl
-                  .color(Theme.of(context).textTheme.bodySmall!.color!)
-                  .make(),
-              const SizedBox(height: 8),
-
-              // Заголовок статьи
-              widget.article.title.text.bold.xl3.make(),
-              const SizedBox(height: 16),
-
-              // Тэги
-              Wrap(
-                spacing: 8,
-                children: widget.article.tags.map((tag) {
-                  return Chip(
-                    label: Text(
-                      tag,
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    backgroundColor: const Color(0xFF517ECF),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-
-              // Аккордеон краткого содержания
-              Container(
-                decoration: BoxDecoration(
-                  color: (Theme.of(context)
-                          .bottomNavigationBarTheme
-                          .backgroundColor ??
-                      Colors.grey[900]) as Color,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                    dividerColor: Colors.transparent,
-                    expansionTileTheme: ExpansionTileThemeData(
-                      collapsedIconColor: Theme.of(context).iconTheme.color,
-                      iconColor: Theme.of(context).iconTheme.color,
-                      backgroundColor: Colors.transparent,
-                    ),
-                  ),
-                  child: ExpansionTile(
-                    tilePadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    title: Row(
-                      children: [
-                        Icon(
-                          Icons.book,
-                          size: 24,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Краткое содержание',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: (Theme.of(context)
-                                  .bottomNavigationBarTheme
-                                  .backgroundColor ??
-                              Colors.white),
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(12),
-                            bottomRight: Radius.circular(12),
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          widget.article.summary,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  widget.article.text,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Кнопка для перехода на оригинальную статью
-              ElevatedButton(
-                onPressed: () {
-                  // Переход на оригинальную статью
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Переход по ссылке: ${widget.article.url}'),
-                  ));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text('Читать оригинал',
-                    style: TextStyle(color: Colors.black, fontSize: 18)),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Заголовок заметок
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Заметки',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  Consumer<ArticleProvider>(
-                    builder: (context, provider, child) {
-                      final notes = provider
-                          .getNotesForArticle(int.parse(widget.article.id));
-                      return notes.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(_isNotesExpanded
-                                  ? Icons.expand_less
-                                  : Icons.expand_more),
-                              onPressed: () {
-                                setState(() {
-                                  _isNotesExpanded = !_isNotesExpanded;
-                                });
-                              },
-                            )
-                          : SizedBox.shrink();
-                    },
-                  ),
-                ],
-              ),
-
-              // Список заметок
-              Consumer<ArticleProvider>(
-                builder: (context, provider, child) {
-                  final notes =
-                      provider.getNotesForArticle(int.parse(widget.article.id));
-                  if (notes.isEmpty) {
-                    return const Text("Заметок пока нет.");
-                  }
-
-                  return AnimatedSize(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                    child: _isNotesExpanded
-                        ? ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: notes.length,
-                            itemBuilder: (context, index) {
-                              final note = notes[index];
-                              return GestureDetector(
-                                onLongPress: () {
-                                  _showNoteOptions(context, note);
-                                },
-                                child: Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 6),
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .bottomNavigationBarTheme
-                                        .backgroundColor,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: buildNoteContent(note),
-                                ),
-                              );
-                            },
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _isNotesExpanded = true;
-                              });
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .bottomNavigationBarTheme
-                                    .backgroundColor,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                'Всего заметок: ${notes.length}',
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                  );
-                },
-              ),
-
+              _buildArticleContent(context),
+              _buildNotesSection(context, provider),
               const SizedBox(height: 10),
-
-              Row(
-                children: [
-                  if (_editingNote != null)
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 30),
-                      onPressed: () {
-                        if (_editingNote == null) return;
-
-                        if (!_hasTextChanged) {
-                          setState(() {
-                            _editingNote = null;
-                            _commentController.clear();
-                          });
-                          return;
-                        }
-
-                        _showConfirmationDialog(
-                          context: context,
-                          title: "Отменить редактирование?",
-                          content: "Изменения не будут сохранены.",
-                          cancelText: "Нет",
-                          confirmText: "Да",
-                          onConfirm: () {
-                            setState(() {
-                              _editingNote = null;
-                              _commentController.clear();
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: ExpandingTextField(controller: _commentController),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(_editingNote == null ? Icons.send : Icons.check,
-                        size: 30),
-                    onPressed: () {
-                      final provider =
-                          Provider.of<ArticleProvider>(context, listen: false);
-
-                      if (_editingNote != null) {
-                        if (!_hasTextChanged) {
-                          setState(() {
-                            _editingNote = null;
-                            _commentController.clear();
-                          });
-                          return;
-                        }
-
-                        provider.updateNote(
-                            _editingNote!.id, _commentController.text.trim());
-
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (!mounted) return;
-                          setState(() {
-                            _editingNote = null;
-                            _commentController.clear();
-                          });
-                        });
-                      } else {
-                        provider.addNote(int.parse(widget.article.id),
-                            _commentController.text);
-                        _commentController.clear();
-                      }
-                    },
-                  ),
-                ],
-              ),
+              _buildCommentInput(context, provider),
             ],
           ),
         ),
