@@ -125,9 +125,9 @@ class _DigestsPageState extends State<DigestsPage> {
               shrinkWrap: true,
               children: sources
                   .map((source) => Text(
-                source,
-                style: const TextStyle(fontWeight: FontWeight.normal),
-              ))
+                        source,
+                        style: const TextStyle(fontWeight: FontWeight.normal),
+                      ))
                   .toList(),
             ),
           ),
@@ -155,9 +155,9 @@ class _DigestsPageState extends State<DigestsPage> {
               shrinkWrap: true,
               children: tags
                   .map((tag) => Text(
-                tag,
-                style: const TextStyle(fontWeight: FontWeight.normal),
-              ))
+                        tag,
+                        style: const TextStyle(fontWeight: FontWeight.normal),
+                      ))
                   .toList(),
             ),
           ),
@@ -245,11 +245,13 @@ class _DigestsPageState extends State<DigestsPage> {
       runSpacing: 4,
       children: [
         ...tags.take(renderedTags).map((tag) => Chip(
-          label: Text(tag,
-              style: const TextStyle(
-                  color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
-          backgroundColor: Theme.of(context).primaryColor,
-        )),
+              label: Text(tag,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+              backgroundColor: Theme.of(context).primaryColor,
+            )),
         if (tags.length > tagLimit)
           GestureDetector(
             onTap: () => _showAllTagsDialog(context, tags),
@@ -257,7 +259,9 @@ class _DigestsPageState extends State<DigestsPage> {
               label: Text(
                 "Ещё ${tags.length - renderedTags}",
                 style: const TextStyle(
-                    color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
               ),
               backgroundColor: Theme.of(context).primaryColor,
             ),
