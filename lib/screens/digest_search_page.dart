@@ -72,140 +72,144 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Строка поиска
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                borderRadius: BorderRadius.circular(8),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Строка поиска
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    // Поле ввода
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        style: const TextStyle(fontSize: 16),
+                        decoration: InputDecoration(
+                          hintText: 'Строка поиска',
+                          hintStyle:
+                              TextStyle(color: Colors.grey[600], fontSize: 16),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: Icon(
+                        Icons.search,
+                        color: Colors.grey[600],
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(
+
+              const SizedBox(height: 16),
+              // Тэги и источники
+              Consumer<DigestProvider>(
+                builder: (context, provider, child) {
+                  return FilterExpansionPanels(provider: provider);
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Поля выбора даты
+              Row(
                 children: [
-                  // Поле ввода
                   Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      style: const TextStyle(fontSize: 16),
-                      decoration: InputDecoration(
-                        hintText: 'Строка поиска',
-                        hintStyle:
-                            TextStyle(color: Colors.grey[600], fontSize: 16),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .bottomNavigationBarTheme
+                            .backgroundColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextField(
+                        controller: _dateFromController,
+                        readOnly: true,
+                        style: const TextStyle(fontSize: 16),
+                        onTap: () => _selectDate(context, _dateFromController),
+                        decoration: const InputDecoration(
+                          labelText: 'Дата С',
+                          labelStyle: TextStyle(fontSize: 14),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                        ),
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: Icon(
-                      Icons.search,
-                      color: Colors.grey[600],
-                      size: 24,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .bottomNavigationBarTheme
+                            .backgroundColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextField(
+                        controller: _dateToController,
+                        readOnly: true,
+                        style: const TextStyle(fontSize: 16),
+                        onTap: () => _selectDate(context, _dateToController),
+                        decoration: const InputDecoration(
+                          labelText: 'Дата По',
+                          labelStyle: TextStyle(fontSize: 14),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 16),
-            // Тэги и источники
-            Consumer<DigestProvider>(
-              builder: (context, provider, child) {
-                return FilterExpansionPanels(provider: provider);
-              },
-            ),
+              const SizedBox(height: 16),
 
-            const SizedBox(height: 16),
-
-            // Поля выбора даты
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .bottomNavigationBarTheme
-                          .backgroundColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextField(
-                      controller: _dateFromController,
-                      readOnly: true,
-                      style: const TextStyle(fontSize: 16),
-                      onTap: () => _selectDate(context, _dateFromController),
-                      decoration: const InputDecoration(
-                        labelText: 'Дата С',
-                        labelStyle: TextStyle(fontSize: 14),
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              // Кнопки "Найти" и "Сбросить фильтры"
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
+                      onPressed: () {
+                        _performSearch();
+                      },
+                      child: const Text('Найти',
+                          style: TextStyle(fontSize: 18, color: Colors.black)),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .bottomNavigationBarTheme
-                          .backgroundColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextField(
-                      controller: _dateToController,
-                      readOnly: true,
-                      style: const TextStyle(fontSize: 16),
-                      onTap: () => _selectDate(context, _dateToController),
-                      decoration: const InputDecoration(
-                        labelText: 'Дата По',
-                        labelStyle: TextStyle(fontSize: 14),
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      ),
-                    ),
+                  const SizedBox(width: 12),
+                  TextButton(
+                    onPressed: _resetFilters,
+                    child: const Text('Сбросить фильтры',
+                        style: TextStyle(fontSize: 16)),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Кнопки "Найти" и "Сбросить фильтры"
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    onPressed: () {
-                      _performSearch();
-                    },
-                    child: const Text('Найти',
-                        style: TextStyle(fontSize: 18, color: Colors.black)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                TextButton(
-                  onPressed: _resetFilters,
-                  child: const Text('Сбросить фильтры',
-                      style: TextStyle(fontSize: 16)),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
