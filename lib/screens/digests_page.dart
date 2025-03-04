@@ -112,8 +112,8 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
-  // тултип с источниками
-  void _showSourcesPopup(BuildContext context, List<String> sources) {
+  // диалоговое окно с источниками
+  void _showAllSourcesDialog(BuildContext context, List<String> sources) {
     showDialog(
       context: context,
       builder: (context) {
@@ -126,6 +126,36 @@ class _DigestsPageState extends State<DigestsPage> {
               children: sources
                   .map((source) => Text(
                 source,
+                style: const TextStyle(fontWeight: FontWeight.normal),
+              ))
+                  .toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Закрыть"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // диалоговое окно с тэгами
+  void _showAllTagsDialog(BuildContext context, List<String> tags) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Все теги"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: tags
+                  .map((tag) => Text(
+                tag,
                 style: const TextStyle(fontWeight: FontWeight.normal),
               ))
                   .toList(),
@@ -189,7 +219,7 @@ class _DigestsPageState extends State<DigestsPage> {
             color: textColor),
         recognizer: TapGestureRecognizer()
           ..onTap = () {
-            _showSourcesPopup(context, sources);
+            _showAllSourcesDialog(context, sources);
           },
       ));
     }
@@ -221,13 +251,16 @@ class _DigestsPageState extends State<DigestsPage> {
           backgroundColor: Theme.of(context).primaryColor,
         )),
         if (tags.length > tagLimit)
-          Chip(
-            label: Text(
-              "Ещё ${tags.length - renderedTags}",
-              style: const TextStyle(
-                  color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+          GestureDetector(
+            onTap: () => _showAllTagsDialog(context, tags),
+            child: Chip(
+              label: Text(
+                "Ещё ${tags.length - renderedTags}",
+                style: const TextStyle(
+                    color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Theme.of(context).primaryColor,
             ),
-            backgroundColor: Theme.of(context).primaryColor,
           ),
       ],
     );
