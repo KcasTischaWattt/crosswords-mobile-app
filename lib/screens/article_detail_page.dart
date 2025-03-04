@@ -28,22 +28,23 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   void initState() {
     super.initState();
-
-    _commentController.addListener(() {
-      if (_editingNote == null) return;
-
-      setState(() {
-        _hasTextChanged =
-            _commentController.text.trim() != _editingNote!.text.trim();
-      });
-    });
+    _commentController.addListener(_onCommentChanged);
   }
 
   @override
   void dispose() {
-    _commentController.removeListener(() {});
+    _commentController.removeListener(_onCommentChanged);
     _commentController.dispose();
     super.dispose();
+  }
+
+  /// Обработка изменения текста в поле ввода комментария
+  void _onCommentChanged() {
+    if (_editingNote == null) return;
+    setState(() {
+      _hasTextChanged =
+          _commentController.text.trim() != _editingNote!.text.trim();
+    });
   }
 
   /// Переключение избранного
@@ -680,14 +681,16 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     }
   }
 
+  /// Построение виджета
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
     final bool isFavorite =
         provider.favoriteArticles.contains(widget.article.id);
     return PopScope(
-        canPop: _editingNote == null && _commentController.text.isEmpty,
-        onPopInvokedWithResult: (didPop, result) => _handlePop(context, didPop, result),
+      canPop: _editingNote == null && _commentController.text.isEmpty,
+      onPopInvokedWithResult: (didPop, result) =>
+          _handlePop(context, didPop, result),
       child: Scaffold(
         appBar: _buildAppBar(context, isFavorite, provider),
         body: SingleChildScrollView(
