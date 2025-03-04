@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../providers/abstract/filter_provider.dart';
 
 class FilterExpansionPanels extends StatefulWidget {
