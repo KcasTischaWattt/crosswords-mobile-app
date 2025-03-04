@@ -84,7 +84,7 @@ class _SearchPageState extends State<SearchPage> {
         elevation: 0,
         shadowColor: Colors.transparent,
         title: const Text(
-          'Темы дайджестов',
+          'Поиск статей',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
