@@ -71,7 +71,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
 
   /// Виджет меню
-  Widget _buildMenu(BuildContext context, BuildContext bottomSheetContext, Note note) {
+  Widget _buildMenu(
+      BuildContext context, BuildContext bottomSheetContext, Note note) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -144,7 +145,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
 
   /// Подтверждение удаления заметки
-  void _confirmDeleteNote(BuildContext context, BuildContext bottomSheetContext, Note note) {
+  void _confirmDeleteNote(
+      BuildContext context, BuildContext bottomSheetContext, Note note) {
     Navigator.pop(bottomSheetContext);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -216,6 +218,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Создает `TextPainter` для вычисления размеров текста
   TextPainter _createTextPainter({
     required String text,
     required TextStyle style,
@@ -228,64 +231,94 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     )..layout(maxWidth: maxWidth ?? double.infinity);
   }
 
+  /// Возвращает форматированную строку времени
+  String _getTimeText(Note note) {
+    return note.updatedAt != note.createdAt
+        ? "изм. ${_formatDateTime(note.updatedAt)}"
+        : _formatDateTime(note.createdAt);
+  }
+
+  /// Построение однострочного макета, если время и текст помещаются в строку
+  Widget _buildSingleLineLayout(
+      BuildContext context, String text, String time) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+            ),
+          ),
+        ),
+        Text(
+          time,
+          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+        ),
+      ],
+    );
+  }
+
+  /// Построение многострочного макета
+  Widget _buildMultiLineLayout(BuildContext context, String text, String time) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 18,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Text(
+            time,
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Построение содержимого заметки
   Widget buildNoteContent(Note note) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final noteStyle = TextStyle(
-            fontSize: 18, color: Theme.of(context).textTheme.bodyLarge!.color);
-        final noteSpan = TextSpan(text: note.text, style: noteStyle);
-
-        final textPainter = TextPainter(
-          text: noteSpan,
-          textDirection: ui.TextDirection.ltr,
-          maxLines: null,
+        final textPainter = _createTextPainter(
+          text: note.text,
+          style: TextStyle(
+            fontSize: 18,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+          ),
+          maxWidth: constraints.maxWidth,
         );
-        textPainter.layout(maxWidth: constraints.maxWidth);
 
-        final lines = textPainter.computeLineMetrics();
-        final linesCount = lines.length;
-        final lastLineWidth = lines.isNotEmpty ? lines.last.width : 0.0;
-
-        final timeText = note.updatedAt != note.createdAt
-            ? "изм. ${_formatDateTime(note.updatedAt)}"
-            : _formatDateTime(note.createdAt);
-        final timeStyle = TextStyle(fontSize: 14, color: Colors.grey[600]);
-        final timeSpan = TextSpan(text: timeText, style: timeStyle);
-
-        final timePainter = TextPainter(
-          text: timeSpan,
-          textDirection: ui.TextDirection.ltr,
+        final timeText = _getTimeText(note);
+        final timePainter = _createTextPainter(
+          text: timeText,
+          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
         );
-        timePainter.layout();
-        final timeWidth = timePainter.width;
 
-        if (linesCount == 1 &&
-            lastLineWidth + timeWidth + 8 < constraints.maxWidth) {
-          return Row(
-            children: [
-              Expanded(
-                child: Text(
-                  note.text,
-                  style: noteStyle,
-                ),
-              ),
-              Text(
-                timeText,
-                style: timeStyle,
-              ),
-            ],
+        final lastLineWidth = textPainter.computeLineMetrics().isNotEmpty
+            ? textPainter.computeLineMetrics().last.width
+            : 0.0;
+
+        if (textPainter.computeLineMetrics().length == 1 &&
+            lastLineWidth + timePainter.width + 8 < constraints.maxWidth) {
+          return _buildSingleLineLayout(
+            context,
+            note.text,
+            timeText,
           );
         } else {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(note.text, style: noteStyle),
-              const SizedBox(height: 4),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(timeText, style: timeStyle),
-              ),
-            ],
+          return _buildMultiLineLayout(
+            context,
+            note.text,
+            timeText,
           );
         }
       },
