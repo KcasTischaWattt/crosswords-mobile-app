@@ -3,14 +3,14 @@ import 'package:provider/provider.dart';
 import '../providers/article_provider.dart';
 import 'widgets/filter_expansion_panels.dart';
 
-class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+class ArticleSearchPage extends StatefulWidget {
+  const ArticleSearchPage({super.key});
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  _ArticleSearchPageState createState() => _ArticleSearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _ArticleSearchPageState extends State<ArticleSearchPage> {
   late TextEditingController _searchController;
   late TextEditingController _dateFromController;
   late TextEditingController _dateToController;

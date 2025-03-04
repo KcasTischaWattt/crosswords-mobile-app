@@ -102,7 +102,7 @@ class _ArticlesPageState extends State<ArticlesPage>
                 onPressed: () async {
                   await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SearchPage()),
+                    MaterialPageRoute(builder: (context) => const ArticleSearchPage()),
                   );
                 },
               ),
