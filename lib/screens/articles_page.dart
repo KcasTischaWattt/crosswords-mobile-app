@@ -135,9 +135,17 @@ class _ArticlesPageState extends State<ArticlesPage>
         );
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor:
+        Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(
+            horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
+            borderRadius:
+            BorderRadius.circular(8)),
       ),
-      child: const Text('Подробнее', style: TextStyle(color: Colors.black, fontSize: 18)),
+      child: const Text('Подробнее',
+          style: TextStyle(
+              color: Colors.black, fontSize: 18)),
     );
   }
 
