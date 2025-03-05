@@ -3,6 +3,7 @@ import '../data/models/article.dart';
 import '../data/models/note.dart';
 import '../data/fake/fake_articles.dart';
 import 'abstract/filter_provider.dart';
+import '../data/models/search_params/article_search_params.dart';
 
 class ArticleProvider extends ChangeNotifier implements FilterProvider {
   List<Article> _articles = [];
@@ -18,6 +19,26 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   // TODO не забыть использовать для запроса к API
   int _currentPage = 1;
   final int _pageSize = 10;
+
+  ArticleSearchParams _currentSearchParams = ArticleSearchParams(
+    searchQuery: '',
+    dateFrom: '',
+    dateTo: '',
+    selectedSources: [],
+    selectedTags: [],
+    searchInText: false,
+    searchOption: 'Поиск по смыслу',
+  );
+
+  ArticleSearchParams _tempSearchParams = ArticleSearchParams(
+    searchQuery: '',
+    dateFrom: '',
+    dateTo: '',
+    selectedSources: [],
+    selectedTags: [],
+    searchInText: false,
+    searchOption: 'Поиск по смыслу',
+  );
 
   // Поля поиска
   String _selectedSearchOption = 'Поиск по смыслу';
@@ -123,6 +144,21 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
   void setSearchOption(String option) {
     _selectedSearchOption = option;
+    notifyListeners();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void setDateFrom(String date) {
+    _dateFrom = date;
+    notifyListeners();
+  }
+
+  void setDateTo(String date) {
+    _dateTo = date;
     notifyListeners();
   }
 

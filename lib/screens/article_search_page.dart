@@ -24,13 +24,18 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     _searchController = TextEditingController(text: provider.searchQuery);
     _dateFromController = TextEditingController(text: provider.dateFrom);
     _dateToController = TextEditingController(text: provider.dateTo);
+
+    _searchController.addListener(_onSearchQueryChanged);
   }
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchQueryChanged);
+
     _searchController.dispose();
     _dateFromController.dispose();
     _dateToController.dispose();
+
     super.dispose();
   }
 
@@ -44,6 +49,10 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     _toggleSearchExpansion();
   }
 
+  void _onSearchQueryChanged() {
+    Provider.of<ArticleProvider>(context, listen: false).setSearchQuery(_searchController.text);
+  }
+
   void _toggleSearchExpansion() {
     setState(() {
       _isSearchExpanded = !_isSearchExpanded;
@@ -51,7 +60,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
   }
 
   Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
+      BuildContext context, TextEditingController controller, Function(String) setDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -59,14 +68,13 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
+      setDate(picked.toIso8601String().split('T').first);
       controller.text = picked.toIso8601String().split('T').first;
     }
   }
 
   void _performSearch() {
     // final provider = Provider.of<ArticleProvider>(context, listen: false);
-    // provider.updateSearchQuery(_searchController.text);
-    // provider.updateDateRange(_dateFromController.text, _dateToController.text);
     Navigator.pop(context);
   }
 
@@ -229,17 +237,18 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
 
   // Поля выбора даты
   Widget _buildDatePickers() {
+    final provider = Provider.of<ArticleProvider>(context);
     return Row(
       children: [
-        Expanded(child: _buildDatePickerField('Дата С', _dateFromController)),
+        Expanded(child: _buildDatePickerField('Дата С', _dateFromController, provider.setDateFrom)),
         const SizedBox(width: 12),
-        Expanded(child: _buildDatePickerField('Дата По', _dateToController)),
+        Expanded(child: _buildDatePickerField('Дата По', _dateToController, provider.setDateTo)),
       ],
     );
   }
 
   // Поле выбора даты
-  Widget _buildDatePickerField(String label, TextEditingController controller) {
+  Widget _buildDatePickerField(String label, TextEditingController controller, Function(String) setDate) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
@@ -249,7 +258,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
         controller: controller,
         readOnly: true,
         style: const TextStyle(fontSize: 16),
-        onTap: () => _selectDate(context, controller),
+        onTap: () => _selectDate(context, controller, setDate),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 14),
