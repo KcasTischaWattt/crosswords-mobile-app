@@ -82,65 +82,70 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  Widget _buildSubscriptionsList() {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return _buildSubscriptionItem(index);
+      },
+    );
+  }
+
+  Widget _buildSubscriptionItem(int index) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: SizedBox(
+        width: 80,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.grey[300],
+              child: Icon(Icons.person, size: 25, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 4),
+            Text("Дайджест $index",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAllSubscriptionsButton() {
+    return Container(
+      width: 60,
+      height: 80,
+      alignment: Alignment.center,
+      child: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AllDigestTopicsPage()),
+          );
+        },
+        child: const Text(
+          "Все",
+          style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSubscriptionsRow() {
     return SizedBox(
       height: 80,
       child: Row(children: [
-        // Карусель подписок
-        Expanded(
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: SizedBox(
-                  width: 80,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: Colors.grey[300],
-                        child: Icon(Icons.person,
-                            size: 25, color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 4),
-                      Text("Дайджест $index",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: const TextStyle(fontSize: 12)),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-
-        // Кнопка все
-        Container(
-          width: 60,
-          height: 80,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(),
-          child: TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AllDigestTopicsPage()),
-              );
-            },
-            child: const Text(
-              "Все",
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue),
-            ),
-          ),
-        ),
+        Expanded(child: _buildSubscriptionsList()),
+        _buildAllSubscriptionsButton(),
       ]),
     );
   }
@@ -204,6 +209,8 @@ class _DigestsPageState extends State<DigestsPage> {
       },
     );
   }
+
+
 
   // Строки с источниками
   Widget _buildSourcesText(List<String> sources) {
@@ -303,8 +310,98 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  bool _shouldShowLoading(DigestProvider provider, List<Digest> digests) {
+    return provider.isLoading && digests.isEmpty;
+  }
+
+  Widget _buildLoadingIndicator() {
+    return const Padding(
+      padding: EdgeInsets.all(12),
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildDigestCard(Digest digest) {
+    return Card(
+      color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDigestTitle(digest),
+            const SizedBox(height: 8),
+            _buildSourcesText(digest.sources),
+            const SizedBox(height: 8),
+            _buildDigestText(digest.text),
+            const SizedBox(height: 8),
+            _buildTags(digest.tags),
+            const SizedBox(height: 4),
+            _buildFooter(digest),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDigestTitle(Digest digest) {
+    return digest.title.text.bold.xl3
+        .color(Theme.of(context).textTheme.bodyLarge!.color!)
+        .size(12)
+        .make();
+  }
+
+  Widget _buildDigestText(String text) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.bodyLarge,
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildFooter(Digest digest) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildDateText(digest.date),
+        _buildReadMoreButton(digest),
+      ],
+    );
+  }
+
+  Widget _buildDateText(String date) {
+    return date.text
+        .size(14)
+        .color(Theme.of(context).textTheme.bodySmall!.color!)
+        .make();
+  }
+
+  Widget _buildReadMoreButton(Digest digest) {
+    return ElevatedButton(
+      onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          // TODO переход к дайджесту
+          SnackBar(content: Text('Переход к дайджесту: ${digest.title}')),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: const Text(
+        'Подробнее',
+        style: TextStyle(color: Colors.black, fontSize: 18),
+      ),
+    );
+  }
+
+
   Widget _buildDigestList(DigestProvider provider, List<Digest> digests) {
-    if (provider.isLoading && digests.isEmpty) {
+    if (_shouldShowLoading(provider, digests)) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -318,86 +415,9 @@ class _DigestsPageState extends State<DigestsPage> {
       itemCount: digests.length + (provider.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == digests.length) {
-          return const Padding(
-            padding: EdgeInsets.all(12),
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return _buildLoadingIndicator();
         }
-        final digest = digests[index];
-        return Card(
-          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Заголовок дайджеста
-                digest.title.text.bold.xl3
-                    .color(
-                      Theme.of(context).textTheme.bodyLarge!.color!,
-                    )
-                    .size(12)
-                    .make(),
-
-                const SizedBox(height: 8),
-
-                // Источники
-                _buildSourcesText(digest.sources),
-
-                const SizedBox(height: 8),
-
-                // Текст дайджеста
-                Text(
-                  digest.text,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                const SizedBox(height: 8),
-
-                // Тэги
-                _buildTags(digest.tags),
-
-                const SizedBox(height: 4),
-
-                // Дата и кнопка Подробнее
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    digest.date.text
-                        .size(14)
-                        .color(Theme.of(context).textTheme.bodySmall!.color!)
-                        .make(),
-                    ElevatedButton(
-                      onPressed: () {
-                        // TODO Переход на страницу деталей дайджеста
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content:
-                                  Text('Переход к дайджесту: ${digest.title}')),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                      ),
-                      child: const Text(
-                        'Подробнее',
-                        style: TextStyle(color: Colors.black, fontSize: 18),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
+        return _buildDigestCard(digests[index]);
       },
     );
   }
