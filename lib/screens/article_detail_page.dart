@@ -154,6 +154,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         cancelText: "Отмена",
         confirmText: "Удалить",
         onConfirm: () {
+          if (_editingNote != null && _editingNote!.id == note.id) {
+            _resetEditing();
+          }
+
           Provider.of<ArticleProvider>(context, listen: false)
               .deleteNote(note.id);
         },
