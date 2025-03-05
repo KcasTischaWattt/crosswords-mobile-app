@@ -23,10 +23,14 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
     _searchController = TextEditingController(text: provider.searchQuery);
     _dateFromController = TextEditingController(text: provider.dateFrom);
     _dateToController = TextEditingController(text: provider.dateTo);
+
+    _searchController.addListener(_onSearchQueryChanged);
   }
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchQueryChanged);
+
     _searchController.dispose();
     _dateFromController.dispose();
     _dateToController.dispose();
@@ -34,11 +38,20 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
   }
 
   void _resetFilters() {
-    Provider.of<DigestProvider>(context, listen: false).resetFilters();
+    final provider = Provider.of<DigestProvider>(context, listen: false);
+    provider.resetFilters();
+
+    _searchController.text = provider.searchQuery;
+    _dateFromController.text = provider.dateFrom;
+    _dateToController.text = provider.dateTo;
+  }
+
+  void _onSearchQueryChanged() {
+    Provider.of<DigestProvider>(context, listen: false).setSearchQuery(_searchController.text);
   }
 
   Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
+      BuildContext context, TextEditingController controller, Function(String) setDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -46,14 +59,13 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
+      setDate(picked.toIso8601String().split('T').first);
       controller.text = picked.toIso8601String().split('T').first;
     }
   }
 
   void _performSearch() {
-    // final provider = Provider.of<ArticleProvider>(context, listen: false);
-    // provider.updateSearchQuery(_searchController.text);
-    // provider.updateDateRange(_dateFromController.text, _dateToController.text);
+    Provider.of<DigestProvider>(context, listen: false).applySearchParams();
     Navigator.pop(context);
   }
 
@@ -84,7 +96,7 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
               controller: _searchController,
               style: const TextStyle(fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'Строка поиска',
+                hintText: 'Поиск по названию',
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
@@ -114,11 +126,12 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
   }
 
   Widget _buildDatePickers() {
+    final provider = Provider.of<DigestProvider>(context);
     return Row(
       children: [
-        Expanded(child: _buildDatePickerField('Дата С', _dateFromController)),
+        Expanded(child: _buildDatePickerField('Дата С', _dateFromController, provider.setDateFrom)),
         const SizedBox(width: 12),
-        Expanded(child: _buildDatePickerField('Дата По', _dateToController)),
+        Expanded(child: _buildDatePickerField('Дата По', _dateToController, provider.setDateTo)),
       ],
     );
   }
@@ -130,14 +143,14 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
     );
   }
 
-  Widget _buildDatePickerField(String label, TextEditingController controller) {
+  Widget _buildDatePickerField(String label, TextEditingController controller, Function(String) setDate) {
     return Container(
       decoration: _containerDecoration(),
       child: TextField(
         controller: controller,
         readOnly: true,
         style: const TextStyle(fontSize: 16),
-        onTap: () => _selectDate(context, controller),
+        onTap: () => _selectDate(context, controller, setDate),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 14),

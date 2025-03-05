@@ -2,43 +2,70 @@ import 'package:flutter/material.dart';
 import '../data/models/digest.dart';
 import '../data/fake/fake_digests.dart';
 import 'abstract/filter_provider.dart';
+import '../data/models/search_params/digest_search_params.dart';
 
 class DigestProvider extends ChangeNotifier implements FilterProvider {
   List<Digest> _digests = [];
-  List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3', 'Источник 4', 'Источник 5', 'Источник 6'];
+  List<String> _sources = [
+    'Источник 1',
+    'Источник 2',
+    'Источник 3',
+    'Источник 4',
+    'Источник 5',
+    'Источник 6'
+  ];
   List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
 
   bool _isLoading = false;
   String _selectedCategory = 'Все дайджесты';
 
-  // Поля поиска
-  String _searchQuery = '';
-  String _dateFrom = '';
-  String _dateTo = '';
-  List<String> _selectedSources = [];
-  List<String> _selectedTags = [];
+  DigestSearchParams _currentSearchParams = DigestSearchParams(
+    searchQuery: '',
+    dateFrom: '',
+    dateTo: '',
+    selectedSources: [],
+    selectedTags: [],
+  );
+
+  DigestSearchParams _tempSearchParams = DigestSearchParams(
+    searchQuery: '',
+    dateFrom: '',
+    dateTo: '',
+    selectedSources: [],
+    selectedTags: [],
+  );
 
   List<Digest> get digests => _digests;
+
   @override
   List<String> get sources => _sources;
+
   @override
   List<String> get tags => _tags;
+
   bool get isLoading => _isLoading;
+
   String get selectedCategory => _selectedCategory;
-  String get searchQuery => _searchQuery;
-  String get dateFrom => _dateFrom;
-  String get dateTo => _dateTo;
+
+  String get searchQuery => _tempSearchParams.searchQuery;
+
+  String get dateFrom => _tempSearchParams.dateFrom;
+
+  String get dateTo => _tempSearchParams.dateTo;
+
+  DigestSearchParams get currentSearchParams => _currentSearchParams;
+
+  DigestSearchParams get tempSearchParams => _tempSearchParams;
+
   @override
-  List<String> get selectedSources => _selectedSources;
+  List<String> get selectedSources => _tempSearchParams.selectedSources;
+
   @override
-  List<String> get selectedTags => _selectedTags;
+  List<String> get selectedTags => _tempSearchParams.selectedTags;
 
   void resetFilters() {
-    _searchQuery = '';
-    _dateFrom = '';
-    _dateTo = '';
-    _selectedSources.clear();
-    _selectedSources.clear();
+    _tempSearchParams = _tempSearchParams.resetFilters();
+    _currentSearchParams = _currentSearchParams.resetFilters();
     notifyListeners();
   }
 
@@ -47,6 +74,59 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  void setSearchQuery(String query) {
+    _tempSearchParams = _tempSearchParams.copyWith(searchQuery: query);
+    notifyListeners();
+  }
+
+  void setDateFrom(String date) {
+    _tempSearchParams = _tempSearchParams.copyWith(dateFrom: date);
+    notifyListeners();
+  }
+
+  void setDateTo(String date) {
+    _tempSearchParams = _tempSearchParams.copyWith(dateTo: date);
+    notifyListeners();
+  }
+
+  void applySearchParams() {
+    _currentSearchParams = _tempSearchParams.copyWith(
+      searchQuery: _tempSearchParams.searchQuery,
+      dateFrom: _tempSearchParams.dateFrom,
+      dateTo: _tempSearchParams.dateTo,
+      selectedSources: List<String>.from(_tempSearchParams.selectedSources),
+      selectedTags: List<String>.from(_tempSearchParams.selectedTags),
+    );
+    notifyListeners();
+  }
+
+  @override
+  void toggleSource(String source) {
+    final selectedSources = List<String>.from(
+        _tempSearchParams.selectedSources);
+    if (selectedSources.contains(source)) {
+      selectedSources.remove(source);
+    } else {
+      selectedSources.add(source);
+    }
+    _tempSearchParams =
+        _tempSearchParams.copyWith(selectedSources: selectedSources);
+    notifyListeners();
+  }
+
+  @override
+  void toggleTag(String tag) {
+    final selectedTags = List<String>.from(_tempSearchParams.selectedTags);
+    if (selectedTags.contains(tag)) {
+      selectedTags.remove(tag);
+    } else {
+      selectedTags.add(tag);
+    }
+    _tempSearchParams = _tempSearchParams.copyWith(selectedTags: selectedTags);
+    notifyListeners();
+  }
+
+  // TODO загрузка дайджестов
   Future<void> loadDigests() async {
     _isLoading = true;
     notifyListeners();
@@ -56,26 +136,6 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     _digests = fakeDigests.toList();
 
     _isLoading = false;
-    notifyListeners();
-  }
-
-  @override
-  void toggleSource(String source) {
-    if (_selectedSources.contains(source)) {
-      _selectedSources.remove(source);
-    } else {
-      _selectedSources.add(source);
-    }
-    notifyListeners();
-  }
-
-  @override
-  void toggleTag(String tag) {
-    if (_selectedTags.contains(tag)) {
-      _selectedTags.remove(tag);
-    } else {
-      _selectedTags.add(tag);
-    }
     notifyListeners();
   }
 }

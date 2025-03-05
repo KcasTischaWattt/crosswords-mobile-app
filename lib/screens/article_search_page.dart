@@ -252,13 +252,17 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
+  BoxDecoration _dateContainerDecoration() {
+    return BoxDecoration(
+      color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+      borderRadius: BorderRadius.circular(8),
+    );
+  }
+
   // Поле выбора даты
   Widget _buildDatePickerField(String label, TextEditingController controller, Function(String) setDate) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: _dateContainerDecoration(),
       child: TextField(
         controller: controller,
         readOnly: true,

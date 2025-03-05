@@ -208,14 +208,15 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  // Метод для добавления заметки
+  /// Метод для добавления заметки
   Future<void> addNote(int articleId, String text) async {
     if (text.trim().isEmpty) return;
 
+    // TODO Отправить данные на сервер
     final newNote = Note(
-      id: DateTime.now().millisecondsSinceEpoch, // Временный ID
+      id: DateTime.now().millisecondsSinceEpoch,
       text: text,
-      user: "User1", // TODO Заглушка, потом заменить на userId
+      user: "User1",
       articleId: articleId,
       createdAt: DateTime.now().toIso8601String(),
       updatedAt: DateTime.now().toIso8601String(),
@@ -223,8 +224,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
     _notes.add(newNote);
     notifyListeners();
-
-    // TODO Отправить данные на сервер
   }
 
   void updateNote(int noteId, String newText) {
