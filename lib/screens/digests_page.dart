@@ -19,10 +19,12 @@ class _DigestsPageState extends State<DigestsPage> {
 
   @override
   void initState() {
+    super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
 
     Future.microtask(() {
+      if (!mounted) return;
       final provider = Provider.of<DigestProvider>(context, listen: false);
       if (provider.digests.isEmpty) {
         provider.loadDigests();
