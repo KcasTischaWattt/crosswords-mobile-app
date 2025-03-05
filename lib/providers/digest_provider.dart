@@ -17,6 +17,10 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
 
   bool _isLoading = false;
+  bool _isLoadingMore = false;
+  int _currentPage = 1;
+  final int _pageSize = 10;
+
   String _selectedCategory = 'Все дайджесты';
 
   DigestSearchParams _currentSearchParams = DigestSearchParams(
@@ -44,6 +48,8 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   List<String> get tags => _tags;
 
   bool get isLoading => _isLoading;
+
+  bool get isLoadingMore => _isLoadingMore;
 
   String get selectedCategory => _selectedCategory;
 
@@ -102,8 +108,8 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
 
   @override
   void toggleSource(String source) {
-    final selectedSources = List<String>.from(
-        _tempSearchParams.selectedSources);
+    final selectedSources =
+        List<String>.from(_tempSearchParams.selectedSources);
     if (selectedSources.contains(source)) {
       selectedSources.remove(source);
     } else {
@@ -126,16 +132,42 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  // TODO загрузка дайджестов
   Future<void> loadDigests() async {
+    _currentPage = 1;
     _isLoading = true;
+    notifyListeners();
+
+    // TODO загрузка дайджестов
+    await Future.delayed(const Duration(seconds: 1));
+
+    List<Digest> newDigests = fakeDigests.toList();
+
+    _digests.clear();
+    _digests.addAll(newDigests);
+    _currentPage++;
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> loadMoreDigests() async {
+    if (_isLoadingMore || _isLoading) return;
+
+    _isLoadingMore = true;
     notifyListeners();
 
     await Future.delayed(const Duration(seconds: 1));
 
-    _digests = fakeDigests.toList();
+    // List<Digest> newDigests = fakeDigests.skip((_currentPage - 1) * _pageSize).take(_pageSize).toList();
 
-    _isLoading = false;
+    List<Digest> newDigests = fakeDigests.toList();
+
+    if (newDigests.isNotEmpty) {
+      _digests.addAll(newDigests);
+      _currentPage++;
+    }
+
+    _isLoadingMore = false;
     notifyListeners();
   }
 }

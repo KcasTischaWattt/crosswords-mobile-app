@@ -15,12 +15,42 @@ class DigestsPage extends StatefulWidget {
 }
 
 class _DigestsPageState extends State<DigestsPage> {
+  late ScrollController _scrollController;
+
   @override
   void initState() {
-    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+
     Future.microtask(() {
-      Provider.of<DigestProvider>(context, listen: false).loadDigests();
+      final provider = Provider.of<DigestProvider>(context, listen: false);
+      if (provider.digests.isEmpty) {
+        provider.loadDigests();
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  bool _shouldLoadMore(DigestProvider provider) {
+    if (!_scrollController.hasClients) return false;
+    return _scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200 &&
+        !provider.isLoadingMore &&
+        !provider.isLoading;
+  }
+
+  void _onScroll() {
+    final provider = Provider.of<DigestProvider>(context, listen: false);
+    if (_shouldLoadMore(provider)) {
+      provider.loadMoreDigests();
+    }
   }
 
   Widget _buildCategoryButtons(DigestProvider provider) {
@@ -272,7 +302,7 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildDigestList(DigestProvider provider, List<Digest> digests) {
-    if (provider.isLoading) {
+    if (provider.isLoading && digests.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -281,9 +311,16 @@ class _DigestsPageState extends State<DigestsPage> {
     }
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(8),
-      itemCount: digests.length,
+      itemCount: digests.length + (provider.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == digests.length) {
+          return const Padding(
+            padding: EdgeInsets.all(12),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
         final digest = digests[index];
         return Card(
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
@@ -363,33 +400,37 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: const Text(
+        'Дайджесты',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const DigestSearchPage()),
+            );
+          },
+        ),
+      ],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DigestProvider>(context);
     final digests = provider.digests;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Дайджесты',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DigestSearchPage()),
-              );
-            },
-          ),
-        ],
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        shadowColor: Colors.transparent,
-      ),
+      appBar: _buildAppBar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
