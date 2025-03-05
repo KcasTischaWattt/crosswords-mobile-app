@@ -9,6 +9,7 @@ import '../data/models/note.dart';
 import 'package:flutter/services.dart';
 import 'widgets/fade_background.dart';
 import 'widgets/expanding_text_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -495,14 +496,23 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Открытие ссылки во внешнем браузере
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Не удалось открыть ссылку")),
+      );
+    }
+  }
+
+
   /// Построение кнопки "Читать оригинал"
   Widget _buildReadOriginalButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Переход по ссылке: ${widget.article.url}'),
-        ));
-      },
+      onPressed: () => _launchURL(widget.article.url),
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
@@ -602,6 +612,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Построение поля ввода комментария
   Widget _buildCommentInput(BuildContext context, ArticleProvider provider) {
     return Row(
       children: [
