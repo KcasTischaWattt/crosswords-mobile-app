@@ -74,7 +74,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
   }
 
   void _performSearch() {
-    // final provider = Provider.of<ArticleProvider>(context, listen: false);
+    Provider.of<ArticleProvider>(context, listen: false).applySearchParams();
     Navigator.pop(context);
   }
 

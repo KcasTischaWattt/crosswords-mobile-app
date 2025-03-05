@@ -1,21 +1,35 @@
 class ArticleSearchParams {
-  final String searchQuery;
-  final String dateFrom;
-  final String dateTo;
-  final List<String> selectedSources;
-  final List<String> selectedTags;
-  final bool searchInText;
-  final String searchOption;
+  final String _searchQuery;
+  final String _dateFrom;
+  final String _dateTo;
+  final List<String> _selectedSources;
+  final List<String> _selectedTags;
+  final bool _searchInText;
+  final String _searchOption;
+
+  String get searchQuery => _searchQuery;
+  String get dateFrom => _dateFrom;
+  String get dateTo => _dateTo;
+  List<String> get selectedSources => _selectedSources;
+  List<String> get selectedTags => _selectedTags;
+  bool get searchInText => _searchInText;
+  String get searchOption => _searchOption;
 
   ArticleSearchParams({
-    required this.searchQuery,
-    required this.dateFrom,
-    required this.dateTo,
-    required this.selectedSources,
-    required this.selectedTags,
-    required this.searchInText,
-    required this.searchOption,
-  });
+    required String searchQuery,
+    required String dateFrom,
+    required String dateTo,
+    required List<String> selectedSources,
+    required List<String> selectedTags,
+    required bool searchInText,
+    required String searchOption,
+  })  : _searchQuery = searchQuery,
+        _dateFrom = dateFrom,
+        _dateTo = dateTo,
+        _selectedSources = selectedSources,
+        _selectedTags = selectedTags,
+        _searchInText = searchInText,
+        _searchOption = searchOption;
 
   factory ArticleSearchParams.fromJson(Map<String, dynamic> json) {
     return ArticleSearchParams(
@@ -46,6 +60,18 @@ class ArticleSearchParams {
       selectedTags: selectedTags ?? List.from(this.selectedTags),
       searchInText: searchInText ?? this.searchInText,
       searchOption: searchOption ?? this.searchOption,
+    );
+  }
+
+  ArticleSearchParams resetFilters() {
+    return ArticleSearchParams(
+      searchQuery: '',
+      dateFrom: '',
+      dateTo: '',
+      selectedSources: [],
+      selectedTags: [],
+      searchInText: false,
+      searchOption: 'Везде',
     );
   }
 

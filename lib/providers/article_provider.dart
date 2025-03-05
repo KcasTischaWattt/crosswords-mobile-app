@@ -14,7 +14,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   final List<Note> _notes = [];
   bool _isLoading = false;
   bool _showOnlyFavorites = false;
-  bool _isSearchVisible = false;
   bool _isLoadingMore = false;
   // TODO не забыть использовать для запроса к API
   int _currentPage = 1;
@@ -40,15 +39,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     searchOption: 'Поиск по смыслу',
   );
 
-  // Поля поиска
-  String _selectedSearchOption = 'Поиск по смыслу';
-  String _searchQuery = '';
-  String _dateFrom = '';
-  String _dateTo = '';
-  List<String> _selectedSources = [];
-  List<String> _selectedTags = [];
-  bool _searchInText = false;
-
   @override
   List<String> get sources => _sources;
   @override
@@ -57,18 +47,17 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   bool get isLoading => _isLoading;
   Set<String> get favoriteArticles => _favoriteArticles;
   bool get showOnlyFavorites => _showOnlyFavorites;
-  String get selectedSearchOption => _selectedSearchOption;
-  @override
-  List<String> get selectedSources => _selectedSources;
-  @override
-  List<String> get selectedTags => _selectedTags;
-  bool get searchInText => _searchInText;
-  bool get isSearchVisible => _isSearchVisible;
   bool get isLoadingMore => _isLoadingMore;
   List<Note> get notes => _notes;
-  String get searchQuery => _searchQuery;
-  String get dateFrom => _dateFrom;
-  String get dateTo => _dateTo;
+  String get selectedSearchOption => _tempSearchParams.searchOption;
+  bool get searchInText => _tempSearchParams.searchInText;
+  String get searchQuery => _tempSearchParams.searchQuery;
+  String get dateFrom => _tempSearchParams.dateFrom;
+  String get dateTo => _tempSearchParams.dateTo;
+  @override
+  List<String> get selectedSources => _tempSearchParams.selectedSources;
+  @override
+  List<String> get selectedTags => _tempSearchParams.selectedTags;
 
   // TODO переделать систему получения заметок
   List<Note> getNotesForArticle(int articleId) {
@@ -143,62 +132,70 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   }
 
   void setSearchOption(String option) {
-    _selectedSearchOption = option;
+    _tempSearchParams = _tempSearchParams.copyWith(searchOption: option);
     notifyListeners();
   }
 
   void setSearchQuery(String query) {
-    _searchQuery = query;
+    _tempSearchParams = _tempSearchParams.copyWith(searchQuery: query);
     notifyListeners();
   }
 
   void setDateFrom(String date) {
-    _dateFrom = date;
+    _tempSearchParams = _tempSearchParams.copyWith(dateFrom: date);
     notifyListeners();
   }
 
   void setDateTo(String date) {
-    _dateTo = date;
+    _tempSearchParams = _tempSearchParams.copyWith(dateTo: date);
     notifyListeners();
   }
 
   @override
   void toggleSource(String source) {
-    if (_selectedSources.contains(source)) {
-      _selectedSources.remove(source);
+    final selectedSources = List<String>.from(_tempSearchParams.selectedSources);
+    if (selectedSources.contains(source)) {
+      selectedSources.remove(source);
     } else {
-      _selectedSources.add(source);
+      selectedSources.add(source);
     }
+    _tempSearchParams = _tempSearchParams.copyWith(selectedSources: selectedSources);
     notifyListeners();
   }
 
   @override
   void toggleTag(String tag) {
-    if (_selectedTags.contains(tag)) {
-      _selectedTags.remove(tag);
+    final selectedTags = List<String>.from(_tempSearchParams.selectedTags);
+    if (selectedTags.contains(tag)) {
+      selectedTags.remove(tag);
     } else {
-      _selectedTags.add(tag);
+      selectedTags.add(tag);
     }
+    _tempSearchParams = _tempSearchParams.copyWith(selectedTags: selectedTags);
     notifyListeners();
   }
 
   void setSearchInText(bool value) {
-    _searchInText = value;
+    _tempSearchParams = _tempSearchParams.copyWith(searchInText: value);
     notifyListeners();
   }
 
   void resetFilters() {
-    _selectedSources.clear();
-    _selectedTags.clear();
-    _searchInText = false;
-    _searchQuery = '';
-    _dateFrom = '';
-    _dateTo = '';
+    _tempSearchParams = _tempSearchParams.resetFilters();
+    _currentSearchParams = _currentSearchParams.resetFilters();
     notifyListeners();
   }
 
-  void toggleSearchVisibility() {
-    _isSearchVisible = !_isSearchVisible;
+  void applySearchParams() {
+    _currentSearchParams = _tempSearchParams.copyWith(
+      searchQuery: _tempSearchParams.searchQuery,
+      dateFrom: _tempSearchParams.dateFrom,
+      dateTo: _tempSearchParams.dateTo,
+      selectedSources: List<String>.from(_tempSearchParams.selectedSources),
+      selectedTags: List<String>.from(_tempSearchParams.selectedTags),
+      searchInText: _tempSearchParams.searchInText,
+      searchOption: _tempSearchParams.searchOption,
+    );
     notifyListeners();
   }
 
