@@ -40,7 +40,12 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
   }
 
   void _resetFilters() {
-    Provider.of<ArticleProvider>(context, listen: false).resetFilters();
+    final provider = Provider.of<ArticleProvider>(context, listen: false);
+    provider.resetFilters();
+
+    _searchController.text = provider.searchQuery;
+    _dateFromController.text = provider.dateFrom;
+    _dateToController.text = provider.dateTo;
   }
 
   void _setSearchOption(String option) {

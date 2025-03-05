@@ -71,7 +71,7 @@ class ArticleSearchParams {
       selectedSources: [],
       selectedTags: [],
       searchInText: false,
-      searchOption: 'Везде',
+      searchOption: searchOption,
     );
   }
 
