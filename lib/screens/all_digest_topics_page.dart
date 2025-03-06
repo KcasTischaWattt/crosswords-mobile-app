@@ -18,7 +18,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     super.initState();
     Future.microtask(() {
       if (!mounted) return;
-      final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+      final provider =
+          Provider.of<SubscriptionProvider>(context, listen: false);
       if (provider.subscriptions.isEmpty) {
         provider.loadSubscriptions();
       }
@@ -27,7 +28,9 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
 
   Widget _buildSubscriptionList(SubscriptionProvider provider) {
     final subscriptions = _showOnlySubscriptions
-        ? provider.subscriptions.where((sub) => sub.subscribeOptions.subscribed).toList()
+        ? provider.subscriptions
+            .where((sub) => sub.subscribeOptions.subscribed)
+            .toList()
         : provider.subscriptions;
 
     if (subscriptions.isEmpty) {
@@ -43,7 +46,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  Widget _buildSubscriptionItem(Subscription subscription, SubscriptionProvider provider) {
+  Widget _buildSubscriptionItem(
+      Subscription subscription, SubscriptionProvider provider) {
     return ListTile(
       leading: const CircleAvatar(
         radius: 24,
@@ -54,6 +58,16 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (subscription.isOwner && subscription.subscribeOptions.subscribed)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text("Редактирование: ${subscription.title}")),
+                );
+              },
+            ),
           if (subscription.subscribeOptions.subscribed)
             IconButton(
               icon: Icon(subscription.subscribeOptions.mobileNotifications
@@ -62,7 +76,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
               onPressed: () {
                 provider.updateSubscription(subscription.copyWith(
                   subscribeOptions: subscription.subscribeOptions.copyWith(
-                    mobileNotifications: !subscription.subscribeOptions.mobileNotifications,
+                    mobileNotifications:
+                        !subscription.subscribeOptions.mobileNotifications,
                   ),
                 ));
               },
