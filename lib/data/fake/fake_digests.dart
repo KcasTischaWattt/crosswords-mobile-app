@@ -5,6 +5,8 @@ List<Digest> fakeDigests = [
   Digest(
     id: 1,
     title: 'Главное о спорте',
+    averageRating: 4.6,
+    description: "самое важно о мире спорта",
     sources: ['Интерфакс', 'Коммерсантъ', 'Спорт-Экспресс'],
     text: '''
 Российский боксер Муслим Гаджимагомедов победил южноафриканца Табисо Мчуну на турнире IBA Champions Night в Москве. 10-раундовый поединок завершился решением судей. 
@@ -15,6 +17,8 @@ List<Digest> fakeDigests = [
     ''',
     tags: ['Спорт', 'Футбол', 'Бокс'],
     date: '01/02/2025',
+    public: true,
+    owner: "abce@gmail.com",
     urls: [
       'https://www.kommersant.ru/doc/7477233',
       'https://www.kommersant.ru/doc/7476685',
@@ -29,6 +33,8 @@ List<Digest> fakeDigests = [
   Digest(
     id: 2,
     title: 'Экономика России',
+    averageRating: 4.2,
+    description: "Экономика России в цифрах",
     sources: ['Коммерсантъ', 'ЦБ РФ', 'Интерфакс', 'РБК'],
     text: '''
 Количество и объем операций, совершенных через Систему быстрых платежей (СБП) в 2024 году, увеличились в 2 раза по сравнению с предыдущим годом. Всего через СБП за минувший год прошло более 13,4 млрд транзакций на общую сумму 69,5 трлн рублей, свидетельствуют данные Банка России.
@@ -37,6 +43,8 @@ List<Digest> fakeDigests = [
     ''',
     tags: ['Экономика', 'СБП', 'Пенсии', 'Индексация'],
     date: '01/02/2025',
+    public: false,
+    owner: "someone@example.com",
     urls: [
       'https://www.cbr.ru/press/event/?id=23333',
       'https://www.kommersant.ru/doc/7462654',
