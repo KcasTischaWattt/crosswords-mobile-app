@@ -321,6 +321,59 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  Widget _buildDigestActions(Digest digest) {
+    final provider = Provider.of<DigestProvider>(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Подписка
+        IconButton(
+          icon: Icon(
+            digest.subscribeOptions.subscribed
+                ? Icons.check_circle
+                : Icons.add_circle_outline,
+            color: digest.subscribeOptions.subscribed ? Colors.green : null,
+          ),
+          onPressed: () {
+            setState(() {
+              provider.updateDigest(digest.copyWith(
+                subscribeOptions: digest.subscribeOptions.copyWith(
+                  subscribed: !digest.subscribeOptions.subscribed,
+                ),
+              ));
+            });
+          },
+        ),
+        // Уведомления
+        IconButton(
+          icon: Icon(
+            digest.subscribeOptions.mobileNotifications
+                ? Icons.notifications_active
+                : Icons.notifications_none,
+          ),
+          onPressed: () {
+            setState(() {
+              provider.updateDigest(digest.copyWith(
+                subscribeOptions: digest.subscribeOptions.copyWith(
+                  mobileNotifications: !digest.subscribeOptions.mobileNotifications,
+                ),
+              ));
+            });
+          },
+        ),
+        // Редактирование
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Редактирование: ${digest.title}")),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildDigestCard(Digest digest) {
     final provider = Provider.of<DigestProvider>(context);
     return Card(
@@ -334,7 +387,12 @@ class _DigestsPageState extends State<DigestsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDigestTitle(digest),
+                Row(
+                  children: [
+                    _buildDigestTitle(digest),
+                    _buildDigestActions(digest),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 _buildSourcesText(digest.sources),
                 const SizedBox(height: 8),
@@ -346,72 +404,19 @@ class _DigestsPageState extends State<DigestsPage> {
               ],
             ),
           ),
-
-          // Кнопки в верхнем правом углу
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Подписка
-                IconButton(
-                  icon: Icon(
-                    digest.subscribeOptions.subscribed
-                        ? Icons.check_circle
-                        : Icons.add_circle_outline,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      provider.updateDigest(digest.copyWith(
-                        subscribeOptions: digest.subscribeOptions.copyWith(
-                          subscribed: !digest.subscribeOptions.subscribed,
-                        ),
-                      ));
-                    });
-                  },
-                ),
-
-                // Уведомления
-                IconButton(
-                  icon: Icon(
-                    digest.subscribeOptions.mobileNotifications
-                        ? Icons.notifications_active
-                        : Icons.notifications_none,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      provider.updateDigest(digest.copyWith(
-                        subscribeOptions: digest.subscribeOptions.copyWith(
-                          mobileNotifications: !digest.subscribeOptions.mobileNotifications,
-                        ),
-                      ));
-                    });
-                  },
-                ),
-
-                // Редактирование
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Редактирование: ${digest.title}')),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildDigestTitle(Digest digest) {
-    return digest.title.text.bold.xl3
-        .color(Theme.of(context).textTheme.bodyLarge!.color!)
-        .size(12)
-        .make();
+    return Expanded(
+      child: digest.title.text.bold.xl3
+          .color(Theme.of(context).textTheme.bodyLarge!.color!)
+          .maxLines(1)
+          .overflow(TextOverflow.ellipsis)
+          .make(),
+    );
   }
 
   Widget _buildDigestText(String text) {
