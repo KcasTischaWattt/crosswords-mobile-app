@@ -393,6 +393,43 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  void _showUnsubscribeDialog(Digest digest, DigestProvider provider) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Отмена подписки"),
+          content: Text("Вы уверены, что хотите отписаться от \"${digest.title}\"?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Отмена"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _toggleSubscription(digest, provider);
+              },
+              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _toggleSubscription(Digest digest, DigestProvider provider) {
+    setState(() {
+      provider.updateDigest(
+        digest.copyWith(
+          subscribeOptions: digest.subscribeOptions.copyWith(
+            subscribed: !digest.subscribeOptions.subscribed,
+          ),
+        ),
+      );
+    });
+  }
+
   Widget _buildSubscribeButton(Digest digest) {
     final provider = Provider.of<DigestProvider>(context, listen: false);
     return IconButton(
@@ -400,13 +437,11 @@ class _DigestsPageState extends State<DigestsPage> {
           ? Icons.check_circle
           : Icons.add_circle_outline),
       onPressed: () {
-        setState(() {
-          provider.updateDigest(digest.copyWith(
-            subscribeOptions: digest.subscribeOptions.copyWith(
-              subscribed: !digest.subscribeOptions.subscribed,
-            ),
-          ));
-        });
+        if (digest.subscribeOptions.subscribed) {
+          _showUnsubscribeDialog(digest, provider);
+        } else {
+          _toggleSubscription(digest, provider);
+        }
       },
     );
   }
