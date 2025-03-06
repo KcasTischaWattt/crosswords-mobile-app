@@ -67,4 +67,20 @@ List<Subscription> fakeSubscriptions = [
     owner: "economist@example.com",
     isOwner: false,
   ),
+  Subscription(
+    id: 5,
+    title: 'Трансграничные переводы',
+    description: "Всё о переводах в страны СНГ",
+    sources: ['ЦБ Узбекистана', 'ЦБ Киргизии', 'ЦБ Азербайджана'],
+    tags: ['Экономика', 'Переводы'],
+    subscribeOptions: SubscribeOptions(
+      subscribed: false,
+      sendToMail: false,
+      mobileNotifications: false,
+    ),
+    creationDate: '01/02/2025',
+    public: false,
+    owner: "perevod@example.com",
+    isOwner: false,
+  ),
 ];

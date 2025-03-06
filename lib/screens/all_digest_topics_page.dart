@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/subscription_provider.dart';
+import '../data/models/subscription.dart';
 
 class AllDigestTopicsPage extends StatefulWidget {
   const AllDigestTopicsPage({super.key});
@@ -10,14 +13,78 @@ class AllDigestTopicsPage extends StatefulWidget {
 class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   bool _showOnlySubscriptions = false;
 
-  final List<Map<String, dynamic>> _fakeTopics = List.generate(
-    15,
-        (index) => {
-          "title": "Тема $index",
-          "isSubscribed": index % 3 == 0,
-          "isNotified": index % 4 == 0,
-    },
-  );
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (!mounted) return;
+      final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+      if (provider.subscriptions.isEmpty) {
+        provider.loadSubscriptions();
+      }
+    });
+  }
+
+  Widget _buildSubscriptionList(SubscriptionProvider provider) {
+    final subscriptions = _showOnlySubscriptions
+        ? provider.subscriptions.where((sub) => sub.subscribeOptions.subscribed).toList()
+        : provider.subscriptions;
+
+    if (subscriptions.isEmpty) {
+      return const Center(child: Text("Нет подписок"));
+    }
+
+    return ListView.builder(
+      itemCount: subscriptions.length,
+      itemBuilder: (context, index) {
+        final subscription = subscriptions[index];
+        return _buildSubscriptionItem(subscription, provider);
+      },
+    );
+  }
+
+  Widget _buildSubscriptionItem(Subscription subscription, SubscriptionProvider provider) {
+    return ListTile(
+      leading: const CircleAvatar(
+        radius: 24,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.category, color: Colors.white),
+      ),
+      title: Text(subscription.title),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (subscription.subscribeOptions.subscribed)
+            IconButton(
+              icon: Icon(subscription.subscribeOptions.mobileNotifications
+                  ? Icons.notifications_active
+                  : Icons.notifications_none),
+              onPressed: () {
+                provider.updateSubscription(subscription.copyWith(
+                  subscribeOptions: subscription.subscribeOptions.copyWith(
+                    mobileNotifications: !subscription.subscribeOptions.mobileNotifications,
+                  ),
+                ));
+              },
+            ),
+          IconButton(
+            icon: Icon(
+              subscription.subscribeOptions.subscribed
+                  ? Icons.check_circle
+                  : Icons.add_circle_outline,
+            ),
+            onPressed: () {
+              provider.updateSubscription(subscription.copyWith(
+                subscribeOptions: subscription.subscribeOptions.copyWith(
+                  subscribed: !subscription.subscribeOptions.subscribed,
+                ),
+              ));
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +102,6 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
       ),
       body: Column(
         children: [
-          // Кнопка "Только подписки"
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -53,48 +119,9 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _fakeTopics.length,
-              itemBuilder: (context, index) {
-                final topic = _fakeTopics[index];
-
-                if (_showOnlySubscriptions && !topic["isSubscribed"]) {
-                  return const SizedBox.shrink();
-                }
-
-                return ListTile(
-                  leading: const CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Colors.grey,
-                    child: Icon(Icons.category, color: Colors.white),
-                  ),
-                  title: Text(topic["title"]),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(topic["isNotified"] ? Icons.notifications_active : Icons.notifications_none),
-                        onPressed: () {
-                          setState(() {
-                            topic["isNotified"] = !topic["isNotified"];
-                          });
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          topic["isSubscribed"]
-                              ? Icons.check_circle
-                              : Icons.add_circle_outline,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            topic["isSubscribed"] = !topic["isSubscribed"];
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                );
+            child: Consumer<SubscriptionProvider>(
+              builder: (context, provider, child) {
+                return _buildSubscriptionList(provider);
               },
             ),
           ),

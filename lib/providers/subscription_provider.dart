@@ -10,6 +10,11 @@ class SubscriptionProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   List<Subscription> get subscriptions => _subscriptions;
 
+  Future<void> updateSubscription(Subscription subscription) async {
+
+    await Future.delayed(const Duration(seconds: 1));
+    notifyListeners();
+  }
 
   Future<void> loadSubscriptions() async {
     _isLoading = true;
