@@ -9,6 +9,18 @@ class SubscribeOptions {
     required this.mobileNotifications,
   });
 
+  SubscribeOptions copyWith({
+    bool? subscribed,
+    bool? sendToMail,
+    bool? mobileNotifications,
+  }) {
+    return SubscribeOptions(
+      subscribed: subscribed ?? this.subscribed,
+      sendToMail: sendToMail ?? this.sendToMail,
+      mobileNotifications: mobileNotifications ?? this.mobileNotifications,
+    );
+  }
+
   factory SubscribeOptions.fromJson(Map<String, dynamic> json) {
     return SubscribeOptions(
       subscribed: json['subscribed'],

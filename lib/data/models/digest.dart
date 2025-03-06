@@ -21,6 +21,28 @@ class Digest {
     required this.subscribeOptions,
   });
 
+  Digest copyWith({
+    int? id,
+    String? title,
+    List<String>? sources,
+    String? text,
+    List<String>? tags,
+    String? date,
+    List<String>? urls,
+    SubscribeOptions? subscribeOptions,
+  }) {
+    return Digest(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      sources: sources ?? List.from(this.sources),
+      text: text ?? this.text,
+      tags: tags ?? List.from(this.tags),
+      date: date ?? this.date,
+      urls: urls ?? List.from(this.urls),
+      subscribeOptions: subscribeOptions ?? this.subscribeOptions,
+    );
+  }
+
   // Метод для преобразования JSON в объект Digest
   factory Digest.fromJson(Map<String, dynamic> json) {
     return Digest(
