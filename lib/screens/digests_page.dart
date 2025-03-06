@@ -448,6 +448,9 @@ class _DigestsPageState extends State<DigestsPage> {
 
   Widget _buildNotificationButton(Digest digest) {
     final provider = Provider.of<DigestProvider>(context, listen: false);
+
+    if (!digest.subscribeOptions.subscribed) return const SizedBox.shrink();
+
     return IconButton(
       icon: Icon(digest.subscribeOptions.mobileNotifications
           ? Icons.notifications_active
