@@ -73,57 +73,81 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
 
   Widget _buildSubscriptionItem(Subscription subscription, SubscriptionProvider provider) {
     return ListTile(
-      leading: const CircleAvatar(
-        radius: 24,
-        backgroundColor: Colors.grey,
-        child: Icon(Icons.category, color: Colors.white),
+      leading: _buildLeadingIcon(),
+      title: _buildTitle(subscription),
+      trailing: _buildTrailingButtons(subscription, provider),
+    );
+  }
+
+  Widget _buildLeadingIcon() {
+    return const CircleAvatar(
+      radius: 24,
+      backgroundColor: Colors.grey,
+      child: Icon(Icons.category, color: Colors.white),
+    );
+  }
+
+  Widget _buildTitle(Subscription subscription) {
+    return Text(
+      subscription.title,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildTrailingButtons(Subscription subscription, SubscriptionProvider provider) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (subscription.isOwner && subscription.subscribeOptions.subscribed)
+          _buildEditButton(subscription),
+        if (subscription.subscribeOptions.subscribed)
+          _buildNotificationButton(subscription, provider),
+        _buildSubscriptionToggleButton(subscription, provider),
+      ],
+    );
+  }
+
+  Widget _buildEditButton(Subscription subscription) {
+    return IconButton(
+      icon: const Icon(Icons.edit),
+      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Редактирование: ${subscription.title}")),
       ),
-      title: Text(
-        subscription.title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildNotificationButton(Subscription subscription, SubscriptionProvider provider) {
+    return IconButton(
+      icon: Icon(
+        subscription.subscribeOptions.mobileNotifications
+            ? Icons.notifications_active
+            : Icons.notifications_none,
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (subscription.isOwner && subscription.subscribeOptions.subscribed)
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Редактирование: ${subscription.title}")),
-              ),
-            ),
-          if (subscription.subscribeOptions.subscribed)
-            IconButton(
-              icon: Icon(
-                subscription.subscribeOptions.mobileNotifications
-                    ? Icons.notifications_active
-                    : Icons.notifications_none,
-              ),
-              onPressed: () {
-                provider.updateSubscription(subscription.copyWith(
-                  subscribeOptions: subscription.subscribeOptions.copyWith(
-                    mobileNotifications: !subscription.subscribeOptions.mobileNotifications,
-                  ),
-                ));
-              },
-            ),
-          IconButton(
-            icon: Icon(
-              subscription.subscribeOptions.subscribed
-                  ? Icons.check_circle
-                  : Icons.add_circle_outline,
-            ),
-            onPressed: () {
-              if (subscription.subscribeOptions.subscribed) {
-                _buildUnsubscribeDialog(subscription, provider);
-              } else {
-                _toggleSubscription(subscription, provider);
-              }
-            },
+      onPressed: () {
+        provider.updateSubscription(subscription.copyWith(
+          subscribeOptions: subscription.subscribeOptions.copyWith(
+            mobileNotifications: !subscription.subscribeOptions.mobileNotifications,
           ),
-        ],
+        ));
+      },
+    );
+  }
+
+  Widget _buildSubscriptionToggleButton(Subscription subscription, SubscriptionProvider provider) {
+    return IconButton(
+      icon: Icon(
+        subscription.subscribeOptions.subscribed
+            ? Icons.check_circle
+            : Icons.add_circle_outline,
       ),
+      onPressed: () {
+        if (subscription.subscribeOptions.subscribed) {
+          _buildUnsubscribeDialog(subscription, provider);
+        } else {
+          _toggleSubscription(subscription, provider);
+        }
+      },
     );
   }
 
