@@ -83,4 +83,20 @@ List<Subscription> fakeSubscriptions = [
     owner: "perevod@example.com",
     isOwner: false,
   ),
+  Subscription(
+    id: 6,
+    title: 'Глубокий анализ современных тенденций в науке, технологиях и инновациях',
+    description: "Детальный разбор последних исследований, научных открытий и инновационных технологий.",
+    sources: ['Наука и Жизнь', 'Популярная механика', 'MIT Technology Review'],
+    tags: ['Наука', 'Технологии', 'Инновации', 'Исследования'],
+    subscribeOptions: SubscribeOptions(
+      subscribed: true,
+      sendToMail: false,
+      mobileNotifications: true,
+    ),
+    creationDate: '01/02/2025',
+    public: true,
+    owner: "scientist@example.com",
+    isOwner: true,
+  ),
 ];

@@ -46,6 +46,43 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
+  void _showUnsubscribeDialog(Subscription subscription, SubscriptionProvider provider) {
+    String message = subscription.public
+        ? "Вы уверены, что хотите отказаться от подписки?"
+        : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Отмена подписки"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Отмена"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _toggleSubscription(subscription, provider);
+              },
+              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _toggleSubscription(Subscription subscription, SubscriptionProvider provider) {
+    provider.updateSubscription(subscription.copyWith(
+      subscribeOptions: subscription.subscribeOptions.copyWith(
+        subscribed: !subscription.subscribeOptions.subscribed,
+      ),
+    ));
+  }
+
   Widget _buildSubscriptionItem(
       Subscription subscription, SubscriptionProvider provider) {
     return ListTile(
@@ -54,7 +91,11 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
         backgroundColor: Colors.grey,
         child: Icon(Icons.category, color: Colors.white),
       ),
-      title: Text(subscription.title),
+      title: Text(
+        subscription.title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -89,11 +130,11 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
                   : Icons.add_circle_outline,
             ),
             onPressed: () {
-              provider.updateSubscription(subscription.copyWith(
-                subscribeOptions: subscription.subscribeOptions.copyWith(
-                  subscribed: !subscription.subscribeOptions.subscribed,
-                ),
-              ));
+              if (subscription.subscribeOptions.subscribed) {
+                _showUnsubscribeDialog(subscription, provider);
+              } else {
+                _toggleSubscription(subscription, provider);
+              }
             },
           ),
         ],
