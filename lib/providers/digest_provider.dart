@@ -16,14 +16,6 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   ];
   List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
 
-  void updateDigest(Digest updatedDigest) {
-    final index = _digests.indexWhere((digest) => digest.id == updatedDigest.id);
-    if (index != -1) {
-      _digests[index] = updatedDigest;
-      notifyListeners();
-    }
-  }
-
   bool _isLoading = false;
   bool _isLoadingMore = false;
   int _currentPage = 1;
@@ -112,6 +104,14 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
       selectedTags: List<String>.from(_tempSearchParams.selectedTags),
     );
     notifyListeners();
+  }
+
+  void updateDigest(Digest updatedDigest) {
+    final index = _digests.indexWhere((digest) => digest.id == updatedDigest.id);
+    if (index != -1) {
+      _digests[index] = updatedDigest;
+      notifyListeners();
+    }
   }
 
   @override
