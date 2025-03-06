@@ -10,10 +10,12 @@ class SubscriptionProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   List<Subscription> get subscriptions => _subscriptions;
 
-  Future<void> updateSubscription(Subscription subscription) async {
-
-    await Future.delayed(const Duration(seconds: 1));
-    notifyListeners();
+  void updateSubscription(Subscription updatedSubscription) {
+    final index = _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);
+    if (index != -1) {
+      _subscriptions[index] = updatedSubscription;
+      notifyListeners();
+    }
   }
 
   Future<void> loadSubscriptions() async {
