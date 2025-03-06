@@ -210,14 +210,22 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
-
-
-  // Строки с источниками
   Widget _buildSourcesText(List<String> sources) {
     if (sources.isEmpty) return const SizedBox.shrink();
 
     final textColor = Theme.of(context).textTheme.bodyLarge!.color!;
 
+    return RichText(
+      text: TextSpan(
+        children: sources.length <= 3
+            ? _buildShortSourcesText(sources)
+            : _buildCondensedSourcesText(sources, textColor),
+        style: TextStyle(fontSize: 14, color: textColor),
+      ),
+    );
+  }
+
+  List<InlineSpan> _buildShortSourcesText(List<String> sources) {
     List<InlineSpan> spans = [
       const TextSpan(
         text: "Источники: ",
@@ -225,52 +233,47 @@ class _DigestsPageState extends State<DigestsPage> {
       ),
     ];
 
-    if (sources.length <= 3) {
-      for (int i = 0; i < sources.length; i++) {
-        spans.add(TextSpan(
-          text: sources[i],
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ));
-        if (i < sources.length - 1) {
-          spans.add(const TextSpan(
-              text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
-        }
+    for (int i = 0; i < sources.length; i++) {
+      spans.add(_buildSourceSpan(sources[i]));
+      if (i < sources.length - 1) {
+        spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
       }
-    } else {
-      spans.add(TextSpan(
-        text: sources[0],
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ));
-      spans.add(const TextSpan(
-          text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
+    }
+    return spans;
+  }
 
-      spans.add(TextSpan(
-        text: sources[1],
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ));
-      spans.add(const TextSpan(
-          text: " и ", style: TextStyle(fontWeight: FontWeight.normal)));
-
-      spans.add(TextSpan(
+  List<InlineSpan> _buildCondensedSourcesText(List<String> sources, Color textColor) {
+    return [
+      const TextSpan(
+        text: "Источники: ",
+        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+      ),
+      _buildSourceSpan(sources[0]),
+      const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)),
+      _buildSourceSpan(sources[1]),
+      const TextSpan(text: " и ", style: TextStyle(fontWeight: FontWeight.normal)),
+      TextSpan(
         text: "ещё ${sources.length - 2}",
         style: TextStyle(
-            fontWeight: FontWeight.bold,
-            decoration: TextDecoration.underline,
-            color: textColor),
+          fontWeight: FontWeight.bold,
+          decoration: TextDecoration.underline,
+          color: textColor,
+        ),
         recognizer: TapGestureRecognizer()
           ..onTap = () {
             _showAllSourcesDialog(context, sources);
           },
-      ));
-    }
-
-    return RichText(
-      text: TextSpan(
-        children: spans,
-        style: TextStyle(fontSize: 14, color: textColor),
       ),
+    ];
+  }
+
+  TextSpan _buildSourceSpan(String source) {
+    return TextSpan(
+      text: source,
+      style: const TextStyle(fontWeight: FontWeight.bold),
     );
   }
+
 
   // Тэги
   Widget _buildTags(List<String> tags) {
@@ -321,98 +324,119 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
-  Widget _buildDigestActions(Digest digest) {
-    final provider = Provider.of<DigestProvider>(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Подписка
-        IconButton(
-          icon: Icon(
-            digest.subscribeOptions.subscribed
-                ? Icons.check_circle
-                : Icons.add_circle_outline,
-          ),
-          onPressed: () {
-            setState(() {
-              provider.updateDigest(digest.copyWith(
-                subscribeOptions: digest.subscribeOptions.copyWith(
-                  subscribed: !digest.subscribeOptions.subscribed,
-                ),
-              ));
-            });
-          },
-        ),
-        // Уведомления
-        IconButton(
-          icon: Icon(
-            digest.subscribeOptions.mobileNotifications
-                ? Icons.notifications_active
-                : Icons.notifications_none,
-          ),
-          onPressed: () {
-            setState(() {
-              provider.updateDigest(digest.copyWith(
-                subscribeOptions: digest.subscribeOptions.copyWith(
-                  mobileNotifications: !digest.subscribeOptions.mobileNotifications,
-                ),
-              ));
-            });
-          },
-        ),
-        // Редактирование
-        IconButton(
-          icon: const Icon(Icons.edit),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Редактирование: ${digest.title}")),
-            );
-          },
-        ),
-      ],
+  Widget _buildDigestCard(Digest digest) {
+    return _buildCardContainer(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          bool isNarrowScreen = constraints.maxWidth <= 300;
+          return _buildDigestContent(digest, isNarrowScreen);
+        },
+      ),
     );
   }
 
-  Widget _buildDigestCard(Digest digest) {
-    final provider = Provider.of<DigestProvider>(context);
+  Widget _buildCardContainer({required Widget child}) {
     return Card(
       color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
       margin: const EdgeInsets.symmetric(vertical: 6),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            bool isNarrowScreen = constraints.maxWidth <= 300;
+      child: Padding(padding: const EdgeInsets.all(8), child: child),
+    );
+  }
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (isNarrowScreen) ...[
-                  _buildDigestTitle(digest),
-                  const SizedBox(height: 8),
-                  _buildDigestActions(digest),
-                ] else
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: _buildDigestTitle(digest)),
-                      _buildDigestActions(digest),
-                    ],
-                  ),
-                const SizedBox(height: 8),
-                _buildSourcesText(digest.sources),
-                const SizedBox(height: 8),
-                _buildDigestText(digest.text),
-                const SizedBox(height: 8),
-                _buildTags(digest.tags),
-                const SizedBox(height: 4),
-                _buildFooter(digest),
-              ],
-            );
-          },
-        ),
-      ),
+  Widget _buildDigestContent(Digest digest, bool isNarrowScreen) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDigestLayout(digest, isNarrowScreen),
+        const SizedBox(height: 8),
+        _buildSourcesText(digest.sources),
+        const SizedBox(height: 8),
+        _buildDigestText(digest.text),
+        const SizedBox(height: 8),
+        _buildTags(digest.tags),
+        const SizedBox(height: 4),
+        _buildFooter(digest),
+      ],
+    );
+  }
+
+  Widget _buildDigestLayout(Digest digest, bool isNarrowScreen) {
+    if (isNarrowScreen) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDigestTitle(digest),
+          const SizedBox(height: 8),
+          _buildDigestActions(digest),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: _buildDigestTitle(digest)),
+          _buildDigestActions(digest),
+        ],
+      );
+    }
+  }
+
+  Widget _buildDigestActions(Digest digest) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildSubscribeButton(digest),
+        _buildNotificationButton(digest),
+        _buildEditButton(digest),
+      ],
+    );
+  }
+
+  Widget _buildSubscribeButton(Digest digest) {
+    final provider = Provider.of<DigestProvider>(context, listen: false);
+    return IconButton(
+      icon: Icon(digest.subscribeOptions.subscribed
+          ? Icons.check_circle
+          : Icons.add_circle_outline),
+      onPressed: () {
+        setState(() {
+          provider.updateDigest(digest.copyWith(
+            subscribeOptions: digest.subscribeOptions.copyWith(
+              subscribed: !digest.subscribeOptions.subscribed,
+            ),
+          ));
+        });
+      },
+    );
+  }
+
+  Widget _buildNotificationButton(Digest digest) {
+    final provider = Provider.of<DigestProvider>(context, listen: false);
+    return IconButton(
+      icon: Icon(digest.subscribeOptions.mobileNotifications
+          ? Icons.notifications_active
+          : Icons.notifications_none),
+      onPressed: () {
+        setState(() {
+          provider.updateDigest(digest.copyWith(
+            subscribeOptions: digest.subscribeOptions.copyWith(
+              mobileNotifications: !digest.subscribeOptions.mobileNotifications,
+            ),
+          ));
+        });
+      },
+    );
+  }
+
+  Widget _buildEditButton(Digest digest) {
+    return IconButton(
+      icon: const Icon(Icons.edit),
+      onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Редактирование: ${digest.title}")),
+        );
+      },
     );
   }
 
