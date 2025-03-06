@@ -18,6 +18,15 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
+  void transferOwnership(Subscription subscription, String newOwner) {
+    int index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
+
+    if (index != -1) {
+      _subscriptions[index] = subscription.copyWith(owner: newOwner, isOwner: false);
+      notifyListeners();
+    }
+  }
+
   Future<void> loadSubscriptions() async {
     _isLoading = true;
     notifyListeners();

@@ -46,7 +46,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  void _showUnsubscribeDialog(Subscription subscription, SubscriptionProvider provider) {
+  void _showUnsubscribeDialog(
+      Subscription subscription, SubscriptionProvider provider) {
     String message = subscription.public
         ? "Вы уверены, что хотите отказаться от подписки?"
         : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
@@ -65,9 +66,14 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                _toggleSubscription(subscription, provider);
+                if (subscription.isOwner) {
+                  _showTransferOwnershipDialog(subscription, provider);
+                } else {
+                  _toggleSubscription(subscription, provider);
+                }
               },
-              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
+              child:
+                  const Text("Отписаться", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -75,7 +81,113 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  void _toggleSubscription(Subscription subscription, SubscriptionProvider provider) {
+  void _showTransferOwnershipDialog(
+      Subscription subscription, SubscriptionProvider provider) {
+    List<String> potentialOwners = [
+      "1",
+      "2",
+      "3",
+      "4",
+      "dsadsadasdasdasdasdsadasdasd",
+      "dsadas",
+      "fdsffsfdsffds",
+      "fdsffdsfdsffhgghf",
+      "3432",
+      "fd",
+      "65656",
+      "dsadsadasdasdasdasdsadasdasd",
+      "dsadas",
+      "fdsffsfdsffds",
+      "fdsffdsfdsffhgghf",
+      "3432",
+      "fd",
+      "65656"
+    ];
+
+    if (potentialOwners.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Невозможно передать владение"),
+            content: const Text(
+                "Вы единственный подписчик этого дайджеста. После отписки управление будет утеряно."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Отмена"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _toggleSubscription(subscription, provider);
+                },
+                child: const Text("Отписаться",
+                    style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    String? selectedOwner;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Выберите нового владельца"),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: potentialOwners.map((owner) {
+                      return RadioListTile<String>(
+                        title: Text(owner),
+                        value: owner,
+                        groupValue: selectedOwner,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedOwner = value;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Отмена"),
+                ),
+                TextButton(
+                  onPressed: selectedOwner == null
+                      ? null
+                      : () {
+                          Navigator.pop(context);
+                          provider.transferOwnership(
+                              subscription, selectedOwner!);
+                          _toggleSubscription(subscription, provider);
+                        },
+                  child: const Text("Передать и отписаться",
+                      style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _toggleSubscription(
+      Subscription subscription, SubscriptionProvider provider) {
     provider.updateSubscription(subscription.copyWith(
       subscribeOptions: subscription.subscribeOptions.copyWith(
         subscribed: !subscription.subscribeOptions.subscribed,
