@@ -7,7 +7,8 @@ class SubscriptionProvider extends ChangeNotifier {
 
   bool _isLoading = false;
 
-  List<Subscription> get digests => _subscriptions;
+  bool get isLoading => _isLoading;
+  List<Subscription> get subscriptions => _subscriptions;
 
 
   Future<void> loadSubscriptions() async {

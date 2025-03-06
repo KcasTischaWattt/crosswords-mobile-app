@@ -6,6 +6,8 @@ import '../data/models/digest.dart';
 import 'all_digest_topics_page.dart';
 import 'package:flutter/gestures.dart';
 import 'digest_search_page.dart';
+import '../providers/subscription_provider.dart';
+import '../data/models/subscription.dart';
 
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
@@ -26,8 +28,13 @@ class _DigestsPageState extends State<DigestsPage> {
     Future.microtask(() {
       if (!mounted) return;
       final provider = Provider.of<DigestProvider>(context, listen: false);
+      final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+
       if (provider.digests.isEmpty) {
         provider.loadDigests();
+      }
+      if (subscriptionProvider.subscriptions.isEmpty) {
+        subscriptionProvider.loadSubscriptions();
       }
     });
   }
@@ -43,7 +50,7 @@ class _DigestsPageState extends State<DigestsPage> {
   bool _shouldLoadMore(DigestProvider provider) {
     if (!_scrollController.hasClients) return false;
     return _scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200 &&
+            _scrollController.position.maxScrollExtent - 200 &&
         !provider.isLoadingMore &&
         !provider.isLoading;
   }
@@ -82,17 +89,27 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
-  Widget _buildSubscriptionsList() {
+  Widget _buildSubscriptionsList(SubscriptionProvider provider) {
+    final subscriptions = provider.subscriptions;
+
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (subscriptions.isEmpty) {
+      return const Center(child: Text("Нет подписок"));
+    }
+
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: 10,
+      itemCount: provider.subscriptions.length,
       itemBuilder: (context, index) {
-        return _buildSubscriptionItem(index);
+        return _buildSubscriptionItem(subscriptions[index]);
       },
     );
   }
 
-  Widget _buildSubscriptionItem(int index) {
+  Widget _buildSubscriptionItem(Subscription subscription) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: SizedBox(
@@ -106,7 +123,7 @@ class _DigestsPageState extends State<DigestsPage> {
               child: Icon(Icons.person, size: 25, color: Colors.grey[600]),
             ),
             const SizedBox(height: 4),
-            Text("Дайджест $index",
+            Text(subscription.title,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: const TextStyle(fontSize: 12)),
@@ -132,21 +149,25 @@ class _DigestsPageState extends State<DigestsPage> {
         child: const Text(
           "Все",
           style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue),
+              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
         ),
       ),
     );
   }
 
   Widget _buildSubscriptionsRow() {
-    return SizedBox(
-      height: 80,
-      child: Row(children: [
-        Expanded(child: _buildSubscriptionsList()),
-        _buildAllSubscriptionsButton(),
-      ]),
+    return Consumer<SubscriptionProvider>(
+      builder: (context, provider, child) {
+        return SizedBox(
+          height: 80,
+          child: Row(
+            children: [
+              Expanded(child: _buildSubscriptionsList(provider)),
+              _buildAllSubscriptionsButton(),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -236,22 +257,26 @@ class _DigestsPageState extends State<DigestsPage> {
     for (int i = 0; i < sources.length; i++) {
       spans.add(_buildSourceSpan(sources[i]));
       if (i < sources.length - 1) {
-        spans.add(const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
+        spans.add(const TextSpan(
+            text: ", ", style: TextStyle(fontWeight: FontWeight.normal)));
       }
     }
     return spans;
   }
 
-  List<InlineSpan> _buildCondensedSourcesText(List<String> sources, Color textColor) {
+  List<InlineSpan> _buildCondensedSourcesText(
+      List<String> sources, Color textColor) {
     return [
       const TextSpan(
         text: "Источники: ",
         style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
       ),
       _buildSourceSpan(sources[0]),
-      const TextSpan(text: ", ", style: TextStyle(fontWeight: FontWeight.normal)),
+      const TextSpan(
+          text: ", ", style: TextStyle(fontWeight: FontWeight.normal)),
       _buildSourceSpan(sources[1]),
-      const TextSpan(text: " и ", style: TextStyle(fontWeight: FontWeight.normal)),
+      const TextSpan(
+          text: " и ", style: TextStyle(fontWeight: FontWeight.normal)),
       TextSpan(
         text: "ещё ${sources.length - 2}",
         style: TextStyle(
@@ -273,7 +298,6 @@ class _DigestsPageState extends State<DigestsPage> {
       style: const TextStyle(fontWeight: FontWeight.bold),
     );
   }
-
 
   // Тэги
   Widget _buildTags(List<String> tags) {
@@ -399,7 +423,8 @@ class _DigestsPageState extends State<DigestsPage> {
       builder: (context) {
         return AlertDialog(
           title: const Text("Отмена подписки"),
-          content: Text("Вы уверены, что хотите отписаться от \"${digest.title}\"?"),
+          content:
+              Text("Вы уверены, что хотите отписаться от \"${digest.title}\"?"),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -410,7 +435,8 @@ class _DigestsPageState extends State<DigestsPage> {
                 Navigator.pop(context);
                 _toggleSubscription(digest, provider);
               },
-              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
+              child:
+                  const Text("Отписаться", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -531,7 +557,6 @@ class _DigestsPageState extends State<DigestsPage> {
       ),
     );
   }
-
 
   Widget _buildDigestList(DigestProvider provider, List<Digest> digests) {
     if (_shouldShowLoading(provider, digests)) {

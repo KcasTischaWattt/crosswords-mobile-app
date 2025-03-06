@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'providers/article_provider.dart';
 import 'providers/digest_provider.dart';
+import 'providers/subscription_provider.dart';
 import 'screens/articles_page.dart';
 import 'screens/digests_page.dart';
 import 'screens/notifications_page.dart';
@@ -15,6 +16,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ArticleProvider()),
         ChangeNotifierProvider(create: (_) => DigestProvider()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
       ],
       child: const MyApp(),
     ),
