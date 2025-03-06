@@ -332,7 +332,6 @@ class _DigestsPageState extends State<DigestsPage> {
             digest.subscribeOptions.subscribed
                 ? Icons.check_circle
                 : Icons.add_circle_outline,
-            color: digest.subscribeOptions.subscribed ? Colors.green : null,
           ),
           onPressed: () {
             setState(() {
@@ -380,19 +379,27 @@ class _DigestsPageState extends State<DigestsPage> {
       color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
       margin: const EdgeInsets.symmetric(vertical: 6),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            bool isNarrowScreen = constraints.maxWidth <= 300;
+
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    _buildDigestTitle(digest),
-                    _buildDigestActions(digest),
-                  ],
-                ),
+                if (isNarrowScreen) ...[
+                  _buildDigestTitle(digest),
+                  const SizedBox(height: 8),
+                  _buildDigestActions(digest),
+                ] else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: _buildDigestTitle(digest)),
+                      _buildDigestActions(digest),
+                    ],
+                  ),
                 const SizedBox(height: 8),
                 _buildSourcesText(digest.sources),
                 const SizedBox(height: 8),
@@ -402,21 +409,19 @@ class _DigestsPageState extends State<DigestsPage> {
                 const SizedBox(height: 4),
                 _buildFooter(digest),
               ],
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget _buildDigestTitle(Digest digest) {
-    return Expanded(
-      child: digest.title.text.bold.xl3
-          .color(Theme.of(context).textTheme.bodyLarge!.color!)
-          .maxLines(1)
-          .overflow(TextOverflow.ellipsis)
-          .make(),
-    );
+    return digest.title.text.bold.xl3
+        .color(Theme.of(context).textTheme.bodyLarge!.color!)
+        .maxLines(1)
+        .overflow(TextOverflow.ellipsis)
+        .make();
   }
 
   Widget _buildDigestText(String text) {
@@ -441,7 +446,7 @@ class _DigestsPageState extends State<DigestsPage> {
   Widget _buildDateText(String date) {
     return date.text
         .size(14)
-        .color(Theme.of(context).textTheme.bodySmall!.color!)
+        .color(Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
         .make();
   }
 
@@ -515,7 +520,7 @@ class _DigestsPageState extends State<DigestsPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DigestProvider>(context);
-    final digests = provider.digests;
+    final digests = provider.digests ?? [];
 
     return Scaffold(
       appBar: _buildAppBar(),
