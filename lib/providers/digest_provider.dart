@@ -107,7 +107,8 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   }
 
   void updateDigest(Digest updatedDigest) {
-    final index = _digests.indexWhere((digest) => digest.id == updatedDigest.id);
+    final index =
+        _digests.indexWhere((digest) => digest.id == updatedDigest.id);
     if (index != -1) {
       _digests[index] = updatedDigest;
       notifyListeners();

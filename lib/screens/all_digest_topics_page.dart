@@ -22,14 +22,16 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   void _loadSubscriptions() {
     Future.microtask(() {
       if (!mounted) return;
-      final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+      final provider =
+          Provider.of<SubscriptionProvider>(context, listen: false);
       if (provider.subscriptions.isEmpty) {
         provider.loadSubscriptions();
       }
     });
   }
 
-  void _toggleSubscription(Subscription subscription, SubscriptionProvider provider) {
+  void _toggleSubscription(
+      Subscription subscription, SubscriptionProvider provider) {
     provider.updateSubscription(subscription.copyWith(
       subscribeOptions: subscription.subscribeOptions.copyWith(
         subscribed: !subscription.subscribeOptions.subscribed,
@@ -37,7 +39,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     ));
   }
 
-  void _confirmUnsubscribe(Subscription subscription, SubscriptionProvider provider) {
+  void _confirmUnsubscribe(
+      Subscription subscription, SubscriptionProvider provider) {
     if (subscription.isOwner) {
       _buildTransferOwnershipDialog(subscription, provider);
     } else {
@@ -45,14 +48,17 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     }
   }
 
-  void _transferOwnership(Subscription subscription, SubscriptionProvider provider, String newOwner) {
+  void _transferOwnership(Subscription subscription,
+      SubscriptionProvider provider, String newOwner) {
     provider.transferOwnership(subscription, newOwner);
     _toggleSubscription(subscription, provider);
   }
 
   Widget _buildSubscriptionList(SubscriptionProvider provider) {
     final subscriptions = _showOnlySubscriptions
-        ? provider.subscriptions.where((sub) => sub.subscribeOptions.subscribed).toList()
+        ? provider.subscriptions
+            .where((sub) => sub.subscribeOptions.subscribed)
+            .toList()
         : provider.subscriptions;
 
     if (subscriptions.isEmpty) {
@@ -67,7 +73,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  Widget _buildSubscriptionItem(Subscription subscription, SubscriptionProvider provider) {
+  Widget _buildSubscriptionItem(
+      Subscription subscription, SubscriptionProvider provider) {
     return ListTile(
       leading: _buildLeadingIcon(),
       title: _buildTitle(subscription),
@@ -91,7 +98,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  Widget _buildTrailingButtons(Subscription subscription, SubscriptionProvider provider) {
+  Widget _buildTrailingButtons(
+      Subscription subscription, SubscriptionProvider provider) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -113,7 +121,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  Widget _buildNotificationButton(Subscription subscription, SubscriptionProvider provider) {
+  Widget _buildNotificationButton(
+      Subscription subscription, SubscriptionProvider provider) {
     return IconButton(
       icon: Icon(
         subscription.subscribeOptions.mobileNotifications
@@ -123,14 +132,16 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
       onPressed: () {
         provider.updateSubscription(subscription.copyWith(
           subscribeOptions: subscription.subscribeOptions.copyWith(
-            mobileNotifications: !subscription.subscribeOptions.mobileNotifications,
+            mobileNotifications:
+                !subscription.subscribeOptions.mobileNotifications,
           ),
         ));
       },
     );
   }
 
-  Widget _buildSubscriptionToggleButton(Subscription subscription, SubscriptionProvider provider) {
+  Widget _buildSubscriptionToggleButton(
+      Subscription subscription, SubscriptionProvider provider) {
     return IconButton(
       icon: Icon(
         subscription.subscribeOptions.subscribed
@@ -147,7 +158,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  void _buildUnsubscribeDialog(Subscription subscription, SubscriptionProvider provider) {
+  void _buildUnsubscribeDialog(
+      Subscription subscription, SubscriptionProvider provider) {
     String message = subscription.public
         ? "Вы уверены, что хотите отказаться от подписки?"
         : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
@@ -159,13 +171,16 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
           title: const Text("Отмена подписки"),
           content: Text(message),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Отмена")),
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Отмена")),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 _confirmUnsubscribe(subscription, provider);
               },
-              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
+              child:
+                  const Text("Отписаться", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -173,7 +188,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
-  void _buildTransferOwnershipDialog(Subscription subscription, SubscriptionProvider provider) {
+  void _buildTransferOwnershipDialog(
+      Subscription subscription, SubscriptionProvider provider) {
     List<String> potentialOwners = _getPotentialOwners();
 
     if (potentialOwners.isEmpty) {
@@ -186,10 +202,27 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
 
   List<String> _getPotentialOwners() {
     // TODO получение списка пользователей
-    return ["User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3"];
+    return [
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3"
+    ];
   }
 
-  void _showOwnershipDialog(Subscription subscription, SubscriptionProvider provider, List<String> potentialOwners) {
+  void _showOwnershipDialog(Subscription subscription,
+      SubscriptionProvider provider, List<String> potentialOwners) {
     showDialog(
       context: context,
       builder: (context) {
@@ -233,10 +266,12 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
                   onPressed: selectedOwner == null
                       ? null
                       : () {
-                    Navigator.pop(context);
-                    _transferOwnership(subscription, provider, selectedOwner!);
-                  },
-                  child: const Text("Передать и отписаться", style: TextStyle(color: Colors.red)),
+                          Navigator.pop(context);
+                          _transferOwnership(
+                              subscription, provider, selectedOwner!);
+                        },
+                  child: const Text("Передать и отписаться",
+                      style: TextStyle(color: Colors.red)),
                 ),
               ],
             );
@@ -276,7 +311,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
           ),
           Expanded(
             child: Consumer<SubscriptionProvider>(
-              builder: (context, provider, child) => _buildSubscriptionList(provider),
+              builder: (context, provider, child) =>
+                  _buildSubscriptionList(provider),
             ),
           ),
         ],

@@ -8,10 +8,12 @@ class SubscriptionProvider extends ChangeNotifier {
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
+
   List<Subscription> get subscriptions => _subscriptions;
 
   void updateSubscription(Subscription updatedSubscription) {
-    final index = _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);
+    final index =
+        _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);
     if (index != -1) {
       _subscriptions[index] = updatedSubscription;
       notifyListeners();
@@ -22,7 +24,8 @@ class SubscriptionProvider extends ChangeNotifier {
     int index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
 
     if (index != -1) {
-      _subscriptions[index] = subscription.copyWith(owner: newOwner, isOwner: false);
+      _subscriptions[index] =
+          subscription.copyWith(owner: newOwner, isOwner: false);
       notifyListeners();
     }
   }
