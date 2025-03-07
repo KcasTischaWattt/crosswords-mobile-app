@@ -417,6 +417,70 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  List<String> _getPotentialOwners(Digest digest) {
+    // TODO получение списка пользователей
+    return ["User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3"];
+  }
+
+  void _transferOwnership(Digest digest, DigestProvider provider, String newOwner) {
+    // TODO передача владельца
+    _toggleSubscription(digest, provider);
+  }
+
+  void _showTransferOwnershipDialog(Digest digest, DigestProvider provider) {
+    List<String> potentialOwners = _getPotentialOwners(digest);
+
+    if (potentialOwners.isEmpty) {
+      _toggleSubscription(digest, provider);
+      return;
+    }
+
+    String? selectedOwner;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Выберите нового владельца"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: potentialOwners.map((owner) {
+                  return RadioListTile<String>(
+                    title: Text(owner),
+                    value: owner,
+                    groupValue: selectedOwner,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedOwner = value;
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Отмена"),
+                ),
+                TextButton(
+                  onPressed: selectedOwner == null
+                      ? null
+                      : () {
+                    Navigator.pop(context);
+                    _transferOwnership(digest, provider, selectedOwner!);
+                  },
+                  child: const Text("Передать и отписаться", style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _showUnsubscribeDialog(Digest digest, DigestProvider provider) {
     String message = digest.public
         ? "Вы уверены, что хотите отписаться от \"${digest.title}\"?"
@@ -436,7 +500,11 @@ class _DigestsPageState extends State<DigestsPage> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                _toggleSubscription(digest, provider);
+                if (digest.isOwner) {
+                  _showTransferOwnershipDialog(digest, provider);
+                } else {
+                  _toggleSubscription(digest, provider);
+                }
               },
               child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
             ),
@@ -445,8 +513,6 @@ class _DigestsPageState extends State<DigestsPage> {
       },
     );
   }
-
-
 
   void _toggleSubscription(Digest digest, DigestProvider provider) {
     setState(() {

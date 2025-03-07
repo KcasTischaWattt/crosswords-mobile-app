@@ -185,7 +185,8 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   }
 
   List<String> _getPotentialOwners() {
-    return ["User1", "User2", "User3"];
+    // TODO получение списка пользователей
+    return ["User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3"];
   }
 
   void _showOwnershipDialog(Subscription subscription, SubscriptionProvider provider, List<String> potentialOwners) {
