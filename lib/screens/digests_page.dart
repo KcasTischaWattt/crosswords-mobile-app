@@ -444,20 +444,31 @@ class _DigestsPageState extends State<DigestsPage> {
           builder: (context, setState) {
             return AlertDialog(
               title: const Text("Выберите нового владельца"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: potentialOwners.map((owner) {
-                  return RadioListTile<String>(
-                    title: Text(owner),
-                    value: owner,
-                    groupValue: selectedOwner,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedOwner = value;
-                      });
-                    },
-                  );
-                }).toList(),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: potentialOwners.map((owner) {
+                            return RadioListTile<String>(
+                              title: Text(owner),
+                              value: owner,
+                              groupValue: selectedOwner,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedOwner = value;
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
