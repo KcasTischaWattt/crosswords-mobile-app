@@ -106,29 +106,7 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildSubscriptionDescription() {
-    final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
-
-    final selectedSubscription = _selectedSubscriptionId == null
-        ? null
-        : subscriptionProvider.subscriptions.firstWhere(
-            (sub) => sub.id == _selectedSubscriptionId,
-            orElse: () => Subscription(
-              id: -1,
-              title: '',
-              description: 'Описание не найдено',
-              sources: [],
-              tags: [],
-              subscribeOptions: SubscribeOptions(
-                subscribed: false,
-                sendToMail: false,
-                mobileNotifications: false,
-              ),
-              creationDate: '',
-              public: false,
-              owner: '',
-              isOwner: false,
-            ),
-          );
+    final selectedSubscription = _getSelectedSubscription();
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
@@ -810,12 +788,54 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      title: const Text(
-        'Дайджесты',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  Subscription? _getSelectedSubscription() {
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
+    if (_selectedSubscriptionId == null) return null;
+
+    return subscriptionProvider.subscriptions.firstWhere(
+          (sub) => sub.id == _selectedSubscriptionId,
+      orElse: () => Subscription(
+        id: -1,
+        title: 'Неизвестная подписка',
+        description: '',
+        sources: [],
+        tags: [],
+        subscribeOptions: SubscribeOptions(
+          subscribed: false,
+          sendToMail: false,
+          mobileNotifications: false,
+        ),
+        creationDate: '',
+        public: false,
+        owner: '',
+        isOwner: false,
       ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    final selectedSubscription = _getSelectedSubscription();
+
+    return AppBar(
+      title: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: Text(
+          _selectedSubscriptionId == null ? 'Дайджесты' : selectedSubscription!.title,
+          key: ValueKey(_selectedSubscriptionId),
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
+      leading: _selectedSubscriptionId != null
+          ? IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          setState(() {
+            _selectedSubscriptionId = null;
+          });
+        },
+      )
+          : null,
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
