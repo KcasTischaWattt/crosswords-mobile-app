@@ -67,31 +67,36 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildCategoryButtons(DigestProvider provider) {
-    if (_selectedSubscriptionId != null) return const SizedBox.shrink();
-
-    final categories = ["Все дайджесты", "Подписки", "Приватные"];
-
-    return SizedBox(
-      height: 50,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final isSelected = provider.selectedCategory == category;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ChoiceChip(
-                label: Text(
-                  category,
-                  style: const TextStyle(fontSize: 14),
-                ),
-                selected: isSelected,
-                onSelected: (_) => provider.setCategory(category),
-                visualDensity: VisualDensity.compact,
-              ),
-            );
-          }),
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        opacity: _selectedSubscriptionId == null ? 1.0 : 0.0,
+        child: _selectedSubscriptionId == null
+            ? SizedBox(
+          height: 50,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                final categories = ["Все дайджесты", "Подписки", "Приватные"];
+                final category = categories[index];
+                final isSelected = provider.selectedCategory == category;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ChoiceChip(
+                    label: Text(category, style: const TextStyle(fontSize: 14)),
+                    selected: isSelected,
+                    onSelected: (_) => provider.setCategory(category),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                );
+              }),
+        )
+            : const SizedBox.shrink(),
+      ),
     );
   }
 
