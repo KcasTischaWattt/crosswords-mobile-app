@@ -723,11 +723,23 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildDigestTitle(Digest digest) {
-    return digest.title.text.bold.xl3
-        .color(Theme.of(context).textTheme.bodyLarge!.color!)
-        .maxLines(1)
-        .overflow(TextOverflow.ellipsis)
-        .make();
+    Icon icon = digest.public
+        ? const Icon(Icons.public_rounded, size: 21)
+        : const Icon(Icons.lock, size: 20);
+
+    return Row(
+      children: [
+        icon,
+        const SizedBox(width: 8),
+        Expanded(
+          child: digest.title.text.bold.xl3
+              .color(Theme.of(context).textTheme.bodyLarge!.color!)
+              .maxLines(1)
+              .overflow(TextOverflow.ellipsis)
+              .make(),
+        ),
+      ],
+    );
   }
 
   Widget _buildDigestText(String text) {
