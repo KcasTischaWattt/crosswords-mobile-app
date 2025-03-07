@@ -50,7 +50,7 @@ class _DigestsPageState extends State<DigestsPage> {
   bool _shouldLoadMore(DigestProvider provider) {
     if (!_scrollController.hasClients) return false;
     return _scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
+        _scrollController.position.maxScrollExtent - 200 &&
         !provider.isLoadingMore &&
         !provider.isLoading;
   }
@@ -184,9 +184,9 @@ class _DigestsPageState extends State<DigestsPage> {
               shrinkWrap: true,
               children: sources
                   .map((source) => Text(
-                        source,
-                        style: const TextStyle(fontWeight: FontWeight.normal),
-                      ))
+                source,
+                style: const TextStyle(fontWeight: FontWeight.normal),
+              ))
                   .toList(),
             ),
           ),
@@ -214,9 +214,9 @@ class _DigestsPageState extends State<DigestsPage> {
               shrinkWrap: true,
               children: tags
                   .map((tag) => Text(
-                        tag,
-                        style: const TextStyle(fontWeight: FontWeight.normal),
-                      ))
+                tag,
+                style: const TextStyle(fontWeight: FontWeight.normal),
+              ))
                   .toList(),
             ),
           ),
@@ -312,13 +312,13 @@ class _DigestsPageState extends State<DigestsPage> {
       runSpacing: 4,
       children: [
         ...tags.take(renderedTags).map((tag) => Chip(
-              label: Text(tag,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold)),
-              backgroundColor: Theme.of(context).primaryColor,
-            )),
+          label: Text(tag,
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold)),
+          backgroundColor: Theme.of(context).primaryColor,
+        )),
         if (tags.length > tagLimit)
           GestureDetector(
             onTap: () => _showAllTagsDialog(context, tags),
@@ -418,13 +418,16 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   void _showUnsubscribeDialog(Digest digest, DigestProvider provider) {
+    String message = digest.public
+        ? "Вы уверены, что хотите отписаться от \"${digest.title}\"?"
+        : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text("Отмена подписки"),
-          content:
-              Text("Вы уверены, что хотите отписаться от \"${digest.title}\"?"),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -435,14 +438,15 @@ class _DigestsPageState extends State<DigestsPage> {
                 Navigator.pop(context);
                 _toggleSubscription(digest, provider);
               },
-              child:
-                  const Text("Отписаться", style: TextStyle(color: Colors.red)),
+              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
       },
     );
   }
+
+
 
   void _toggleSubscription(Digest digest, DigestProvider provider) {
     setState(() {
