@@ -682,6 +682,8 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildEditButton(Digest digest) {
+    if (!digest.isOwner) return const SizedBox.shrink();
+
     return IconButton(
       icon: const Icon(Icons.edit),
       onPressed: () {
