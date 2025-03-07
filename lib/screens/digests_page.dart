@@ -1,3 +1,4 @@
+import '../data/models/subscribe_options.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -9,6 +10,7 @@ import 'digest_search_page.dart';
 import '../providers/subscription_provider.dart';
 import '../data/models/subscription.dart';
 
+
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
 
@@ -18,6 +20,8 @@ class DigestsPage extends StatefulWidget {
 
 class _DigestsPageState extends State<DigestsPage> {
   late ScrollController _scrollController;
+
+  int? _selectedSubscriptionId;
 
   @override
   void initState() {
@@ -89,6 +93,52 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  Widget _buildSubscriptionDescription() {
+    if (_selectedSubscriptionId == null) return const SizedBox.shrink();
+
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
+    final selectedSubscription = subscriptionProvider.subscriptions.firstWhere(
+          (sub) => sub.id == _selectedSubscriptionId,
+      orElse: () => Subscription(
+        id: -1,
+        title: '',
+        description: 'Описание не найдено',
+        sources: [],
+        tags: [],
+        subscribeOptions: SubscribeOptions(subscribed: false, sendToMail: false, mobileNotifications: false),
+        creationDate: '',
+        public: false,
+        owner: '',
+        isOwner: false,
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        color: Theme.of(context).colorScheme.surfaceVariant,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                selectedSubscription.title,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                selectedSubscription.description,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSubscriptionsList(SubscriptionProvider provider) {
     final subscriptions = provider.subscriptions;
 
@@ -110,24 +160,40 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildSubscriptionItem(Subscription subscription) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: SizedBox(
-        width: 80,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.grey[300],
-              child: Icon(Icons.person, size: 25, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 4),
-            Text(subscription.title,
+    bool isSelected = _selectedSubscriptionId == subscription.id;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedSubscriptionId = subscription.id;
+        });
+        // TODO загрузка дайджестов для подписки
+        final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+        digestProvider.loadDigests();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: SizedBox(
+          width: 80,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: isSelected ? Colors.blue.withOpacity(0.3) : Colors.grey[300],
+                child: Icon(Icons.person, size: 25, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subscription.title,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
-                style: const TextStyle(fontSize: 12)),
-          ],
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -697,6 +763,7 @@ class _DigestsPageState extends State<DigestsPage> {
         children: [
           _buildCategoryButtons(provider),
           _buildSubscriptionsRow(),
+          _buildSubscriptionDescription(),
           Expanded(child: _buildDigestList(provider, digests)),
         ],
       ),
