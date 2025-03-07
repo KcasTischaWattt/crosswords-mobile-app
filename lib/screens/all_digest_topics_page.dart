@@ -178,18 +178,25 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   }
 
   void _buildTransferOwnershipDialog(Subscription subscription, SubscriptionProvider provider) {
-    List<String> potentialOwners = ["User1", "User2", "User3"];
+    List<String> potentialOwners = _getPotentialOwners();
 
     if (potentialOwners.isEmpty) {
       _buildUnsubscribeDialog(subscription, provider);
       return;
     }
 
-    String? selectedOwner;
+    _showOwnershipDialog(subscription, provider, potentialOwners);
+  }
 
+  List<String> _getPotentialOwners() {
+    return ["User1", "User2", "User3"];
+  }
+
+  void _showOwnershipDialog(Subscription subscription, SubscriptionProvider provider, List<String> potentialOwners) {
     showDialog(
       context: context,
       builder: (context) {
+        String? selectedOwner;
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
@@ -210,7 +217,10 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
                 }).toList(),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text("Отмена")),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Отмена"),
+                ),
                 TextButton(
                   onPressed: selectedOwner == null
                       ? null
