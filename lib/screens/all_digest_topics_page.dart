@@ -41,17 +41,13 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     if (subscription.isOwner) {
       _buildTransferOwnershipDialog(subscription, provider);
     } else {
-      _handleUnsubscribe(subscription, provider);
+      _toggleSubscription(subscription, provider);
     }
-  }
-
-  void _handleUnsubscribe(Subscription subscription, SubscriptionProvider provider) {
-    _toggleSubscription(subscription, provider);
   }
 
   void _transferOwnership(Subscription subscription, SubscriptionProvider provider, String newOwner) {
     provider.transferOwnership(subscription, newOwner);
-    _handleUnsubscribe(subscription, provider);
+    _toggleSubscription(subscription, provider);
   }
 
   Widget _buildSubscriptionList(SubscriptionProvider provider) {
