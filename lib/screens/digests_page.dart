@@ -166,12 +166,19 @@ class _DigestsPageState extends State<DigestsPage> {
         setState(() {
           _selectedSubscriptionId = subscription.id;
         });
+
         // TODO загрузка дайджестов для подписки
         final digestProvider = Provider.of<DigestProvider>(context, listen: false);
         digestProvider.loadDigests();
       },
-      child: Padding(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected ?Theme.of(context).bottomNavigationBarTheme.backgroundColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: SizedBox(
           width: 80,
           child: Column(
@@ -179,7 +186,7 @@ class _DigestsPageState extends State<DigestsPage> {
             children: [
               CircleAvatar(
                 radius: 25,
-                backgroundColor: isSelected ? Colors.blue.withOpacity(0.3) : Colors.grey[300],
+                backgroundColor: Colors.grey[300],
                 child: Icon(Icons.person, size: 25, color: Colors.grey[600]),
               ),
               const SizedBox(height: 4),
