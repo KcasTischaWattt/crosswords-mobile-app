@@ -10,7 +10,6 @@ import 'digest_search_page.dart';
 import '../providers/subscription_provider.dart';
 import '../data/models/subscription.dart';
 
-
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
 
@@ -32,7 +31,8 @@ class _DigestsPageState extends State<DigestsPage> {
     Future.microtask(() {
       if (!mounted) return;
       final provider = Provider.of<DigestProvider>(context, listen: false);
-      final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+      final subscriptionProvider =
+          Provider.of<SubscriptionProvider>(context, listen: false);
 
       if (provider.digests.isEmpty) {
         provider.loadDigests();
@@ -54,7 +54,7 @@ class _DigestsPageState extends State<DigestsPage> {
   bool _shouldLoadMore(DigestProvider provider) {
     if (!_scrollController.hasClients) return false;
     return _scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200 &&
+            _scrollController.position.maxScrollExtent - 200 &&
         !provider.isLoadingMore &&
         !provider.isLoading;
   }
@@ -76,25 +76,30 @@ class _DigestsPageState extends State<DigestsPage> {
         opacity: _selectedSubscriptionId == null ? 1.0 : 0.0,
         child: _selectedSubscriptionId == null
             ? SizedBox(
-          height: 50,
-          child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                final categories = ["Все дайджесты", "Подписки", "Приватные"];
-                final category = categories[index];
-                final isSelected = provider.selectedCategory == category;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ChoiceChip(
-                    label: Text(category, style: const TextStyle(fontSize: 14)),
-                    selected: isSelected,
-                    onSelected: (_) => provider.setCategory(category),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                );
-              }),
-        )
+                height: 50,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      final categories = [
+                        "Все дайджесты",
+                        "Подписки",
+                        "Приватные"
+                      ];
+                      final category = categories[index];
+                      final isSelected = provider.selectedCategory == category;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ChoiceChip(
+                          label: Text(category,
+                              style: const TextStyle(fontSize: 14)),
+                          selected: isSelected,
+                          onSelected: (_) => provider.setCategory(category),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      );
+                    }),
+              )
             : const SizedBox.shrink(),
       ),
     );
@@ -106,24 +111,24 @@ class _DigestsPageState extends State<DigestsPage> {
     final selectedSubscription = _selectedSubscriptionId == null
         ? null
         : subscriptionProvider.subscriptions.firstWhere(
-          (sub) => sub.id == _selectedSubscriptionId,
-      orElse: () => Subscription(
-        id: -1,
-        title: '',
-        description: 'Описание не найдено',
-        sources: [],
-        tags: [],
-        subscribeOptions: SubscribeOptions(
-          subscribed: false,
-          sendToMail: false,
-          mobileNotifications: false,
-        ),
-        creationDate: '',
-        public: false,
-        owner: '',
-        isOwner: false,
-      ),
-    );
+            (sub) => sub.id == _selectedSubscriptionId,
+            orElse: () => Subscription(
+              id: -1,
+              title: '',
+              description: 'Описание не найдено',
+              sources: [],
+              tags: [],
+              subscribeOptions: SubscribeOptions(
+                subscribed: false,
+                sendToMail: false,
+                mobileNotifications: false,
+              ),
+              creationDate: '',
+              public: false,
+              owner: '',
+              isOwner: false,
+            ),
+          );
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
@@ -135,31 +140,31 @@ class _DigestsPageState extends State<DigestsPage> {
         child: _selectedSubscriptionId == null
             ? const SizedBox.shrink()
             : Padding(
-          padding: const EdgeInsets.all(6),
-          child: Card(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)),
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    selectedSubscription!.title,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                padding: const EdgeInsets.all(6),
+                child: Card(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selectedSubscription!.title,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          selectedSubscription.description,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    selectedSubscription.description,
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -188,7 +193,8 @@ class _DigestsPageState extends State<DigestsPage> {
     bool isSelected = _selectedSubscriptionId == subscription.id;
     return GestureDetector(
       onTap: () {
-        final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+        final digestProvider =
+            Provider.of<DigestProvider>(context, listen: false);
         if (_selectedSubscriptionId == subscription.id) {
           setState(() {
             _selectedSubscriptionId = null;
@@ -210,7 +216,9 @@ class _DigestsPageState extends State<DigestsPage> {
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ?Theme.of(context).bottomNavigationBarTheme.backgroundColor : Colors.transparent,
+          color: isSelected
+              ? Theme.of(context).bottomNavigationBarTheme.backgroundColor
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: SizedBox(
@@ -291,9 +299,9 @@ class _DigestsPageState extends State<DigestsPage> {
               shrinkWrap: true,
               children: sources
                   .map((source) => Text(
-                source,
-                style: const TextStyle(fontWeight: FontWeight.normal),
-              ))
+                        source,
+                        style: const TextStyle(fontWeight: FontWeight.normal),
+                      ))
                   .toList(),
             ),
           ),
@@ -321,9 +329,9 @@ class _DigestsPageState extends State<DigestsPage> {
               shrinkWrap: true,
               children: tags
                   .map((tag) => Text(
-                tag,
-                style: const TextStyle(fontWeight: FontWeight.normal),
-              ))
+                        tag,
+                        style: const TextStyle(fontWeight: FontWeight.normal),
+                      ))
                   .toList(),
             ),
           ),
@@ -419,13 +427,13 @@ class _DigestsPageState extends State<DigestsPage> {
       runSpacing: 4,
       children: [
         ...tags.take(renderedTags).map((tag) => Chip(
-          label: Text(tag,
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold)),
-          backgroundColor: Theme.of(context).primaryColor,
-        )),
+              label: Text(tag,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+              backgroundColor: Theme.of(context).primaryColor,
+            )),
         if (tags.length > tagLimit)
           GestureDetector(
             onTap: () => _showAllTagsDialog(context, tags),
@@ -526,10 +534,27 @@ class _DigestsPageState extends State<DigestsPage> {
 
   List<String> _getPotentialOwners(Digest digest) {
     // TODO получение списка пользователей
-    return ["User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3", "User1", "User2", "User3"];
+    return [
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3"
+    ];
   }
 
-  void _transferOwnership(Digest digest, DigestProvider provider, String newOwner) {
+  void _transferOwnership(
+      Digest digest, DigestProvider provider, String newOwner) {
     // TODO передача владельца
     _toggleSubscription(digest, provider);
   }
@@ -586,10 +611,11 @@ class _DigestsPageState extends State<DigestsPage> {
                   onPressed: selectedOwner == null
                       ? null
                       : () {
-                    Navigator.pop(context);
-                    _transferOwnership(digest, provider, selectedOwner!);
-                  },
-                  child: const Text("Передать и отписаться", style: TextStyle(color: Colors.red)),
+                          Navigator.pop(context);
+                          _transferOwnership(digest, provider, selectedOwner!);
+                        },
+                  child: const Text("Передать и отписаться",
+                      style: TextStyle(color: Colors.red)),
                 ),
               ],
             );
@@ -624,7 +650,8 @@ class _DigestsPageState extends State<DigestsPage> {
                   _toggleSubscription(digest, provider);
                 }
               },
-              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
+              child:
+                  const Text("Отписаться", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -682,6 +709,7 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildEditButton(Digest digest) {
+    if (!digest.subscribeOptions.subscribed) return const SizedBox.shrink();
     if (!digest.isOwner) return const SizedBox.shrink();
 
     return IconButton(
