@@ -68,10 +68,10 @@ class _DigestsPageState extends State<DigestsPage> {
 
   Widget _buildCategoryButtons(DigestProvider provider) {
     return AnimatedSize(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         opacity: _selectedSubscriptionId == null ? 1.0 : 0.0,
         child: _selectedSubscriptionId == null
@@ -101,10 +101,11 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildSubscriptionDescription() {
-    if (_selectedSubscriptionId == null) return const SizedBox.shrink();
-
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
-    final selectedSubscription = subscriptionProvider.subscriptions.firstWhere(
+
+    final selectedSubscription = _selectedSubscriptionId == null
+        ? null
+        : subscriptionProvider.subscriptions.firstWhere(
           (sub) => sub.id == _selectedSubscriptionId,
       orElse: () => Subscription(
         id: -1,
@@ -112,7 +113,11 @@ class _DigestsPageState extends State<DigestsPage> {
         description: 'Описание не найдено',
         sources: [],
         tags: [],
-        subscribeOptions: SubscribeOptions(subscribed: false, sendToMail: false, mobileNotifications: false),
+        subscribeOptions: SubscribeOptions(
+          subscribed: false,
+          sendToMail: false,
+          mobileNotifications: false,
+        ),
         creationDate: '',
         public: false,
         owner: '',
@@ -120,26 +125,39 @@ class _DigestsPageState extends State<DigestsPage> {
       ),
     );
 
-    return Padding(
-      padding: const EdgeInsets.all(6),
-      child: Card(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        child: Padding(
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        opacity: _selectedSubscriptionId == null ? 0.0 : 1.0,
+        child: _selectedSubscriptionId == null
+            ? const SizedBox.shrink()
+            : Padding(
           padding: const EdgeInsets.all(6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                selectedSubscription.title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          child: Card(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8)),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    selectedSubscription!.title,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    selectedSubscription.description,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                selectedSubscription.description,
-                style: const TextStyle(fontSize: 14),
-              ),
-            ],
+            ),
           ),
         ),
       ),
