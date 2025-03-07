@@ -67,6 +67,8 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildCategoryButtons(DigestProvider provider) {
+    if (_selectedSubscriptionId != null) return const SizedBox.shrink();
+
     final categories = ["Все дайджесты", "Подписки", "Приватные"];
 
     return SizedBox(
@@ -163,12 +165,21 @@ class _DigestsPageState extends State<DigestsPage> {
     bool isSelected = _selectedSubscriptionId == subscription.id;
     return GestureDetector(
       onTap: () {
+        final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+        if (_selectedSubscriptionId == subscription.id) {
+          setState(() {
+            _selectedSubscriptionId = null;
+          });
+          // TODO обновить список дайджестов
+          digestProvider.loadDigests();
+          return;
+        }
+
         setState(() {
           _selectedSubscriptionId = subscription.id;
         });
 
         // TODO загрузка дайджестов для подписки
-        final digestProvider = Provider.of<DigestProvider>(context, listen: false);
         digestProvider.loadDigests();
       },
       child: AnimatedContainer(
