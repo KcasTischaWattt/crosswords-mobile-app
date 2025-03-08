@@ -40,7 +40,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
         'text': "Настройка уведомлений",
         'action': () {
           Navigator.pop(context);
-          //TODO Логика настройки уведомлений
+          _showNotificationSettingsDialog(context, widget.digest);
         }
       });
     }
@@ -77,6 +77,60 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               );
             }).toList(),
           ),
+        );
+      },
+    );
+  }
+
+  void _showNotificationSettingsDialog(BuildContext context, Digest digest) {
+    bool mobileNotifications = digest.subscribeOptions.mobileNotifications;
+    bool emailNotifications = digest.subscribeOptions.sendToMail;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Настройки уведомлений"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CheckboxListTile(
+                    title: const Text("Мобильные уведомления"),
+                    value: mobileNotifications,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        mobileNotifications = value ?? false;
+                      });
+                    },
+                  ),
+                  CheckboxListTile(
+                    title: const Text("Уведомления на почту"),
+                    value: emailNotifications,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        emailNotifications = value ?? false;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text("Отмена"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    // TODO: Добавить логику сохранения настроек уведомлений
+                  },
+                  child: const Text("Применить"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
