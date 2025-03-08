@@ -77,10 +77,11 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
 
   void _navigateToDigestsPage(int subscriptionId) {
     final subscriptionProvider =
-    Provider.of<SubscriptionProvider>(context, listen: false);
+        Provider.of<SubscriptionProvider>(context, listen: false);
     subscriptionProvider.setSelectedSubscription(subscriptionId);
 
-    mainAppKey.currentState?.setSelectedIndex(1);
+    subscriptionProvider.setSelectedSubscription(subscriptionId);
+    Navigator.pop(context);
   }
 
   Widget _buildSubscriptionItem(

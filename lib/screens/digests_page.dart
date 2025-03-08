@@ -65,14 +65,16 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildCategoryButtons(DigestProvider digestProvider) {
-    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        opacity: subscriptionProvider.selectedSubscriptionId == null ? 1.0 : 0.0,
+        opacity:
+            subscriptionProvider.selectedSubscriptionId == null ? 1.0 : 0.0,
         child: subscriptionProvider.selectedSubscriptionId == null
             ? SizedBox(
                 height: 50,
@@ -86,14 +88,16 @@ class _DigestsPageState extends State<DigestsPage> {
                         "Приватные"
                       ];
                       final category = categories[index];
-                      final isSelected = digestProvider.selectedCategory == category;
+                      final isSelected =
+                          digestProvider.selectedCategory == category;
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: ChoiceChip(
                           label: Text(category,
                               style: const TextStyle(fontSize: 14)),
                           selected: isSelected,
-                          onSelected: (_) => digestProvider.setCategory(category),
+                          onSelected: (_) =>
+                              digestProvider.setCategory(category),
                           visualDensity: VisualDensity.compact,
                         ),
                       );
@@ -114,7 +118,8 @@ class _DigestsPageState extends State<DigestsPage> {
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        opacity: subscriptionProvider.selectedSubscriptionId == null ? 0.0 : 1.0,
+        opacity:
+            subscriptionProvider.selectedSubscriptionId == null ? 0.0 : 1.0,
         child: subscriptionProvider.selectedSubscriptionId == null
             ? const SizedBox.shrink()
             : Padding(
@@ -169,7 +174,8 @@ class _DigestsPageState extends State<DigestsPage> {
 
   Widget _buildSubscriptionItem(Subscription subscription) {
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
-    bool isSelected = subscriptionProvider.selectedSubscriptionId == subscription.id;
+    bool isSelected =
+        subscriptionProvider.selectedSubscriptionId == subscription.id;
     return GestureDetector(
       onTap: () {
         final digestProvider =
@@ -794,7 +800,7 @@ class _DigestsPageState extends State<DigestsPage> {
     if (subscriptionProvider.selectedSubscriptionId == null) return null;
 
     return subscriptionProvider.subscriptions.firstWhere(
-          (sub) => sub.id == subscriptionProvider.selectedSubscriptionId,
+      (sub) => sub.id == subscriptionProvider.selectedSubscriptionId,
       orElse: () => Subscription(
         id: -1,
         title: 'Неизвестная подписка',
@@ -822,7 +828,9 @@ class _DigestsPageState extends State<DigestsPage> {
       title: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: Text(
-          subscriptionProvider.selectedSubscriptionId == null ? 'Дайджесты' : selectedSubscription!.title,
+          subscriptionProvider.selectedSubscriptionId == null
+              ? 'Дайджесты'
+              : selectedSubscription!.title,
           key: ValueKey(subscriptionProvider.selectedSubscriptionId),
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -830,13 +838,13 @@ class _DigestsPageState extends State<DigestsPage> {
       ),
       leading: subscriptionProvider.selectedSubscriptionId != null
           ? IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          setState(() {
-            subscriptionProvider.resetSelectedSubscription();
-          });
-        },
-      )
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                setState(() {
+                  subscriptionProvider.resetSelectedSubscription();
+                });
+              },
+            )
           : null,
       actions: [
         IconButton(
