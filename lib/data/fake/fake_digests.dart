@@ -55,9 +55,9 @@ List<Digest> fakeDigests = [
       'https://www.kommersant.ru/doc/7462763'
     ],
     subscribeOptions: SubscribeOptions(
-      subscribed: true,
-      sendToMail: true,
-      mobileNotifications: true,
+      subscribed: false,
+      sendToMail: false,
+      mobileNotifications: false,
     ),
   ),
 ];
