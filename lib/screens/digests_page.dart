@@ -833,7 +833,7 @@ class _DigestsPageState extends State<DigestsPage> {
               : selectedSubscription!.title,
           key: ValueKey(subscriptionProvider.selectedSubscriptionId),
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
       leading: subscriptionProvider.selectedSubscriptionId != null
