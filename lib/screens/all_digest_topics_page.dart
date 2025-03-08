@@ -317,14 +317,18 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ChoiceChip(
-              label: const Text("Только подписки"),
-              selected: _showOnlySubscriptions,
-              onSelected: (bool selected) {
-                setState(() {
-                  _showOnlySubscriptions = selected;
-                });
-              },
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ChoiceChip(
+                label: const Text("Только подписки"),
+                selected: _showOnlySubscriptions,
+                onSelected: (bool selected) {
+                  // TODO обновление списка подписок
+                  setState(() {
+                    _showOnlySubscriptions = selected;
+                  });
+                },
+              ),
             ),
           ),
           Expanded(
