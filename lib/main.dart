@@ -23,8 +23,10 @@ void main() {
   );
 }
 
+final GlobalKey<_MainAppState> mainAppKey = GlobalKey<_MainAppState>();
+
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -93,6 +95,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: isAuthenticated
           ? MainApp(
+              key: mainAppKey,
               toggleTheme: _toggleTheme,
               isFavoriteDialogEnabled: isFavoriteDialogEnabled,
             )
@@ -109,10 +112,10 @@ class MainApp extends StatefulWidget {
   final ValueNotifier<bool> isFavoriteDialogEnabled;
 
   const MainApp({
-    Key? key,
+    super.key,
     required this.toggleTheme,
     required this.isFavoriteDialogEnabled,
-  }) : super(key: key);
+  });
 
   @override
   _MainAppState createState() => _MainAppState();
@@ -121,36 +124,36 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int _selectedIndex = 0;
 
-  late final List<Widget> _pages;
-
   @override
   void initState() {
     super.initState();
-    _pages = [
-      ArticlesPage(
-        isFavoriteDialogEnabled: widget.isFavoriteDialogEnabled.value,
-      ),
-      DigestsPage(),
-      NotificationsPage(),
-      SettingsPage(
-        toggleTheme: widget.toggleTheme,
-        isFavoriteDialogEnabled: widget.isFavoriteDialogEnabled,
-      ),
-    ];
+  }
+
+  void setSelectedIndex(int index) {
+    _onItemTapped(index);
   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    print("Выбранная вкладка: $_selectedIndex");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          ArticlesPage(
+              isFavoriteDialogEnabled: widget.isFavoriteDialogEnabled.value),
+          DigestsPage(),
+          NotificationsPage(),
+          SettingsPage(
+              toggleTheme: widget.toggleTheme,
+              isFavoriteDialogEnabled: widget.isFavoriteDialogEnabled),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

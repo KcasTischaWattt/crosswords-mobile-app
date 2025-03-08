@@ -1,3 +1,4 @@
+import 'package:crosswords/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
@@ -79,10 +80,7 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     Provider.of<SubscriptionProvider>(context, listen: false);
     subscriptionProvider.setSelectedSubscription(subscriptionId);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const DigestsPage()),
-    );
+    mainAppKey.currentState?.setSelectedIndex(1);
   }
 
   Widget _buildSubscriptionItem(
