@@ -327,6 +327,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     );
   }
 
+  /// Показ диалога подтверждения выхода
   void _showExitConfirmationDialog(BuildContext context) {
     _showConfirmationDialog(
       context: context,
