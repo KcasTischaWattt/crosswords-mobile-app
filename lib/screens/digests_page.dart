@@ -20,8 +20,6 @@ class DigestsPage extends StatefulWidget {
 class _DigestsPageState extends State<DigestsPage> {
   late ScrollController _scrollController;
 
-  int? _selectedSubscriptionId;
-
   @override
   void initState() {
     super.initState();
@@ -66,15 +64,16 @@ class _DigestsPageState extends State<DigestsPage> {
     }
   }
 
-  Widget _buildCategoryButtons(DigestProvider provider) {
+  Widget _buildCategoryButtons(DigestProvider digestProvider) {
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        opacity: _selectedSubscriptionId == null ? 1.0 : 0.0,
-        child: _selectedSubscriptionId == null
+        opacity: subscriptionProvider.selectedSubscriptionId == null ? 1.0 : 0.0,
+        child: subscriptionProvider.selectedSubscriptionId == null
             ? SizedBox(
                 height: 50,
                 child: ListView.builder(
@@ -87,14 +86,14 @@ class _DigestsPageState extends State<DigestsPage> {
                         "Приватные"
                       ];
                       final category = categories[index];
-                      final isSelected = provider.selectedCategory == category;
+                      final isSelected = digestProvider.selectedCategory == category;
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: ChoiceChip(
                           label: Text(category,
                               style: const TextStyle(fontSize: 14)),
                           selected: isSelected,
-                          onSelected: (_) => provider.setCategory(category),
+                          onSelected: (_) => digestProvider.setCategory(category),
                           visualDensity: VisualDensity.compact,
                         ),
                       );
@@ -107,6 +106,7 @@ class _DigestsPageState extends State<DigestsPage> {
 
   Widget _buildSubscriptionDescription() {
     final selectedSubscription = _getSelectedSubscription();
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
@@ -114,8 +114,8 @@ class _DigestsPageState extends State<DigestsPage> {
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        opacity: _selectedSubscriptionId == null ? 0.0 : 1.0,
-        child: _selectedSubscriptionId == null
+        opacity: subscriptionProvider.selectedSubscriptionId == null ? 0.0 : 1.0,
+        child: subscriptionProvider.selectedSubscriptionId == null
             ? const SizedBox.shrink()
             : Padding(
                 padding: const EdgeInsets.all(6),
@@ -168,14 +168,15 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildSubscriptionItem(Subscription subscription) {
-    bool isSelected = _selectedSubscriptionId == subscription.id;
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
+    bool isSelected = subscriptionProvider.selectedSubscriptionId == subscription.id;
     return GestureDetector(
       onTap: () {
         final digestProvider =
             Provider.of<DigestProvider>(context, listen: false);
-        if (_selectedSubscriptionId == subscription.id) {
+        if (subscriptionProvider.selectedSubscriptionId == subscription.id) {
           setState(() {
-            _selectedSubscriptionId = null;
+            subscriptionProvider.resetSelectedSubscription();
           });
           // TODO обновить список дайджестов
           digestProvider.loadDigests();
@@ -183,7 +184,7 @@ class _DigestsPageState extends State<DigestsPage> {
         }
 
         setState(() {
-          _selectedSubscriptionId = subscription.id;
+          subscriptionProvider.setSelectedSubscription(subscription.id);
         });
 
         // TODO загрузка дайджестов для подписки
@@ -790,10 +791,10 @@ class _DigestsPageState extends State<DigestsPage> {
 
   Subscription? _getSelectedSubscription() {
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
-    if (_selectedSubscriptionId == null) return null;
+    if (subscriptionProvider.selectedSubscriptionId == null) return null;
 
     return subscriptionProvider.subscriptions.firstWhere(
-          (sub) => sub.id == _selectedSubscriptionId,
+          (sub) => sub.id == subscriptionProvider.selectedSubscriptionId,
       orElse: () => Subscription(
         id: -1,
         title: 'Неизвестная подписка',
@@ -814,24 +815,25 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   AppBar _buildAppBar() {
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
     final selectedSubscription = _getSelectedSubscription();
 
     return AppBar(
       title: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: Text(
-          _selectedSubscriptionId == null ? 'Дайджесты' : selectedSubscription!.title,
-          key: ValueKey(_selectedSubscriptionId),
+          subscriptionProvider.selectedSubscriptionId == null ? 'Дайджесты' : selectedSubscription!.title,
+          key: ValueKey(subscriptionProvider.selectedSubscriptionId),
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
-      leading: _selectedSubscriptionId != null
+      leading: subscriptionProvider.selectedSubscriptionId != null
           ? IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
           setState(() {
-            _selectedSubscriptionId = null;
+            subscriptionProvider.resetSelectedSubscription();
           });
         },
       )
@@ -857,7 +859,7 @@ class _DigestsPageState extends State<DigestsPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DigestProvider>(context);
-    final digests = provider.digests ?? [];
+    final digests = provider.digests;
 
     return Scaffold(
       appBar: _buildAppBar(),
