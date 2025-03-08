@@ -55,7 +55,7 @@ class Digest {
     );
   }
 
-  // Метод для преобразования JSON в объект Digest
+  /// Метод для преобразования JSON в объект Digest
   factory Digest.fromJson(Map<String, dynamic> json) {
     return Digest(
       averageRating: json['averageRating'],
@@ -72,7 +72,7 @@ class Digest {
     );
   }
 
-  // Метод для преобразования объекта Digest в JSON
+  /// Метод для преобразования объекта Digest в JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
