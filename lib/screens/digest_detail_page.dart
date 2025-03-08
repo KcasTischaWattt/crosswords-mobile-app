@@ -62,7 +62,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
             children: [
               const Text(
                 'Оцените качество дайджеста',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
