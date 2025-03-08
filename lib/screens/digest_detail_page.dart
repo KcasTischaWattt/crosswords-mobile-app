@@ -102,117 +102,65 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     );
   }
 
-  Widget _buildTagList(List<String> tags) {
-    if (tags.isEmpty) return const SizedBox.shrink();
+  /// Универсальный метод построения списка источников и тэгов
+  Widget _buildItemList({
+    required List<String> items,
+    required String dialogTitle,
+    required Color chipColor,
+    required Color textColor,
+    required FontWeight fontWeight,
+  }) {
+    if (items.isEmpty) return const SizedBox.shrink();
 
     double screenWidth = MediaQuery.of(context).size.width;
-    int tagLimit = screenWidth <= 350 ? 3 : 4;
-    int renderedTags = tags.length > tagLimit ? tagLimit - 1 : tags.length;
-
-    return Wrap(
-      spacing: 8,
-      children: [
-        ...tags.take(renderedTags).map((tag) => Chip(
-              label: Text(tag,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold)),
-              backgroundColor: Theme.of(context).primaryColor,
-            )),
-        if (tags.length > tagLimit)
-          GestureDetector(
-            onTap: () => _showAllTagsDialog(context, tags),
-            child: Chip(
-              label: Text(
-                "Ещё ${tags.length - renderedTags}",
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
-              ),
-              backgroundColor: Theme.of(context).primaryColor,
-            ),
-          ),
-      ],
-    );
-  }
-
-  void _showAllTagsDialog(BuildContext context, List<String> tags) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Все теги"),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView(
-              shrinkWrap: true,
-              children: tags
-                  .map((tag) => Text(
-                        tag,
-                        style: const TextStyle(fontWeight: FontWeight.normal),
-                      ))
-                  .toList(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Закрыть"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildSourceList(List<String> sources) {
-    if (sources.isEmpty) return const SizedBox.shrink();
-
-    double screenWidth = MediaQuery.of(context).size.width;
-    int sourceLimit = screenWidth <= 350 ? 3 : 4;
-    int renderedSources =
-        sources.length > sourceLimit ? sourceLimit - 1 : sources.length;
+    int itemLimit = screenWidth <= 350 ? 3 : 4;
+    int renderedItems = items.length > itemLimit ? itemLimit - 1 : items.length;
 
     return Wrap(
       spacing: 8,
       runSpacing: 4,
       children: [
-        ...sources.take(renderedSources).map((source) => Chip(
-              label: Text(source,
-                  style: const TextStyle(color: Colors.white, fontSize: 14)),
-              backgroundColor: Theme.of(context).secondaryHeaderColor,
+        ...items.take(renderedItems).map((item) => Chip(
+              label: Text(item,
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 14,
+                      fontWeight: fontWeight)),
+              backgroundColor: chipColor,
             )),
-        if (sources.length > sourceLimit)
+        if (items.length > itemLimit)
           GestureDetector(
-            onTap: () => _showAllSourcesDialog(context, sources),
+            onTap: () => _showAllItemsDialog(context, items, dialogTitle),
             child: Chip(
               label: Text(
-                "Ещё ${sources.length - renderedSources}",
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                "Ещё ${items.length - renderedItems}",
+                style: TextStyle(
+                    color: textColor,
+                    fontSize: 14,
+                    fontWeight: fontWeight),
               ),
-              backgroundColor: Theme.of(context).secondaryHeaderColor,
+              backgroundColor: chipColor,
             ),
           ),
       ],
     );
   }
 
-// Диалоговое окно со всеми источниками
-  void _showAllSourcesDialog(BuildContext context, List<String> sources) {
+  /// Универсальный метод для диалогового окна
+  void _showAllItemsDialog(
+      BuildContext context, List<String> items, String title) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Все источники"),
+          title: Text(title),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView(
               shrinkWrap: true,
-              children: sources
-                  .map((source) => Text(
-                        source,
+              children: items
+                  .map((item) => Text(
+                        item,
                         style: const TextStyle(fontWeight: FontWeight.normal),
                       ))
                   .toList(),
@@ -264,7 +212,13 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               const SizedBox(height: 16),
 
               // Теги
-              _buildTagList(widget.digest.tags),
+              _buildItemList(
+                items: widget.digest.tags,
+                dialogTitle: "Все теги",
+                chipColor: Theme.of(context).primaryColor,
+                textColor: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
               const SizedBox(height: 16),
 
               // Контент дайджеста
@@ -272,7 +226,13 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               const SizedBox(height: 16),
 
               // Источники
-              _buildSourceList(widget.digest.sources),
+              _buildItemList(
+                items: widget.digest.sources,
+                dialogTitle: "Все источники",
+                chipColor: Theme.of(context).secondaryHeaderColor,
+                textColor: Colors.white,
+                fontWeight: FontWeight.normal,
+              ),
               const SizedBox(height: 16),
 
               // Аккордеон "Оцените качество дайджеста"
