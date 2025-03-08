@@ -405,7 +405,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   label: Text(tag,
                       style: const TextStyle(
                           color: Colors.white, fontWeight: FontWeight.bold)),
-                  backgroundColor: const Color(0xFF517ECF)))
+                  backgroundColor: Theme.of(context).secondaryHeaderColor))
               .toList(),
         ),
         const SizedBox(height: 16),

@@ -54,6 +54,7 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.light,
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
         primaryColor: const Color(0xFFFFD700),
+        secondaryHeaderColor: const Color(0xFF517ECF),
         textTheme: GoogleFonts.latoTextTheme()
             .apply(
               bodyColor: Colors.black,
@@ -74,6 +75,7 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF121212),
         primaryColor: const Color(0xFFFFD700),
+        secondaryHeaderColor: const Color(0xFF3E63A0),
         textTheme: GoogleFonts.latoTextTheme()
             .apply(
               bodyColor: Colors.white,

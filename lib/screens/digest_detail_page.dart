@@ -182,7 +182,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
         ...sources.take(renderedSources).map((source) => Chip(
               label: Text(source,
                   style: const TextStyle(color: Colors.white, fontSize: 14)),
-              backgroundColor: const Color(0xFF517ECF),
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
             )),
         if (sources.length > sourceLimit)
           GestureDetector(
@@ -192,7 +192,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                 "Ещё ${sources.length - renderedSources}",
                 style: const TextStyle(color: Colors.white, fontSize: 14),
               ),
-              backgroundColor: const Color(0xFF517ECF),
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
             ),
           ),
       ],
