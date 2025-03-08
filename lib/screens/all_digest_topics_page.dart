@@ -89,11 +89,14 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
         _navigateToDigestsPage(subscription.id);
       },
       borderRadius: BorderRadius.circular(8),
-      child: ListTile(
-        leading: _buildLeadingIcon(),
-        title: _buildTitle(subscription),
-        trailing: _buildTrailingButtons(subscription, provider),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: SizedBox(
+        height: 60,
+        child: ListTile(
+          leading: _buildLeadingIcon(),
+          title: _buildTitle(subscription),
+          trailing: _buildTrailingButtons(subscription, provider),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        ),
       ),
     );
   }
