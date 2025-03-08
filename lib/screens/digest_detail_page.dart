@@ -17,7 +17,6 @@ class DigestDetailPage extends StatefulWidget {
 class _DigestDetailPageState extends State<DigestDetailPage> {
 
   void _showSettingsMenu(BuildContext context) {
-    final provider = Provider.of<DigestProvider>(context, listen: false);
     final bool isOwner = widget.digest.isOwner;
     final bool isSubscribed = widget.digest.subscribeOptions.subscribed;
 
@@ -50,7 +49,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
       'text': isSubscribed ? "Отписаться" : "Подписаться",
       'action': () {
         Navigator.pop(context);
-        //TODO Логика подписки/отписки
+        _showUnsubscribeConfirmationDialog(context, widget.digest);
       }
     });
 
@@ -127,6 +126,124 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                     // TODO: Добавить логику сохранения настроек уведомлений
                   },
                   child: const Text("Применить"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showUnsubscribeConfirmationDialog(BuildContext context, Digest digest) {
+    String message = digest.public
+        ? "Вы уверены, что хотите отказаться от подписки?"
+        : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Отмена подписки"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Отмена"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (digest.isOwner) {
+                  _showTransferOwnershipDialog(context, digest);
+                } else {
+                  //TODO Логика отписки
+                }
+              },
+              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<String> _getPotentialOwners() {
+    // TODO Логика получения списка потенциальных владельцев
+    return [
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3",
+      "User1",
+      "User2",
+      "User3"
+    ];
+  }
+
+  void _showTransferOwnershipDialog(BuildContext context, Digest digest) {
+    List<String> potentialOwners = _getPotentialOwners();
+
+    if (potentialOwners.isEmpty) {
+      _showUnsubscribeConfirmationDialog(context, digest);
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        String? selectedOwner;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Выберите нового владельца"),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: potentialOwners.map((owner) {
+                            return RadioListTile<String>(
+                              title: Text(owner),
+                              value: owner,
+                              groupValue: selectedOwner,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedOwner = value;
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Отмена"),
+                ),
+                TextButton(
+                  onPressed: selectedOwner == null
+                      ? null
+                      : () {
+                    Navigator.pop(context);
+                    // TODO логика передачи владения
+                  },
+                  child: const Text("Передать и отписаться", style: TextStyle(color: Colors.red)),
                 ),
               ],
             );
