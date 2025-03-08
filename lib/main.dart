@@ -24,7 +24,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -109,10 +109,10 @@ class MainApp extends StatefulWidget {
   final ValueNotifier<bool> isFavoriteDialogEnabled;
 
   const MainApp({
-    Key? key,
+    super.key,
     required this.toggleTheme,
     required this.isFavoriteDialogEnabled,
-  }) : super(key: key);
+  });
 
   @override
   _MainAppState createState() => _MainAppState();
