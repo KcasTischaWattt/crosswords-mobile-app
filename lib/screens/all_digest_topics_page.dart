@@ -99,10 +99,10 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   }
 
   Widget _buildLeadingIcon() {
-    return const CircleAvatar(
-      radius: 24,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.category, color: Colors.white),
+    return CircleAvatar(
+      radius: 25,
+      backgroundColor: Colors.grey[300],
+      child: Icon(Icons.person, color: Colors.grey[600]),
     );
   }
 
