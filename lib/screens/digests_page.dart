@@ -9,6 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'digest_search_page.dart';
 import '../providers/subscription_provider.dart';
 import '../data/models/subscription.dart';
+import 'digest_detail_page.dart';
 
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
@@ -756,9 +757,11 @@ class _DigestsPageState extends State<DigestsPage> {
   Widget _buildReadMoreButton(Digest digest) {
     return ElevatedButton(
       onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          // TODO переход к дайджесту
-          SnackBar(content: Text('Переход к дайджесту: ${digest.title}')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DigestDetailPage(digest: digest),
+          ),
         );
       },
       style: ElevatedButton.styleFrom(

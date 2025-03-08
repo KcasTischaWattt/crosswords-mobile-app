@@ -115,6 +115,10 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
+  Digest setRating(int rating, Digest digest) {
+    return digest.copyWith(userRating: rating);
+  }
+
   @override
   void toggleSource(String source) {
     final selectedSources =
