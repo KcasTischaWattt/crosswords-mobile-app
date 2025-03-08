@@ -56,7 +56,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                   if (widget.digest.isOwner) Icon(Icons.workspace_premium, size: 16),
                   Text(" ${widget.digest.owner}"),
                 ],
-              )
+              ),
               const SizedBox(height: 8),
 
               // Название дайджеста
