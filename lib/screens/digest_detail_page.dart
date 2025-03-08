@@ -60,14 +60,49 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
   }
 
   Widget _buildDateAndOwner() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text("${widget.digest.date} | "),
-        if (widget.digest.isOwner)
-          Icon(Icons.workspace_premium, size: 16),
-        Text(" ${widget.digest.owner}"),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textStyle = DefaultTextStyle.of(context).style;
+        final dateText = widget.digest.date;
+        final ownerText = widget.digest.owner;
+        final separator = " | ";
+
+        final fullText = "$dateText$separator$ownerText";
+
+        final textPainter = TextPainter(
+          text: TextSpan(text: fullText, style: textStyle),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout(maxWidth: constraints.maxWidth);
+
+        final fitsInOneLine = textPainter.didExceedMaxLines == false;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (fitsInOneLine)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(fullText),
+                  if (widget.digest.isOwner)
+                    Icon(Icons.workspace_premium, size: 16),
+                ],
+              )
+            else ...[
+              Text(dateText),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.digest.isOwner)
+                    Icon(Icons.workspace_premium, size: 16),
+                  Text(ownerText),
+                ],
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 
