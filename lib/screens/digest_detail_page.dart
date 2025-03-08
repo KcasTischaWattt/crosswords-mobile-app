@@ -3,6 +3,7 @@ import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 import 'package:provider/provider.dart';
 import 'widgets/item_chips_list_widget.dart';
+import 'widgets/custom_expansion_tile_widget.dart';
 
 class DigestDetailPage extends StatefulWidget {
   final Digest digest;
@@ -38,68 +39,23 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
   }
 
   Widget _buildRatingExpansionTile(BuildContext context) {
-    final provider = Provider.of<DigestProvider>(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
-            Colors.grey[900]) as Color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-          expansionTileTheme: ExpansionTileThemeData(
-            collapsedIconColor: Theme.of(context).iconTheme.color,
-            iconColor: Theme.of(context).iconTheme.color,
-            backgroundColor: Colors.transparent,
-          ),
-        ),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          title: Row(
-            children: [
-              const Text(
-                'Оцените качество дайджеста',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: (Theme.of(context)
-                        .bottomNavigationBarTheme
-                        .backgroundColor ??
-                    Colors.white),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return IconButton(
-                    icon: Icon(
-                      index < widget.digest.userRating
-                          ? Icons.star
-                          : Icons.star_border,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        provider.setRating(index + 1, widget.digest);
-                      });
-                    },
-                  );
-                }),
-              ),
+    return CustomExpansionTile(
+      title: "Оцените качество дайджеста",
+      customContent: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(5, (index) {
+          return IconButton(
+            icon: Icon(
+              index < widget.digest.userRating ? Icons.star : Icons.star_border,
+              color: Theme.of(context).primaryColor,
             ),
-          ],
-        ),
-      ),
+            onPressed: () {
+              final provider = Provider.of<DigestProvider>(context, listen: false);
+              provider.setRating(index + 1, widget.digest);
+            },
+          );
+        }),
+      ), children: [],
     );
   }
 

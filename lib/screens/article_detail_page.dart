@@ -11,6 +11,7 @@ import 'widgets/fade_background.dart';
 import 'widgets/expanding_text_field.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'widgets/item_chips_list_widget.dart';
+import 'widgets/custom_expansion_tile_widget.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -421,61 +422,16 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   /// Построение краткого содержания статьи
   Widget _buildSummaryExpansionTile(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
-            Colors.grey[900]) as Color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-          expansionTileTheme: ExpansionTileThemeData(
-            collapsedIconColor: Theme.of(context).iconTheme.color,
-            iconColor: Theme.of(context).iconTheme.color,
-            backgroundColor: Colors.transparent,
-          ),
+    return CustomExpansionTile(
+      title: "Краткое содержание",
+      icon: Icons.book,
+      customContent: Text(
+        widget.article.summary,
+        style: TextStyle(
+          fontSize: 18,
+          color: Theme.of(context).textTheme.bodyLarge!.color,
         ),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          title: Row(
-            children: [
-              Icon(
-                Icons.book,
-                size: 24,
-                color: Theme.of(context).iconTheme.color,
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Краткое содержание',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: (Theme.of(context)
-                        .bottomNavigationBarTheme
-                        .backgroundColor ??
-                    Colors.white),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                widget.article.summary,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      ), children: [],
     );
   }
 
