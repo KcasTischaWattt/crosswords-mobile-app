@@ -15,6 +15,73 @@ class DigestDetailPage extends StatefulWidget {
 }
 
 class _DigestDetailPageState extends State<DigestDetailPage> {
+
+  void _showSettingsMenu(BuildContext context) {
+    final provider = Provider.of<DigestProvider>(context, listen: false);
+    final bool isOwner = widget.digest.isOwner;
+    final bool isSubscribed = widget.digest.subscribeOptions.subscribed;
+
+    final menuItems = <Map<String, dynamic>>[];
+
+    if (isOwner) {
+      menuItems.add({
+        'icon': Icons.edit,
+        'text': "Редактировать",
+        'action': () {
+          Navigator.pop(context);
+          //TODO Логика редактирования
+        }
+      });
+    }
+
+    if (isSubscribed) {
+      menuItems.add({
+        'icon': Icons.notifications,
+        'text': "Настройка уведомлений",
+        'action': () {
+          Navigator.pop(context);
+          //TODO Логика настройки уведомлений
+        }
+      });
+    }
+
+    menuItems.add({
+      'icon': isSubscribed ? Icons.unsubscribe : Icons.subscriptions,
+      'text': isSubscribed ? "Отписаться" : "Подписаться",
+      'action': () {
+        Navigator.pop(context);
+        //TODO Логика подписки/отписки
+      }
+    });
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext bottomSheetContext) {
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: menuItems.map((item) {
+              return ListTile(
+                leading: Icon(item['icon'] as IconData, size: 28),
+                title: Text(item['text'] as String, style: TextStyle(fontSize: 20)),
+                onTap: item['action'] as VoidCallback,
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
@@ -26,9 +93,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
       actions: [
         IconButton(
           icon: const Icon(Icons.settings, size: 24),
-          onPressed: () {
-            // TODO открыть настройки дайджеста
-          },
+          onPressed: () => _showSettingsMenu(context),
         ),
       ],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
