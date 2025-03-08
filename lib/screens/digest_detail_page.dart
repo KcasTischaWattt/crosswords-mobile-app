@@ -59,6 +59,18 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     );
   }
 
+  Widget _buildDateAndOwner() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text("${widget.digest.date} | "),
+        if (widget.digest.isOwner)
+          Icon(Icons.workspace_premium, size: 16),
+        Text(" ${widget.digest.owner}"),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,15 +82,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Дата и владелец
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("${widget.digest.date} | "),
-                  if (widget.digest.isOwner)
-                    Icon(Icons.workspace_premium, size: 16),
-                  Text(" ${widget.digest.owner}"),
-                ],
-              ),
+              _buildDateAndOwner(),
               const SizedBox(height: 8),
 
               // Название дайджеста
