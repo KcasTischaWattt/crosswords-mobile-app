@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
 import '../data/models/subscription.dart';
+import 'digests_page.dart';
 
 class AllDigestTopicsPage extends StatefulWidget {
   const AllDigestTopicsPage({super.key});
@@ -73,12 +74,30 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
+  void _navigateToDigestsPage(int subscriptionId) {
+    final subscriptionProvider =
+    Provider.of<SubscriptionProvider>(context, listen: false);
+    subscriptionProvider.setSelectedSubscription(subscriptionId);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const DigestsPage()),
+    );
+  }
+
   Widget _buildSubscriptionItem(
       Subscription subscription, SubscriptionProvider provider) {
-    return ListTile(
-      leading: _buildLeadingIcon(),
-      title: _buildTitle(subscription),
-      trailing: _buildTrailingButtons(subscription, provider),
+    return InkWell(
+      onTap: () {
+        _navigateToDigestsPage(subscription.id);
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: ListTile(
+        leading: _buildLeadingIcon(),
+        title: _buildTitle(subscription),
+        trailing: _buildTrailingButtons(subscription, provider),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      ),
     );
   }
 
