@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 import 'package:provider/provider.dart';
+import 'widgets/item_chips_list_widget.dart';
 
 class DigestDetailPage extends StatefulWidget {
   final Digest digest;
@@ -102,81 +103,6 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     );
   }
 
-  /// Универсальный метод построения списка источников и тэгов
-  Widget _buildItemList({
-    required List<String> items,
-    required String dialogTitle,
-    required Color chipColor,
-    required Color textColor,
-    required FontWeight fontWeight,
-  }) {
-    if (items.isEmpty) return const SizedBox.shrink();
-
-    double screenWidth = MediaQuery.of(context).size.width;
-    int itemLimit = screenWidth <= 350 ? 3 : 4;
-    int renderedItems = items.length > itemLimit ? itemLimit - 1 : items.length;
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 4,
-      children: [
-        ...items.take(renderedItems).map((item) => Chip(
-              label: Text(item,
-                  style: TextStyle(
-                      color: textColor,
-                      fontSize: 14,
-                      fontWeight: fontWeight)),
-              backgroundColor: chipColor,
-            )),
-        if (items.length > itemLimit)
-          GestureDetector(
-            onTap: () => _showAllItemsDialog(context, items, dialogTitle),
-            child: Chip(
-              label: Text(
-                "Ещё ${items.length - renderedItems}",
-                style: TextStyle(
-                    color: textColor,
-                    fontSize: 14,
-                    fontWeight: fontWeight),
-              ),
-              backgroundColor: chipColor,
-            ),
-          ),
-      ],
-    );
-  }
-
-  /// Универсальный метод для диалогового окна
-  void _showAllItemsDialog(
-      BuildContext context, List<String> items, String title) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView(
-              shrinkWrap: true,
-              children: items
-                  .map((item) => Text(
-                        item,
-                        style: const TextStyle(fontWeight: FontWeight.normal),
-                      ))
-                  .toList(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Закрыть"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,7 +138,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               const SizedBox(height: 16),
 
               // Теги
-              _buildItemList(
+              ItemListWidget(
                 items: widget.digest.tags,
                 dialogTitle: "Все теги",
                 chipColor: Theme.of(context).primaryColor,
@@ -226,7 +152,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               const SizedBox(height: 16),
 
               // Источники
-              _buildItemList(
+              ItemListWidget(
                 items: widget.digest.sources,
                 dialogTitle: "Все источники",
                 chipColor: Theme.of(context).secondaryHeaderColor,

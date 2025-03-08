@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'widgets/fade_background.dart';
 import 'widgets/expanding_text_field.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'widgets/item_chips_list_widget.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
@@ -398,16 +399,15 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         const SizedBox(height: 8),
         widget.article.title.text.bold.xl3.make(),
         const SizedBox(height: 16),
-        Wrap(
-          spacing: 8,
-          children: widget.article.tags
-              .map((tag) => Chip(
-                  label: Text(tag,
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
-                  backgroundColor: Theme.of(context).secondaryHeaderColor))
-              .toList(),
+
+        ItemListWidget(
+          items: widget.article.tags,
+          dialogTitle: "Все теги",
+          chipColor: Theme.of(context).secondaryHeaderColor,
+          textColor: Colors.white,
+          fontWeight: FontWeight.normal,
         ),
+
         const SizedBox(height: 16),
         _buildSummaryExpansionTile(context),
         const SizedBox(height: 16),
