@@ -96,7 +96,13 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                 children: [
                   if (widget.digest.isOwner)
                     Icon(Icons.workspace_premium, size: 16),
-                  Text(ownerText),
+                  Expanded(
+                    child: Text(
+                      ownerText,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
                 ],
               ),
             ],
