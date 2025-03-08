@@ -13,8 +13,6 @@ class DigestDetailPage extends StatefulWidget {
 }
 
 class _DigestDetailPageState extends State<DigestDetailPage> {
-  int _expandedPanel = -1;
-
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
@@ -70,8 +68,8 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
             Container(
               decoration: BoxDecoration(
                 color: (Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .backgroundColor ??
+                        .bottomNavigationBarTheme
+                        .backgroundColor ??
                     Colors.white),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(12),
@@ -84,7 +82,9 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                 children: List.generate(5, (index) {
                   return IconButton(
                     icon: Icon(
-                      index < widget.digest.userRating ? Icons.star : Icons.star_border,
+                      index < widget.digest.userRating
+                          ? Icons.star
+                          : Icons.star_border,
                       color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () {
@@ -102,49 +102,130 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     );
   }
 
-  Widget _buildExpansionPanel() {
-    return ExpansionPanelList.radio(
-      expandedHeaderPadding: EdgeInsets.zero,
-      elevation: 1,
-      expansionCallback: (index, isExpanded) {
-        setState(() {
-          _expandedPanel = isExpanded ? -1 : index;
-        });
-      },
+  Widget _buildTagList(List<String> tags) {
+    if (tags.isEmpty) return const SizedBox.shrink();
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    int tagLimit = screenWidth <= 350 ? 3 : 4;
+    int renderedTags = tags.length > tagLimit ? tagLimit - 1 : tags.length;
+
+    return Wrap(
+      spacing: 8,
       children: [
-        ExpansionPanelRadio(
-          value: 0,
-          headerBuilder: (context, isExpanded) => const ListTile(title: Text("Теги")),
-          body: _buildTagList(),
-        ),
-        ExpansionPanelRadio(
-          value: 1,
-          headerBuilder: (context, isExpanded) => const ListTile(title: Text("Источники")),
-          body: _buildSourceList(),
-        ),
+        ...tags.take(renderedTags).map((tag) => Chip(
+              label: Text(tag,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold)),
+              backgroundColor: Theme.of(context).primaryColor,
+            )),
+        if (tags.length > tagLimit)
+          GestureDetector(
+            onTap: () => _showAllTagsDialog(context, tags),
+            child: Chip(
+              label: Text(
+                "Ещё ${tags.length - renderedTags}",
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+          ),
       ],
     );
   }
 
-  Widget _buildTagList() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Wrap(
-        spacing: 8,
-        children: widget.digest.tags
-            .map((tag) => Chip(label: Text(tag)))
-            .toList(),
-      ),
+  void _showAllTagsDialog(BuildContext context, List<String> tags) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Все теги"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: tags
+                  .map((tag) => Text(
+                        tag,
+                        style: const TextStyle(fontWeight: FontWeight.normal),
+                      ))
+                  .toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Закрыть"),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildSourceList() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: widget.digest.sources.map((source) => Text("• $source")).toList(),
-      ),
+  Widget _buildSourceList(List<String> sources) {
+    if (sources.isEmpty) return const SizedBox.shrink();
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    int sourceLimit = screenWidth <= 350 ? 3 : 4;
+    int renderedSources =
+        sources.length > sourceLimit ? sourceLimit - 1 : sources.length;
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        ...sources.take(renderedSources).map((source) => Chip(
+              label: Text(source,
+                  style: const TextStyle(color: Colors.white, fontSize: 14)),
+              backgroundColor: const Color(0xFF517ECF),
+            )),
+        if (sources.length > sourceLimit)
+          GestureDetector(
+            onTap: () => _showAllSourcesDialog(context, sources),
+            child: Chip(
+              label: Text(
+                "Ещё ${sources.length - renderedSources}",
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+              backgroundColor: const Color(0xFF517ECF),
+            ),
+          ),
+      ],
+    );
+  }
+
+// Диалоговое окно со всеми источниками
+  void _showAllSourcesDialog(BuildContext context, List<String> sources) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Все источники"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: sources
+                  .map((source) => Text(
+                        source,
+                        style: const TextStyle(fontWeight: FontWeight.normal),
+                      ))
+                  .toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Закрыть"),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -163,7 +244,8 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text("${widget.digest.date} | "),
-                  if (widget.digest.isOwner) Icon(Icons.workspace_premium, size: 16),
+                  if (widget.digest.isOwner)
+                    Icon(Icons.workspace_premium, size: 16),
                   Text(" ${widget.digest.owner}"),
                 ],
               ),
@@ -177,20 +259,25 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               const SizedBox(height: 8),
 
               // Описание дайджеста
-              Text(widget.digest.description, style: Theme.of(context).textTheme.bodyMedium),
+              Text(widget.digest.description,
+                  style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: 16),
+
+              // Теги
+              _buildTagList(widget.digest.tags),
+              const SizedBox(height: 16),
+
+              // Контент дайджеста
+              Text(widget.digest.text),
+              const SizedBox(height: 16),
+
+              // Источники
+              _buildSourceList(widget.digest.sources),
               const SizedBox(height: 16),
 
               // Аккордеон "Оцените качество дайджеста"
               _buildRatingExpansionTile(context),
               const SizedBox(height: 16),
-
-              // Контент дайджеста
-              const SizedBox(height: 8),
-              Text(widget.digest.text),
-              const SizedBox(height: 16),
-
-              // ExpansionPanelList с тегами и источниками
-              _buildExpansionPanel(),
             ],
           ),
         ),
