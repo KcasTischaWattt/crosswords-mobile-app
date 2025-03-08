@@ -38,83 +38,67 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Дата и владелец
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("${widget.digest.date} | "),
-                  if (widget.digest.isOwner) Icon(Icons.workspace_premium, size: 16),
-                  Text(" ${widget.digest.owner}"),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // Название дайджеста
-              Text(
-                widget.digest.title,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-
-              // Описание дайджеста
-              Text(widget.digest.description, style: Theme.of(context).textTheme.bodyMedium),
-              const SizedBox(height: 16),
-
-              // Аккордеон "Оцените качество дайджеста"
-              _buildRatingAccordion(),
-              const SizedBox(height: 16),
-
-              // Контент дайджеста
-              Text("Содержание"),
-              const SizedBox(height: 8),
-              Text(widget.digest.text),
-              const SizedBox(height: 16),
-
-              // ExpansionPanelList с тегами и источниками
-              _buildExpansionPanel(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRatingAccordion() {
+  Widget _buildRatingExpansionTile(BuildContext context) {
     final provider = Provider.of<DigestProvider>(context);
 
-    return ExpansionTile(
-      title: const Text("Оцените качество дайджеста"),
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(5, (index) {
-              return IconButton(
-                icon: Icon(
-                  index < widget.digest.userRating ? Icons.star : Icons.star_border,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () {
-                  setState(() {
-                    provider.setRating(index + 1, widget.digest);
-                  });
-                },
-              );
-            }),
+    return Container(
+      decoration: BoxDecoration(
+        color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+            Colors.grey[900]) as Color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          expansionTileTheme: ExpansionTileThemeData(
+            collapsedIconColor: Theme.of(context).iconTheme.color,
+            iconColor: Theme.of(context).iconTheme.color,
+            backgroundColor: Colors.transparent,
           ),
         ),
-      ],
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          title: Row(
+            children: [
+              const Text(
+                'Оцените качество дайджеста',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: (Theme.of(context)
+                    .bottomNavigationBarTheme
+                    .backgroundColor ??
+                    Colors.white),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  return IconButton(
+                    icon: Icon(
+                      index < widget.digest.userRating ? Icons.star : Icons.star_border,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        provider.setRating(index + 1, widget.digest);
+                      });
+                    },
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -160,6 +144,56 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: widget.digest.sources.map((source) => Text("• $source")).toList(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Дата и владелец
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("${widget.digest.date} | "),
+                  if (widget.digest.isOwner) Icon(Icons.workspace_premium, size: 16),
+                  Text(" ${widget.digest.owner}"),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Название дайджеста
+              Text(
+                widget.digest.title,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+
+              // Описание дайджеста
+              Text(widget.digest.description, style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: 16),
+
+              // Аккордеон "Оцените качество дайджеста"
+              _buildRatingExpansionTile(context),
+              const SizedBox(height: 16),
+
+              // Контент дайджеста
+              const SizedBox(height: 8),
+              Text(widget.digest.text),
+              const SizedBox(height: 16),
+
+              // ExpansionPanelList с тегами и источниками
+              _buildExpansionPanel(),
+            ],
+          ),
+        ),
       ),
     );
   }
