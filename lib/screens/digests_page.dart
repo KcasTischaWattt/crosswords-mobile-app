@@ -851,6 +851,12 @@ class _DigestsPageState extends State<DigestsPage> {
           : null,
       actions: [
         IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+
+          },
+        ),
+        IconButton(
           icon: const Icon(Icons.search),
           onPressed: () async {
             await Navigator.push(
