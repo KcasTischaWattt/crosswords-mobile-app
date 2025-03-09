@@ -75,27 +75,6 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     );
   }
 
-  Widget _buildConfirmButton(SubscriptionProvider provider) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          if (_titleController.text.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Название не может быть пустым")),
-            );
-            return;
-          }
-
-          // TODO добавить создание подписки
-
-          Navigator.pop(context);
-        },
-        child: const Text("Подтвердить"),
-      ),
-    );
-  }
-
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
