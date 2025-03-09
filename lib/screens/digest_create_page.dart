@@ -72,11 +72,20 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     return Row(
       children: [
         Expanded(
-          child: TextField(
-            controller: _recipientController,
-            decoration: const InputDecoration(
-              labelText: "Добавить получателя",
-              border: OutlineInputBorder(),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: TextField(
+              controller: _titleController,
+              style: const TextStyle(fontSize: 18),
+              decoration: InputDecoration(
+                hintText: 'Добавить получателя',
+                hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              ),
             ),
           ),
         ),
@@ -178,6 +187,14 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               _buildSectionTitle("Добавить получателя"),
               _buildRecipientField(),
               const SizedBox(height: 16),
+
+              ItemListWidget(
+                items: provider.followers,
+                dialogTitle: "Все подписчики",
+                chipColor: Theme.of(context).primaryColor,
+                textColor: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
 
               // Кнопка подтверждения
               ActionButtons(
