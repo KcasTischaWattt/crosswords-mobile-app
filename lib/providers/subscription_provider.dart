@@ -29,6 +29,7 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   bool _sendToMail = false;
   bool _mobileNotifications = false;
   bool _isPublic = false;
+  String _currentFollowerInput = '';
 
   int? get selectedSubscriptionId => _selectedSubscriptionId;
 
@@ -59,6 +60,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   String get owner => _owner;
 
   List<String> get followers => _followers;
+
+  String get currentFollowerInput => _currentFollowerInput;
 
   void setSelectedSubscription(int? subscriptionId) {
     _selectedSubscriptionId = subscriptionId;
@@ -102,6 +105,11 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   void setFollowers(List<String> value) {
     _followers = value;
+    notifyListeners();
+  }
+
+  void setCurrentFollowerInput(String value) {
+    _currentFollowerInput = value;
     notifyListeners();
   }
 
