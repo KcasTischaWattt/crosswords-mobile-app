@@ -80,70 +80,74 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   }
 
   Widget _buildCheckboxRow() {
-    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         bool isNarrow = constraints.maxWidth <= 395;
 
-        Widget checkboxes = isNarrow
-            ? Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CheckboxListTile(
-              title: const Text("Почта"),
-              value: provider.sendToMail,
-              onChanged: (value) {
-                setState(() {
-                  provider.setSendToMail(value!);
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: const Text("Приложение"),
-              value: provider.mobileNotifications,
-              onChanged: (value) {
-                setState(() {
-                  provider.setMobileNotifications(value!);
-                });
-              },
-            ),
-          ],
-        )
-            : Row(
-          children: [
-            Expanded(
-              child: CheckboxListTile(
-                title: const Text("Почта"),
-                value: provider.sendToMail,
-                onChanged: (value) {
-                  setState(() {
-                    provider.setSendToMail(value!);
-                  });
-                },
-              ),
-            ),
-            Expanded(
-              child: CheckboxListTile(
-                title: const Text("Приложение"),
-                value: provider.mobileNotifications,
-                onChanged: (value) {
-                  setState(() {
-                    provider.setMobileNotifications(value!);
-                  });
-                },
-              ),
-            ),
-          ],
-        );
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            checkboxes,
+            isNarrow ? _buildCheckboxColumn() : _buildCheckboxRowLayout(),
             const SizedBox(height: 12),
             const Divider(thickness: 1, height: 20),
           ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCheckboxColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildCheckboxTile("Почта",
+              (provider) => provider.sendToMail,
+              (provider, value) => provider.setSendToMail(value),
+        ),
+        _buildCheckboxTile("Приложение",
+              (provider) => provider.mobileNotifications,
+              (provider, value) => provider.setMobileNotifications(value),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCheckboxRowLayout() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildCheckboxTile("Почта",
+                (provider) => provider.sendToMail,
+                (provider, value) => provider.setSendToMail(value),
+          ),
+        ),
+        Expanded(
+          child: _buildCheckboxTile("Приложение",
+                (provider) => provider.mobileNotifications,
+                (provider, value) => provider.setMobileNotifications(value),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCheckboxTile(
+      String title,
+      bool Function(SubscriptionProvider) getValue,
+      void Function(SubscriptionProvider, bool) setValue,
+      ) {
+    return Consumer<SubscriptionProvider>(
+      builder: (context, provider, child) {
+        return CheckboxListTile(
+          title: Text(title),
+          value: getValue(provider),
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                setValue(provider, value);
+              });
+            }
+          },
         );
       },
     );
