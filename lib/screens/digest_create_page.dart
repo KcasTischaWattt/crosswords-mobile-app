@@ -82,23 +82,61 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   Widget _buildCheckboxRow() {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
 
-    return Row(
-      children: [
-        Expanded(
-          child: CheckboxListTile(
-            title: const Text("Почта"),
-            value: provider.sendToMail,
-            onChanged: (value) => provider.setSendToMail(value!),
-          ),
-        ),
-        Expanded(
-          child: CheckboxListTile(
-            title: const Text("Приложение"),
-            value: provider.mobileNotifications,
-            onChanged: (value) => provider.setMobileNotifications(value!),
-          ),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isNarrow = constraints.maxWidth <= 395;
+
+        return isNarrow
+            ? Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CheckboxListTile(
+              title: const Text("Почта"),
+              value: provider.sendToMail,
+              onChanged: (value) {
+                setState(() {
+                  provider.setSendToMail(value!);
+                });
+              },
+            ),
+            CheckboxListTile(
+              title: const Text("Приложение"),
+              value: provider.mobileNotifications,
+              onChanged: (value) {
+                setState(() {
+                  provider.setMobileNotifications(value!);
+                });
+              },
+            ),
+          ],
+        )
+            : Row(
+          children: [
+            Expanded(
+              child: CheckboxListTile(
+                title: const Text("Почта"),
+                value: provider.sendToMail,
+                onChanged: (value) {
+                  setState(() {
+                    provider.setSendToMail(value!);
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: CheckboxListTile(
+                title: const Text("Приложение"),
+                value: provider.mobileNotifications,
+                onChanged: (value) {
+                  setState(() {
+                    provider.setMobileNotifications(value!);
+                  });
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
