@@ -184,6 +184,7 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
                 onSecondaryPressed: _resetFilters,
                 primaryText: 'Найти',
                 secondaryText: 'Сбросить фильтры',
+                primaryIcon: Icons.search,
               ),
               const SizedBox(height: 24),
             ],

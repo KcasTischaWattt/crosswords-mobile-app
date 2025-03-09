@@ -5,6 +5,7 @@ class ActionButtons extends StatelessWidget {
   final VoidCallback onSecondaryPressed;
   final String primaryText;
   final String secondaryText;
+  final IconData? primaryIcon;
 
   const ActionButtons({
     super.key,
@@ -12,6 +13,7 @@ class ActionButtons extends StatelessWidget {
     required this.onSecondaryPressed,
     required this.primaryText,
     required this.secondaryText,
+    this.primaryIcon,
   });
 
   @override
@@ -26,7 +28,16 @@ class ActionButtons extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             onPressed: onPrimaryPressed,
-            child: Text(primaryText, style: TextStyle(fontSize: 18, color: Colors.black)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (primaryIcon != null) ...[
+                  Icon(primaryIcon, color: Colors.black),
+                  const SizedBox(width: 8),
+                ],
+                Text(primaryText, style: const TextStyle(fontSize: 18, color: Colors.black)),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 12),

@@ -159,6 +159,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
                 onSecondaryPressed: _resetFilters,
                 primaryText: 'Создать',
                 secondaryText: 'Сбросить поля',
+                primaryIcon: Icons.add,
               ),
             ],
           ),

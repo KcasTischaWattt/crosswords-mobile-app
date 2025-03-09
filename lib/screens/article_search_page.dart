@@ -301,6 +301,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
                 onSecondaryPressed: _resetFilters,
                 primaryText: 'Найти',
                 secondaryText: 'Сбросить фильтры',
+                primaryIcon: Icons.search,
               ),
               const SizedBox(height: 24),
             ],
