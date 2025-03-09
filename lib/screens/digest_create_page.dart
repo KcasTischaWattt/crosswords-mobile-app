@@ -29,7 +29,9 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     _descriptionController.addListener(_onDescriptionChanged);
 
     // TODO заменить на реального пользователя
-    provider.addFollower("default");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      provider.addFollower("default");
+    });
   }
 
   @override
