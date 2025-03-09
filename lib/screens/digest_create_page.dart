@@ -177,10 +177,10 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
 
               // Кнопка подтверждения
               ActionButtons(
-                onCreate: _createDigest,
-                onReset: _resetFilters,
-                messageOnCreate: 'Создать',
-                messageOnReset: 'Сбросить поля',
+                onPrimaryPressed: _createDigest,
+                onSecondaryPressed: _resetFilters,
+                primaryText: 'Создать',
+                secondaryText: 'Сбросить поля',
               ),
             ],
           ),

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 class ActionButtons extends StatelessWidget {
-  final VoidCallback onCreate;
-  final VoidCallback onReset;
-  final String messageOnCreate;
-  final String messageOnReset;
+  final VoidCallback onPrimaryPressed;
+  final VoidCallback onSecondaryPressed;
+  final String primaryText;
+  final String secondaryText;
 
   const ActionButtons({
     super.key,
-    required this.onCreate,
-    required this.onReset,
-    required this.messageOnCreate,
-    required this.messageOnReset,
+    required this.onPrimaryPressed,
+    required this.onSecondaryPressed,
+    required this.primaryText,
+    required this.secondaryText,
   });
 
   @override
@@ -25,14 +25,14 @@ class ActionButtons extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
-            onPressed: onCreate,
-            child: Text(messageOnCreate, style: TextStyle(fontSize: 18, color: Colors.black)),
+            onPressed: onPrimaryPressed,
+            child: Text(primaryText, style: TextStyle(fontSize: 18, color: Colors.black)),
           ),
         ),
         const SizedBox(width: 12),
         TextButton(
-          onPressed: onReset,
-          child: Text(messageOnReset, style: TextStyle(fontSize: 16)),
+          onPressed: onSecondaryPressed,
+          child: Text(secondaryText, style: TextStyle(fontSize: 16)),
         ),
       ],
     );
