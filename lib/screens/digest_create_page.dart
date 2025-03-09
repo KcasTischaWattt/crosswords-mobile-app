@@ -25,16 +25,30 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     _titleController.text = provider.title;
     _descriptionController.text = provider.description;
 
+    _titleController.addListener(_onTitleChanged);
+    _descriptionController.addListener(_onDescriptionChanged);
+
     // TODO заменить на реального пользователя
     provider.addFollower("default");
   }
 
   @override
   void dispose() {
+    _titleController.removeListener(_onTitleChanged);
+    _descriptionController.removeListener(_onDescriptionChanged);
+
     _titleController.dispose();
     _descriptionController.dispose();
     _recipientController.dispose();
     super.dispose();
+  }
+
+  void _onTitleChanged() {
+    Provider.of<SubscriptionProvider>(context, listen: false).setTitle(_titleController.text);
+  }
+
+  void _onDescriptionChanged() {
+    Provider.of<SubscriptionProvider>(context, listen: false).setDescription(_descriptionController.text);
   }
 
 
