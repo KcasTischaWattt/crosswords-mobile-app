@@ -94,6 +94,16 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     );
   }
 
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
@@ -132,6 +142,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Название подписки
+              _buildSectionTitle("Название подписки"),
               _buildDigestNameInput(),
               const SizedBox(height: 16),
 
@@ -139,7 +150,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               FilterExpansionPanels(provider: provider),
               const SizedBox(height: 16),
 
-              // Описание
+              // Описание,
               ExpandingTextField(
                   controller: _descriptionController,
                   hintText: "Опиcание...",
@@ -147,6 +158,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               const SizedBox(height: 16),
 
               // Чекбоксы "Уведомления"
+              _buildSectionTitle("Настройки уведомлений и приватности"),
               _buildCheckboxRow(),
 
               // Чекбокс "Сделать публичным"
@@ -162,8 +174,8 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               const SizedBox(height: 16),
 
               // Поле добавления получателя
+              _buildSectionTitle("Добавить получателя"),
               _buildRecipientField(),
-
               const SizedBox(height: 16),
 
               // Кнопка подтверждения
