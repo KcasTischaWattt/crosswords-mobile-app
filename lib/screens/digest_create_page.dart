@@ -112,15 +112,36 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         IconButton(
           icon: const Icon(Icons.add_circle),
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(
-                      "Получатель \"${_recipientController.text}\" добавлен")),
-            );
+            _addFollower(_recipientController.text);
             _recipientController.clear();
           },
         ),
       ],
+    );
+  }
+
+  void _addFollower(String follower) {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+    if (!provider.addFollower(follower)) {
+      _showErrorDialogMessage();
+    }
+  }
+
+  void _showErrorDialogMessage() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Ошибка"),
+          content: const Text("Пользователь уже добавлен"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -215,6 +236,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
                 textColor: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
+              const SizedBox(height: 16),
 
               // Кнопка подтверждения
               ActionButtons(
