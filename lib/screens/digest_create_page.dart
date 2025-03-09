@@ -86,7 +86,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
       builder: (context, constraints) {
         bool isNarrow = constraints.maxWidth <= 395;
 
-        return isNarrow
+        Widget checkboxes = isNarrow
             ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -134,6 +134,15 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
                 },
               ),
             ),
+          ],
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            checkboxes,
+            const SizedBox(height: 12),
+            const Divider(thickness: 1, height: 20),
           ],
         );
       },
