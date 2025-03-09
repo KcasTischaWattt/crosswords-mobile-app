@@ -2,6 +2,7 @@ import 'package:crosswords/providers/abstract/filter_provider.dart';
 import 'package:flutter/material.dart';
 import '../data/models/subscription.dart';
 import '../data/fake/fake_subscriptions.dart';
+import '../data/models/subscribe_options.dart';
 
 class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   List<Subscription> _subscriptions = [];
@@ -145,6 +146,7 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
   void addDefault() {
+    // TODO добавление пользоваателя
     addFollower("default");
     notifyListeners();
   }
@@ -152,6 +154,29 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   void resetAndAddDefault() {
     reset();
     addDefault();
+    notifyListeners();
+  }
+
+  void addSubscription() {
+    // TODO добавление подписки
+    Subscription subscription = Subscription(
+      id: _subscriptions.length + 1,
+      title: _title,
+      description: _description,
+      sources: _selectedSources,
+      tags: _selectedTags,
+      subscribeOptions: SubscribeOptions(
+        subscribed: true,
+        sendToMail: _sendToMail,
+        mobileNotifications: _mobileNotifications,
+      ),
+      creationDate: DateTime.now().toString(),
+      public: _isPublic,
+      owner: "default",
+      isOwner: true,
+      followers: _followers,
+    );
+    _subscriptions.add(subscription);
     notifyListeners();
   }
 
