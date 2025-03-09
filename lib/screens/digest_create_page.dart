@@ -17,6 +17,25 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _recipientController = TextEditingController();
 
+  Widget _buildDigestNameField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: _titleController,
+        style: const TextStyle(fontSize: 18),
+        decoration: InputDecoration(
+          hintText: 'Название',
+          hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        ),
+      ),
+    );
+  }
+
   Widget _buildCheckboxRow() {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
 
@@ -113,13 +132,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Название подписки
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: "Название",
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              _buildDigestNameField(),
               const SizedBox(height: 16),
 
               // Выбор тэгов и источников
