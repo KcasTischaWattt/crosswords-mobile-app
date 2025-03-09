@@ -49,15 +49,18 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   }
 
   void _onTitleChanged() {
-    Provider.of<SubscriptionProvider>(context, listen: false).setTitle(_titleController.text);
+    Provider.of<SubscriptionProvider>(context, listen: false)
+        .setTitle(_titleController.text);
   }
 
   void _onDescriptionChanged() {
-    Provider.of<SubscriptionProvider>(context, listen: false).setDescription(_descriptionController.text);
+    Provider.of<SubscriptionProvider>(context, listen: false)
+        .setDescription(_descriptionController.text);
   }
 
   void _onRecipientChanged() {
-    Provider.of<SubscriptionProvider>(context, listen: false).setCurrentFollowerInput(_recipientController.text);
+    Provider.of<SubscriptionProvider>(context, listen: false)
+        .setCurrentFollowerInput(_recipientController.text);
   }
 
   Widget _buildDigestNameInput() {
@@ -100,13 +103,15 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCheckboxTile("Почта",
-              (provider) => provider.sendToMail,
-              (provider, value) => provider.setSendToMail(value),
+        _buildCheckboxTile(
+          "Почта",
+          (provider) => provider.sendToMail,
+          (provider, value) => provider.setSendToMail(value),
         ),
-        _buildCheckboxTile("Приложение",
-              (provider) => provider.mobileNotifications,
-              (provider, value) => provider.setMobileNotifications(value),
+        _buildCheckboxTile(
+          "Приложение",
+          (provider) => provider.mobileNotifications,
+          (provider, value) => provider.setMobileNotifications(value),
         ),
       ],
     );
@@ -116,26 +121,66 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     return Row(
       children: [
         Expanded(
-          child: _buildCheckboxTile("Почта",
-                (provider) => provider.sendToMail,
-                (provider, value) => provider.setSendToMail(value),
+          child: _buildCheckboxTile(
+            "Почта",
+            (provider) => provider.sendToMail,
+            (provider, value) => provider.setSendToMail(value),
           ),
         ),
         Expanded(
-          child: _buildCheckboxTile("Приложение",
-                (provider) => provider.mobileNotifications,
-                (provider, value) => provider.setMobileNotifications(value),
+          child: _buildCheckboxTile(
+            "Приложение",
+            (provider) => provider.mobileNotifications,
+            (provider, value) => provider.setMobileNotifications(value),
           ),
         ),
       ],
     );
   }
 
+  void _showManageFollowersDialog(BuildContext context) {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Управление подписчиками"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: provider.followers.map((user) {
+                return ListTile(
+                  title: Text(user),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      provider.removeFollower(user);
+                      Navigator.pop(context);
+                      _showManageFollowersDialog(context);
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Закрыть"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildCheckboxTile(
-      String title,
-      bool Function(SubscriptionProvider) getValue,
-      void Function(SubscriptionProvider, bool) setValue,
-      ) {
+    String title,
+    bool Function(SubscriptionProvider) getValue,
+    void Function(SubscriptionProvider, bool) setValue,
+  ) {
     return Consumer<SubscriptionProvider>(
       builder: (context, provider, child) {
         return CheckboxListTile(
@@ -169,7 +214,8 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
                 hintText: 'Добавить получателя',
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               ),
             ),
           ),
@@ -295,12 +341,35 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
 
               Consumer<SubscriptionProvider>(
                 builder: (context, provider, child) {
-                  return ItemListWidget(
-                    items: provider.followers,
-                    dialogTitle: "Все подписчики",
-                    chipColor: Theme.of(context).primaryColor,
-                    textColor: Colors.black,
-                    fontWeight: FontWeight.bold,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ItemListWidget(
+                        items: provider.followers,
+                        dialogTitle: "Все подписчики",
+                        chipColor: Theme.of(context).primaryColor,
+                        textColor: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () =>
+                                _showManageFollowersDialog(context),
+                            child: Row(
+                              children: [
+                                Text("Настроить подписчиков",
+                                    style: TextStyle(fontSize: 16)),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.settings, size: 24),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   );
                 },
               ),
