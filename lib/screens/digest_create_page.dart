@@ -43,7 +43,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
       children: [
         Expanded(
           child: CheckboxListTile(
-            title: const Text("Уведомления на почту"),
+            title: const Text("Почта"),
             value: provider.sendToMail,
             onChanged: (value) {
               setState(() {
@@ -54,7 +54,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         ),
         Expanded(
           child: CheckboxListTile(
-            title: const Text("В мобильном приложении"),
+            title: const Text("Приложение"),
             value: provider.mobileNotifications,
             onChanged: (value) {
               setState(() {
