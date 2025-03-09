@@ -114,25 +114,21 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   }
 
   bool addFollower(String value) {
-    if (!_followers.contains(value)) {
-      _followers.add(value);
-      notifyListeners();
-      return true;
-    } else {
-      notifyListeners();
+    if (_followers.contains(value)) {
       return false;
     }
+    _followers.add(value);
+    notifyListeners();
+    return true;
   }
 
   bool removeFollower(String value) {
-    if (_followers.contains(value)) {
-      _followers.remove(value);
-      notifyListeners();
-      return true;
-    } else {
-      notifyListeners();
+    if (!_followers.contains(value)) {
       return false;
     }
+    _followers.remove(value);
+    notifyListeners();
+    return true;
   }
 
   void updateSubscription(Subscription updatedSubscription) {

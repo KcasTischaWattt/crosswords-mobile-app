@@ -88,22 +88,14 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
           child: CheckboxListTile(
             title: const Text("Почта"),
             value: provider.sendToMail,
-            onChanged: (value) {
-              setState(() {
-                provider.setSendToMail(value!);
-              });
-            },
+            onChanged: (value) => provider.setSendToMail(value!),
           ),
         ),
         Expanded(
           child: CheckboxListTile(
             title: const Text("Приложение"),
             value: provider.mobileNotifications,
-            onChanged: (value) {
-              setState(() {
-                provider.setMobileNotifications(value!);
-              });
-            },
+            onChanged: (value) => provider.setMobileNotifications(value!),
           ),
         ),
       ],
@@ -251,12 +243,16 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               _buildRecipientField(),
               const SizedBox(height: 16),
 
-              ItemListWidget(
-                items: provider.followers,
-                dialogTitle: "Все подписчики",
-                chipColor: Theme.of(context).primaryColor,
-                textColor: Colors.black,
-                fontWeight: FontWeight.bold,
+              Consumer<SubscriptionProvider>(
+                builder: (context, provider, child) {
+                  return ItemListWidget(
+                    items: provider.followers,
+                    dialogTitle: "Все подписчики",
+                    chipColor: Theme.of(context).primaryColor,
+                    textColor: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  );
+                },
               ),
               const SizedBox(height: 16),
 
