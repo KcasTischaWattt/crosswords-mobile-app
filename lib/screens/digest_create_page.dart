@@ -127,7 +127,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               // Описание
               ExpandingTextField(
                   controller: _descriptionController,
-                  hintText: "Опивание...",
+                  hintText: "Опиcание...",
                   maxLinesBeforeScroll: 7),
               const SizedBox(height: 16),
 
