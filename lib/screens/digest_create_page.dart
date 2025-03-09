@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
-import '../data/models/subscribe_options.dart';
 import 'widgets/filter_expansion_panels.dart';
 import 'widgets/expanding_text_field.dart';
 import 'widgets/action_buttons.dart';
