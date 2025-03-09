@@ -17,20 +17,18 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _recipientController = TextEditingController();
 
-  bool _sendToMail = false;
-  bool _mobileNotifications = false;
-  bool _isPublic = false;
-
   Widget _buildCheckboxRow() {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+
     return Row(
       children: [
         Expanded(
           child: CheckboxListTile(
             title: const Text("Уведомления на почту"),
-            value: _sendToMail,
+            value: provider.sendToMail,
             onChanged: (value) {
               setState(() {
-                _sendToMail = value!;
+                provider.setSendToMail(value!);
               });
             },
           ),
@@ -38,10 +36,10 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         Expanded(
           child: CheckboxListTile(
             title: const Text("В мобильном приложении"),
-            value: _mobileNotifications,
+            value: provider.mobileNotifications,
             onChanged: (value) {
               setState(() {
-                _mobileNotifications = value!;
+                provider.setMobileNotifications(value!);
               });
             },
           ),
@@ -134,10 +132,10 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               // Чекбокс "Сделать публичным"
               CheckboxListTile(
                 title: const Text("Сделать публичным"),
-                value: _isPublic,
+                value: provider.isPublic,
                 onChanged: (value) {
                   setState(() {
-                    _isPublic = value!;
+                    provider.setIsPublic(value!);
                   });
                 },
               ),

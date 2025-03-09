@@ -22,6 +22,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   List<String> _selectedSources = [];
   List<String> _selectedTags = [];
+  bool _sendToMail = false;
+  bool _mobileNotifications = false;
+  bool _isPublic = false;
 
   int? get selectedSubscriptionId => _selectedSubscriptionId;
 
@@ -39,6 +42,10 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   @override
   List<String> get tags => _tags;
 
+  bool get sendToMail => _sendToMail;
+  bool get mobileNotifications => _mobileNotifications;
+  bool get isPublic => _isPublic;
+
   void setSelectedSubscription(int? subscriptionId) {
     _selectedSubscriptionId = subscriptionId;
     notifyListeners();
@@ -46,6 +53,21 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   void resetSelectedSubscription() {
     _selectedSubscriptionId = null;
+    notifyListeners();
+  }
+
+  void setSendToMail(bool value) {
+    _sendToMail = value;
+    notifyListeners();
+  }
+
+  void setMobileNotifications(bool value) {
+    _mobileNotifications = value;
+    notifyListeners();
+  }
+
+  void setIsPublic(bool value) {
+    _isPublic = value;
     notifyListeners();
   }
 
