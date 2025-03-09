@@ -121,7 +121,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     // provider.resetFilters();
   }
 
-  Widget _buildActionButtons(SubscriptionProvider provider) {
+  Widget _buildActionButtons() {
     return Row(
       children: [
         Expanded(
@@ -198,7 +198,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               const SizedBox(height: 16),
 
               // Кнопка подтверждения
-              _buildActionButtons(provider),
+              _buildActionButtons(),
             ],
           ),
         ),
