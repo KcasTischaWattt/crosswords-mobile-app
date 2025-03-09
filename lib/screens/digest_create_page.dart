@@ -24,9 +24,11 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
     _titleController.text = provider.title;
     _descriptionController.text = provider.description;
+    _recipientController.text = provider.currentFollowerInput;
 
     _titleController.addListener(_onTitleChanged);
     _descriptionController.addListener(_onDescriptionChanged);
+    _recipientController.addListener(_onRecipientChanged);
 
     // TODO заменить на реального пользователя
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -38,6 +40,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   void dispose() {
     _titleController.removeListener(_onTitleChanged);
     _descriptionController.removeListener(_onDescriptionChanged);
+    _recipientController.removeListener(_onRecipientChanged);
 
     _titleController.dispose();
     _descriptionController.dispose();
@@ -53,6 +56,9 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     Provider.of<SubscriptionProvider>(context, listen: false).setDescription(_descriptionController.text);
   }
 
+  void _onRecipientChanged() {
+    Provider.of<SubscriptionProvider>(context, listen: false).setCurrentFollowerInput(_recipientController.text);
+  }
 
   Widget _buildDigestNameInput() {
     return Container(
@@ -114,7 +120,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
-              controller: _titleController,
+              controller: _recipientController,
               style: const TextStyle(fontSize: 18),
               decoration: InputDecoration(
                 hintText: 'Добавить получателя',
