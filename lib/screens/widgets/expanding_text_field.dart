@@ -2,15 +2,22 @@ import 'package:flutter/material.dart';
 
 class ExpandingTextField extends StatefulWidget {
   final TextEditingController controller;
+  final String hintText;
+  final int maxLinesBeforeScroll;
 
-  const ExpandingTextField({Key? key, required this.controller}) : super(key: key);
+  const ExpandingTextField({
+    super.key,
+    required this.controller,
+    this.hintText = "Введите текст...",
+    this.maxLinesBeforeScroll = 5,
+  });
 
   @override
   _ExpandingTextFieldState createState() => _ExpandingTextFieldState();
 }
 
 class _ExpandingTextFieldState extends State<ExpandingTextField> {
-  final int maxLinesBeforeScroll = 5;
+
   late ScrollController _scrollController;
 
   @override
@@ -35,7 +42,7 @@ class _ExpandingTextFieldState extends State<ExpandingTextField> {
       ),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: maxLinesBeforeScroll * 24.0,
+          maxHeight: widget.maxLinesBeforeScroll * 24.0,
         ),
         child: Scrollbar(
           controller: _scrollController,
@@ -47,9 +54,9 @@ class _ExpandingTextFieldState extends State<ExpandingTextField> {
               controller: widget.controller,
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: "Оставить заметку...",
+                hintText: widget.hintText,
               ),
             ),
           ),

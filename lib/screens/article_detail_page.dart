@@ -78,9 +78,21 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget _buildMenu(
       BuildContext context, BuildContext bottomSheetContext, Note note) {
     final menuItems = [
-      {'icon': Icons.content_copy, 'text': "Копировать", 'action': () => _copyNoteText(context, note)},
-      {'icon': Icons.edit, 'text': "Редактировать", 'action': () => _editNote(context, note)},
-      {'icon': Icons.delete, 'text': "Удалить", 'action': () => _confirmDeleteNote(context, bottomSheetContext, note)},
+      {
+        'icon': Icons.content_copy,
+        'text': "Копировать",
+        'action': () => _copyNoteText(context, note)
+      },
+      {
+        'icon': Icons.edit,
+        'text': "Редактировать",
+        'action': () => _editNote(context, note)
+      },
+      {
+        'icon': Icons.delete,
+        'text': "Удалить",
+        'action': () => _confirmDeleteNote(context, bottomSheetContext, note)
+      },
     ];
 
     return Container(
@@ -239,7 +251,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   String _getTimeText(Note note) {
     final createdAt = DateTime.parse(note.createdAt);
     final updatedAt = DateTime.parse(note.updatedAt);
-    return createdAt == updatedAt ? _formatDateTime(createdAt) : "изм. ${_formatDateTime(updatedAt)}";
+    return createdAt == updatedAt
+        ? _formatDateTime(createdAt)
+        : "изм. ${_formatDateTime(updatedAt)}";
   }
 
   /// Построение однострочного макета, если время и текст помещаются в строку
@@ -333,7 +347,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   void _showExitConfirmationDialog(BuildContext context) {
     _showConfirmationDialog(
       context: context,
-      title: _editingNote != null ? "Отменить редактирование?" : "Отменить создание заметки?",
+      title: _editingNote != null
+          ? "Отменить редактирование?"
+          : "Отменить создание заметки?",
       content: "Изменения не будут сохранены.",
       cancelText: "Остаться",
       confirmText: "Выйти",
@@ -400,7 +416,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         const SizedBox(height: 8),
         widget.article.title.text.bold.xl3.make(),
         const SizedBox(height: 16),
-
         ItemListWidget(
           items: widget.article.tags,
           dialogTitle: "Все теги",
@@ -408,7 +423,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           textColor: Colors.white,
           fontWeight: FontWeight.normal,
         ),
-
         const SizedBox(height: 16),
         _buildSummaryExpansionTile(context),
         const SizedBox(height: 16),
@@ -431,7 +445,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           fontSize: 18,
           color: Theme.of(context).textTheme.bodyLarge!.color,
         ),
-      ), children: [],
+      ),
+      children: [],
     );
   }
 
@@ -464,7 +479,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       );
     }
   }
-
 
   /// Построение кнопки "Читать оригинал"
   Widget _buildReadOriginalButton(BuildContext context) {
@@ -577,7 +591,12 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
           IconButton(
               icon: const Icon(Icons.close, size: 30),
               onPressed: _cancelEditing),
-        Expanded(child: ExpandingTextField(controller: _commentController)),
+        Expanded(
+            child: ExpandingTextField(
+          controller: _commentController,
+          hintText: "Оставить заметку...",
+          maxLinesBeforeScroll: 5,
+        )),
         const SizedBox(width: 10),
         IconButton(
             icon:

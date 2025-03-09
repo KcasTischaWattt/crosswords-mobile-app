@@ -64,7 +64,9 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
           icon: const Icon(Icons.add_circle),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Получатель \"${_recipientController.text}\" добавлен")),
+              SnackBar(
+                  content: Text(
+                      "Получатель \"${_recipientController.text}\" добавлен")),
             );
             _recipientController.clear();
           },
@@ -123,7 +125,10 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               const SizedBox(height: 16),
 
               // Описание
-              ExpandingTextField(controller: _descriptionController),
+              ExpandingTextField(
+                  controller: _descriptionController,
+                  hintText: "Опивание...",
+                  maxLinesBeforeScroll: 7),
               const SizedBox(height: 16),
 
               // Чекбоксы "Уведомления"
