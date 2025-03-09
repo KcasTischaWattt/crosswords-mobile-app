@@ -110,6 +110,40 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     );
   }
 
+  void _createDigest() {
+    // TODO добавить создание дайджеста
+    Navigator.pop(context);
+  }
+
+  void _resetFilters() {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+    // TODO добавить сброс фильтров
+    // provider.resetFilters();
+  }
+
+  Widget _buildActionButtons(SubscriptionProvider provider) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+            onPressed: _createDigest,
+            child: const Text('Создать', style: TextStyle(fontSize: 18, color: Colors.black)),
+          ),
+        ),
+        const SizedBox(width: 12),
+        TextButton(
+          onPressed: _resetFilters,
+          child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 16)),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
@@ -164,7 +198,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               const SizedBox(height: 16),
 
               // Кнопка подтверждения
-              _buildConfirmButton(provider),
+              _buildActionButtons(provider),
             ],
           ),
         ),
