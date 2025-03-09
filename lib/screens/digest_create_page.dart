@@ -17,7 +17,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _recipientController = TextEditingController();
 
-  Widget _buildDigestNameField() {
+  Widget _buildDigestNameInput() {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
@@ -132,7 +132,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Название подписки
-              _buildDigestNameField(),
+              _buildDigestNameInput(),
               const SizedBox(height: 16),
 
               // Выбор тэгов и источников
