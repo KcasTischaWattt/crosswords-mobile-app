@@ -22,6 +22,10 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   List<String> _selectedSources = [];
   List<String> _selectedTags = [];
+  String _title = '';
+  String _description = '';
+  List<String> _followers = [];
+  String _owner = '';
   bool _sendToMail = false;
   bool _mobileNotifications = false;
   bool _isPublic = false;
@@ -43,8 +47,18 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   List<String> get tags => _tags;
 
   bool get sendToMail => _sendToMail;
+
   bool get mobileNotifications => _mobileNotifications;
+
   bool get isPublic => _isPublic;
+
+  String get title => _title;
+
+  String get description => _description;
+
+  String get owner => _owner;
+
+  List<String> get followers => _followers;
 
   void setSelectedSubscription(int? subscriptionId) {
     _selectedSubscriptionId = subscriptionId;
@@ -69,6 +83,48 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   void setIsPublic(bool value) {
     _isPublic = value;
     notifyListeners();
+  }
+
+  void setTitle(String value) {
+    _title = value;
+    notifyListeners();
+  }
+
+  void setDescription(String value) {
+    _description = value;
+    notifyListeners();
+  }
+
+  void setOwner(String value) {
+    _owner = value;
+    notifyListeners();
+  }
+
+  void setFollowers(List<String> value) {
+    _followers = value;
+    notifyListeners();
+  }
+
+  bool addFollower(String value) {
+    if (!_followers.contains(value)) {
+      _followers.add(value);
+      notifyListeners();
+      return true;
+    } else {
+      notifyListeners();
+      return false;
+    }
+  }
+
+  bool removeFollower(String value) {
+    if (_followers.contains(value)) {
+      _followers.remove(value);
+      notifyListeners();
+      return true;
+    } else {
+      notifyListeners();
+      return false;
+    }
   }
 
   void updateSubscription(Subscription updatedSubscription) {
