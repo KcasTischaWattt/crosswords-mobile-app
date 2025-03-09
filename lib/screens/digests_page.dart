@@ -820,6 +820,7 @@ class _DigestsPageState extends State<DigestsPage> {
         public: false,
         owner: '',
         isOwner: false,
+        followers: [],
       ),
     );
   }

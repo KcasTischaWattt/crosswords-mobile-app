@@ -4,6 +4,7 @@ import '../providers/subscription_provider.dart';
 import 'widgets/filter_expansion_panels.dart';
 import 'widgets/expanding_text_field.dart';
 import 'widgets/action_buttons.dart';
+import 'widgets/item_chips_list_widget.dart';
 
 class DigestCreatePage extends StatefulWidget {
   const DigestCreatePage({super.key});

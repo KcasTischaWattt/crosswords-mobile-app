@@ -17,6 +17,12 @@ List<Subscription> fakeSubscriptions = [
     public: true,
     owner: "abc@example.com",
     isOwner: false,
+    followers: [
+      "abc@gmail.com",
+      "mylogin",
+      "abcd@gmail.com",
+      "abcde@gmail.com"
+    ],
   ),
   Subscription(
     id: 2,
@@ -33,6 +39,12 @@ List<Subscription> fakeSubscriptions = [
     public: false,
     owner: "someone@example.com",
     isOwner: true,
+    followers: [
+      "abc@gmail.com",
+      "mylogin",
+      "abcd@gmail.com",
+      "abcde@gmail.com"
+    ],
   ),
   Subscription(
     id: 3,
@@ -50,6 +62,12 @@ List<Subscription> fakeSubscriptions = [
     public: false,
     owner: "someone@example.com",
     isOwner: true,
+    followers: [
+      "abc@gmail.com",
+      "mylogin",
+      "abcd@gmail.com",
+      "abcde@gmail.com"
+    ],
   ),
   Subscription(
     id: 4,
@@ -66,6 +84,12 @@ List<Subscription> fakeSubscriptions = [
     public: true,
     owner: "economist@example.com",
     isOwner: false,
+    followers: [
+      "abc@gmail.com",
+      "mylogin",
+      "abcd@gmail.com",
+      "abcde@gmail.com"
+    ],
   ),
   Subscription(
     id: 5,
@@ -82,6 +106,12 @@ List<Subscription> fakeSubscriptions = [
     public: false,
     owner: "perevod@example.com",
     isOwner: false,
+    followers: [
+      "abc@gmail.com",
+      "mylogin",
+      "abcd@gmail.com",
+      "abcde@gmail.com"
+    ],
   ),
   Subscription(
     id: 6,
@@ -98,5 +128,11 @@ List<Subscription> fakeSubscriptions = [
     public: true,
     owner: "scientist@example.com",
     isOwner: true,
+    followers: [
+      "abc@gmail.com",
+      "mylogin",
+      "abcd@gmail.com",
+      "abcde@gmail.com"
+    ],
   ),
 ];

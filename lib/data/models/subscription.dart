@@ -11,6 +11,7 @@ class Subscription {
   final bool public;
   final String owner;
   final bool isOwner;
+  final List<String> followers;
 
   Subscription({
     required this.id,
@@ -23,6 +24,7 @@ class Subscription {
     required this.public,
     required this.owner,
     required this.isOwner,
+    required this.followers,
   });
 
   Subscription copyWith({
@@ -36,6 +38,7 @@ class Subscription {
     bool? public,
     String? owner,
     bool? isOwner,
+    List<String>? followers,
   }) {
     return Subscription(
       id: id ?? this.id,
@@ -48,6 +51,7 @@ class Subscription {
       public: public ?? this.public,
       owner: owner ?? this.owner,
       isOwner: isOwner ?? this.isOwner,
+      followers: followers ?? List.from(this.followers),
     );
   }
 
@@ -63,6 +67,7 @@ class Subscription {
       public: json['public'],
       owner: json['owner'],
       isOwner: json['is_owner'],
+      followers: List<String>.from(json['followers']),
     );
   }
 
@@ -78,6 +83,7 @@ class Subscription {
       'public': public,
       'owner': owner,
       'is_owner': isOwner,
+      'followers': followers,
     };
   }
 }
