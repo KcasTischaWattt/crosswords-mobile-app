@@ -18,6 +18,26 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _recipientController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+    _titleController.text = provider.title;
+    _descriptionController.text = provider.description;
+
+    // TODO заменить на реального пользователя
+    provider.addFollower("default");
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _recipientController.dispose();
+    super.dispose();
+  }
+
+
   Widget _buildDigestNameInput() {
     return Container(
       decoration: BoxDecoration(
