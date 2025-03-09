@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/digest_provider.dart';
 import 'widgets/filter_expansion_panels.dart';
+import 'widgets/action_buttons.dart';
 
 class DigestSearchPage extends StatefulWidget {
   const DigestSearchPage({super.key});
@@ -161,29 +162,6 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
     );
   }
 
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            onPressed: _performSearch,
-            child: const Text('Найти', style: TextStyle(fontSize: 18, color: Colors.black)),
-          ),
-        ),
-        const SizedBox(width: 12),
-        TextButton(
-          onPressed: _resetFilters,
-          child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 16)),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DigestProvider>(context);
@@ -201,7 +179,12 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
               const SizedBox(height: 16),
               _buildDatePickers(),
               const SizedBox(height: 16),
-              _buildActionButtons(),
+              ActionButtons(
+                onCreate: _performSearch,
+                onReset: _resetFilters,
+                messageOnCreate: 'Найти',
+                messageOnReset: 'Сбросить фильтры',
+              ),
               const SizedBox(height: 24),
             ],
           ),

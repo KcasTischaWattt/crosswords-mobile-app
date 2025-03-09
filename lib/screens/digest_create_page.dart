@@ -4,6 +4,7 @@ import '../providers/subscription_provider.dart';
 import '../data/models/subscribe_options.dart';
 import 'widgets/filter_expansion_panels.dart';
 import 'widgets/expanding_text_field.dart';
+import 'widgets/action_buttons.dart';
 
 class DigestCreatePage extends StatefulWidget {
   const DigestCreatePage({super.key});
@@ -121,29 +122,6 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     // provider.resetFilters();
   }
 
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            onPressed: _createDigest,
-            child: const Text('Создать', style: TextStyle(fontSize: 18, color: Colors.black)),
-          ),
-        ),
-        const SizedBox(width: 12),
-        TextButton(
-          onPressed: _resetFilters,
-          child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 16)),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
@@ -198,7 +176,12 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               const SizedBox(height: 16),
 
               // Кнопка подтверждения
-              _buildActionButtons(),
+              ActionButtons(
+                onCreate: _createDigest,
+                onReset: _resetFilters,
+                messageOnCreate: 'Создать',
+                messageOnReset: 'Сбросить поля',
+              ),
             ],
           ),
         ),

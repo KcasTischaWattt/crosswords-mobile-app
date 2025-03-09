@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/article_provider.dart';
 import 'widgets/filter_expansion_panels.dart';
+import 'widgets/action_buttons.dart';
 
 class ArticleSearchPage extends StatefulWidget {
   const ArticleSearchPage({super.key});
@@ -278,30 +279,6 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Кнопки "Найти" и "Сбросить фильтры"
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            onPressed: _performSearch,
-            child: const Text('Найти', style: TextStyle(fontSize: 18, color: Colors.black)),
-          ),
-        ),
-        const SizedBox(width: 12),
-        TextButton(
-          onPressed: _resetFilters,
-          child: const Text('Сбросить фильтры', style: TextStyle(fontSize: 16)),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
@@ -319,7 +296,13 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
               if (provider.selectedSearchOption == 'Точный поиск') _buildCheckbox(provider),
               if (provider.selectedSearchOption != 'Поиск по ID') _buildFilters(provider),
               const SizedBox(height: 16),
-              _buildActionButtons(),
+              ActionButtons(
+                onCreate: _performSearch,
+                onReset: _resetFilters,
+                messageOnCreate: 'Найти',
+                messageOnReset: 'Сбросить фильтры',
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
