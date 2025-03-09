@@ -131,6 +131,30 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     return true;
   }
 
+  void reset() {
+    _selectedSources.clear();
+    _selectedTags.clear();
+    _title = '';
+    _description = '';
+    _followers.clear();
+    _owner = '';
+    _sendToMail = false;
+    _mobileNotifications = false;
+    _isPublic = false;
+    _currentFollowerInput = '';
+    notifyListeners();
+  }
+  void addDefault() {
+    addFollower("default");
+    notifyListeners();
+  }
+
+  void resetAndAddDefault() {
+    reset();
+    addDefault();
+    notifyListeners();
+  }
+
   void updateSubscription(Subscription updatedSubscription) {
     final index =
         _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);

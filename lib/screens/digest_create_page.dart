@@ -32,7 +32,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
 
     // TODO заменить на реального пользователя
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      provider.addFollower("default");
+      provider.addDefault();
     });
   }
 
@@ -241,8 +241,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
 
   void _resetFilters() {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
-    // TODO добавить сброс фильтров
-    // provider.resetFilters();
+    provider.resetAndAddDefault();
   }
 
   @override
