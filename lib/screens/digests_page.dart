@@ -10,6 +10,7 @@ import 'digest_search_page.dart';
 import '../providers/subscription_provider.dart';
 import '../data/models/subscription.dart';
 import 'digest_detail_page.dart';
+import 'digest_create_page.dart';
 
 class DigestsPage extends StatefulWidget {
   const DigestsPage({super.key});
@@ -852,8 +853,13 @@ class _DigestsPageState extends State<DigestsPage> {
       actions: [
         IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {
-
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DigestCreatePage(),
+              ),
+            );
           },
         ),
         IconButton(
