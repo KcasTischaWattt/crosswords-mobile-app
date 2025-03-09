@@ -156,9 +156,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
-                      provider.removeFollower(user);
-                      Navigator.pop(context);
-                      _showManageFollowersDialog(context);
+                      _showDeleteConfirmationDialog(context, user);
                     },
                   ),
                 );
@@ -169,6 +167,35 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text("Закрыть"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String user) {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Подтверждение удаления"),
+          content: Text("Вы уверены, что хотите удалить '$user' из подписчиков?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // Отмена
+              child: const Text("Отмена"),
+            ),
+            TextButton(
+              onPressed: () {
+                provider.removeFollower(user);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                _showManageFollowersDialog(context);
+              },
+              child: const Text("Удалить", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
