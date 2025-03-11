@@ -66,7 +66,10 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
   }
 
   void _performSearch() {
-    Provider.of<DigestProvider>(context, listen: false).applySearchParams();
+    final provider = Provider.of<DigestProvider>(context, listen: false);
+    provider.applySearchParams();
+    // TODO работа поиска
+    provider.loadDigests();
     Navigator.pop(context);
   }
 
