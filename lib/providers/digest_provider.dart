@@ -156,60 +156,49 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  Future<void> loadDigests() async {
-    _currentPage = 1;
-    _isLoading = true;
+  Future<void> _fetchDigests({bool isLoadMore = false}) async {
+    if (_isLoading || (isLoadMore && _isLoadingMore)) return;
+
+    if (isLoadMore) {
+      _isLoadingMore = true;
+    } else {
+      _isLoading = true;
+      _currentPage = isLoadMore ? _currentPage : 1;
+    }
+
     notifyListeners();
 
     // TODO загрузка дайджестов
     await Future.delayed(const Duration(seconds: 1));
 
-    List<Digest> newDigests = fakeDigests.toList();
+    List<Digest> newDigests;
+    if (isLoadMore) {
+      // TODO пагинация дайджестов
+      newDigests = fakeDigests.toList();
+    } else {
+      // TODO обычная загрузка
+      newDigests = fakeDigests.toList();
+    }
 
-    _digests.clear();
-    _digests.addAll(newDigests);
-    _currentPage++;
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  Future<void> reloadDigests() async {
-    _currentPage = 1;
-    _isLoading = true;
-    notifyListeners();
-
-    // TODO загрузка дайджестов
-    await Future.delayed(const Duration(seconds: 1));
-
-    List<Digest> newDigests = fakeDigests.toList();
-
-    _digests.clear();
-    _digests.addAll(newDigests);
-    _currentPage++;
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  Future<void> loadMoreDigests() async {
-    if (_isLoadingMore || _isLoading) return;
-
-    _isLoadingMore = true;
-    notifyListeners();
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    // List<Digest> newDigests = fakeDigests.skip((_currentPage - 1) * _pageSize).take(_pageSize).toList();
-
-    List<Digest> newDigests = fakeDigests.toList();
+    if (!isLoadMore) {
+      _digests.clear();
+    }
 
     if (newDigests.isNotEmpty) {
       _digests.addAll(newDigests);
       _currentPage++;
     }
 
-    _isLoadingMore = false;
+    if (isLoadMore) {
+      _isLoadingMore = false;
+    } else {
+      _isLoading = false;
+    }
+
     notifyListeners();
   }
+
+  Future<void> loadDigests() async => _fetchDigests();
+
+  Future<void> loadMoreDigests() async => _fetchDigests(isLoadMore: true);
 }
