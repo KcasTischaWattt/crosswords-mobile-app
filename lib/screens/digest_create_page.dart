@@ -309,6 +309,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
 
   void _createDigest() {
     // TODO добавить создание дайджеста
+    // TODO не забыть обновить дайджесты и подписки
     Navigator.pop(context);
   }
 

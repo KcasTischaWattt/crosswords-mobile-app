@@ -653,6 +653,7 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   void _toggleSubscription(Digest digest, DigestProvider provider) {
+    // TODO передача на сервер
     setState(() {
       provider.updateDigest(
         digest.copyWith(
@@ -662,6 +663,7 @@ class _DigestsPageState extends State<DigestsPage> {
         ),
       );
     });
+    provider.loadDigests();
   }
 
   Widget _buildSubscribeButton(Digest digest) {
