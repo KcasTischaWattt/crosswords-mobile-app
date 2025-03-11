@@ -174,6 +174,24 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  Future<void> reloadDigests() async {
+    _currentPage = 1;
+    _isLoading = true;
+    notifyListeners();
+
+    // TODO загрузка дайджестов
+    await Future.delayed(const Duration(seconds: 1));
+
+    List<Digest> newDigests = fakeDigests.toList();
+
+    _digests.clear();
+    _digests.addAll(newDigests);
+    _currentPage++;
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
   Future<void> loadMoreDigests() async {
     if (_isLoadingMore || _isLoading) return;
 
