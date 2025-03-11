@@ -883,7 +883,7 @@ class _DigestsPageState extends State<DigestsPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DigestProvider>(context);
-    final digests = provider.digests;
+    final digests = provider.filteredDigests;
 
     return Scaffold(
       appBar: _buildAppBar(),

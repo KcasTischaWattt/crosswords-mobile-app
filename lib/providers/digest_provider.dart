@@ -69,6 +69,17 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   @override
   List<String> get selectedTags => _tempSearchParams.selectedTags;
 
+  List<Digest> get filteredDigests {
+    if (_selectedCategory == "Все дайджесты") {
+      return _digests;
+    } else if (_selectedCategory == "Подписки") {
+      return _digests.where((digest) => digest.subscribeOptions.subscribed).toList();
+    } else if (_selectedCategory == "Приватные") {
+      return _digests.where((digest) => !digest.public).toList();
+    }
+    return _digests;
+  }
+
   void resetFilters() {
     _tempSearchParams = _tempSearchParams.resetFilters();
     _currentSearchParams = _currentSearchParams.resetFilters();
