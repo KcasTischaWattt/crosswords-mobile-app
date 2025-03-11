@@ -18,8 +18,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   int? _selectedSubscriptionId;
   bool _isLoading = false;
+  String _selectedCategory = "Все дайджесты";
 
-  bool get isLoading => _isLoading;
 
   List<String> _selectedSources = [];
   List<String> _selectedTags = [];
@@ -31,6 +31,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   bool _mobileNotifications = false;
   bool _isPublic = false;
   String _currentFollowerInput = '';
+
+  bool get isLoading => _isLoading;
 
   int? get selectedSubscriptionId => _selectedSubscriptionId;
 
@@ -63,6 +65,19 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   List<String> get followers => _followers;
 
   String get currentFollowerInput => _currentFollowerInput;
+
+  String get selectedCategory => _selectedCategory;
+
+  List<Subscription> get filteredSubscriptions {
+    if (_selectedCategory == "Все дайджесты") {
+      return _subscriptions;
+    } else if (_selectedCategory == "Подписки") {
+      return _subscriptions.where((sub) => sub.subscribeOptions.subscribed).toList();
+    } else if (_selectedCategory == "Приватные") {
+      return _subscriptions.where((sub) => !sub.public).toList();
+    }
+    return _subscriptions;
+  }
 
   void setSelectedSubscription(int? subscriptionId) {
     _selectedSubscriptionId = subscriptionId;
@@ -111,6 +126,11 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   void setCurrentFollowerInput(String value) {
     _currentFollowerInput = value;
+    notifyListeners();
+  }
+
+  void setCategory(String category) {
+    _selectedCategory = category;
     notifyListeners();
   }
 

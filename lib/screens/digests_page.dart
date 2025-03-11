@@ -66,6 +66,12 @@ class _DigestsPageState extends State<DigestsPage> {
     }
   }
 
+  void _onCategoryChanged(String category, DigestProvider digestProvider,
+      SubscriptionProvider subscriptionProvider) {
+    digestProvider.setCategory(category);
+    subscriptionProvider.setCategory(category);
+  }
+
   Widget _buildCategoryButtons(DigestProvider digestProvider) {
     final subscriptionProvider =
         Provider.of<SubscriptionProvider>(context, listen: false);
@@ -98,8 +104,8 @@ class _DigestsPageState extends State<DigestsPage> {
                           label: Text(category,
                               style: const TextStyle(fontSize: 14)),
                           selected: isSelected,
-                          onSelected: (_) =>
-                              digestProvider.setCategory(category),
+                          onSelected: (_) => _onCategoryChanged(
+                              category, digestProvider, subscriptionProvider),
                           visualDensity: VisualDensity.compact,
                         ),
                       );
@@ -155,7 +161,7 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildSubscriptionsList(SubscriptionProvider provider) {
-    final subscriptions = provider.subscriptions;
+    final subscriptions = provider.filteredSubscriptions;
 
     if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -167,7 +173,7 @@ class _DigestsPageState extends State<DigestsPage> {
 
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: provider.subscriptions.length,
+      itemCount: provider.filteredSubscriptions.length,
       itemBuilder: (context, index) {
         return _buildSubscriptionItem(subscriptions[index]);
       },
@@ -803,7 +809,7 @@ class _DigestsPageState extends State<DigestsPage> {
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
     if (subscriptionProvider.selectedSubscriptionId == null) return null;
 
-    return subscriptionProvider.subscriptions.firstWhere(
+    return subscriptionProvider.filteredSubscriptions.firstWhere(
       (sub) => sub.id == subscriptionProvider.selectedSubscriptionId,
       orElse: () => Subscription(
         id: -1,
