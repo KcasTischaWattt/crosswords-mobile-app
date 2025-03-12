@@ -70,21 +70,24 @@ class _ArticlesPageState extends State<ArticlesPage>
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(width: 10),
-        IconButton(
-          icon: provider.isLoading
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2))
-              : Icon(
-                  provider.showOnlyFavorites
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: provider.showOnlyFavorites ? Colors.red : Colors.grey,
-                  size: 24,
-                ),
-          onPressed: provider.isLoading ? null : provider.toggleShowFavorites,
-        ),
+        if (widget.isAuthenticated)
+          IconButton(
+            icon: provider.isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    provider.showOnlyFavorites
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color:
+                        provider.showOnlyFavorites ? Colors.red : Colors.grey,
+                    size: 24,
+                  ),
+            onPressed: provider.isLoading ? null : provider.toggleShowFavorites,
+          ),
       ],
     );
   }
