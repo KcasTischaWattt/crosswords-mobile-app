@@ -6,31 +6,38 @@ class LoginPage extends StatelessWidget {
   final bool isDarkMode;
 
   const LoginPage({
-    Key? key,
+    super.key,
     required this.onLogin,
     required this.toggleTheme,
     required this.isDarkMode,
-  }) : super(key: key);
+  });
+
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      toolbarHeight: 60,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.transparent,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: Icon(
+            isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
+            color: Theme.of(context).iconTheme.color,
+            size: 28,
+          ),
+          onPressed: toggleTheme,
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor:
-            Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(
-              isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
-              color: Theme.of(context).iconTheme.color,
-              size: 28,
-            ),
-            onPressed: toggleTheme,
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
