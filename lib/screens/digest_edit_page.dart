@@ -170,6 +170,38 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  void _confirmResetFilters() {
+    if (Provider.of<SubscriptionProvider>(context, listen: false)
+        .areFieldsEmpty()) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Подтверждение сброса"),
+            content: const Text(
+                "Вы уверены, что хотите сбросить все поля? Это действие нельзя отменить."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Отмена"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _resetFilters();
+                },
+                child:
+                const Text("Сбросить", style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _resetFilters();
+    }
+  }
+
   void _addFollower(String follower) {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
     if (!provider.addFollower(follower)) {
@@ -449,7 +481,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
   Widget _buildActionButtons() {
     return ActionButtons(
       onPrimaryPressed: _saveChanges,
-      onSecondaryPressed: _resetFilters,
+      onSecondaryPressed: _confirmResetFilters,
       primaryText: 'Создать',
       secondaryText: 'Сбросить поля',
       primaryIcon: Icons.add,

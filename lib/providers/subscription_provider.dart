@@ -177,6 +177,19 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  bool areFieldsEmpty() {
+    return _title.isEmpty ||
+        _selectedSources.isEmpty ||
+        _description.isEmpty ||
+        _followers.isEmpty ||
+        _owner.isEmpty ||
+        _selectedTags.isEmpty ||
+        _currentFollowerInput.isEmpty ||
+        !_sendToMail ||
+        !_mobileNotifications ||
+        !_isPublic;
+  }
+
   void addDefault() {
     // TODO добавление пользоваателя
     addFollower("default");

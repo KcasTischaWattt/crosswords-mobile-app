@@ -66,10 +66,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   Widget _buildDigestNameInput() {
     return Container(
       decoration: BoxDecoration(
-        color: Theme
-            .of(context)
-            .bottomNavigationBarTheme
-            .backgroundColor,
+        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: TextField(
@@ -108,13 +105,13 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
       children: [
         _buildCheckboxTile(
           "Почта",
-              (provider) => provider.sendToMail,
-              (provider, value) => provider.setSendToMail(value),
+          (provider) => provider.sendToMail,
+          (provider, value) => provider.setSendToMail(value),
         ),
         _buildCheckboxTile(
           "Приложение",
-              (provider) => provider.mobileNotifications,
-              (provider, value) => provider.setMobileNotifications(value),
+          (provider) => provider.mobileNotifications,
+          (provider, value) => provider.setMobileNotifications(value),
         ),
       ],
     );
@@ -126,15 +123,15 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         Expanded(
           child: _buildCheckboxTile(
             "Почта",
-                (provider) => provider.sendToMail,
-                (provider, value) => provider.setSendToMail(value),
+            (provider) => provider.sendToMail,
+            (provider, value) => provider.setSendToMail(value),
           ),
         ),
         Expanded(
           child: _buildCheckboxTile(
             "Приложение",
-                (provider) => provider.mobileNotifications,
-                (provider, value) => provider.setMobileNotifications(value),
+            (provider) => provider.mobileNotifications,
+            (provider, value) => provider.setMobileNotifications(value),
           ),
         ),
       ],
@@ -185,8 +182,8 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
       builder: (context) {
         return AlertDialog(
           title: const Text("Подтверждение удаления"),
-          content: Text(
-              "Вы уверены, что хотите удалить '$user' из подписчиков?"),
+          content:
+              Text("Вы уверены, что хотите удалить '$user' из подписчиков?"),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -207,9 +204,11 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     );
   }
 
-  Widget _buildCheckboxTile(String title,
-      bool Function(SubscriptionProvider) getValue,
-      void Function(SubscriptionProvider, bool) setValue,) {
+  Widget _buildCheckboxTile(
+    String title,
+    bool Function(SubscriptionProvider) getValue,
+    void Function(SubscriptionProvider, bool) setValue,
+  ) {
     return Consumer<SubscriptionProvider>(
       builder: (context, provider, child) {
         return CheckboxListTile(
@@ -233,10 +232,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .bottomNavigationBarTheme
-                  .backgroundColor,
+              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
@@ -247,7 +243,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                 border: InputBorder.none,
                 contentPadding:
-                EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               ),
             ),
           ),
@@ -303,9 +299,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
-      backgroundColor: Theme
-          .of(context)
-          .scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shadowColor: Colors.transparent,
@@ -325,6 +319,42 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   void _resetFilters() {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
     provider.resetAndAddDefault();
+
+    _titleController.text = provider.title;
+    _descriptionController.text = provider.description;
+    _recipientController.text = provider.currentFollowerInput;
+  }
+
+  void _confirmResetFilters() {
+    if (Provider.of<SubscriptionProvider>(context, listen: false)
+        .areFieldsEmpty()) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Подтверждение сброса"),
+            content: const Text(
+                "Вы уверены, что хотите сбросить все поля? Это действие нельзя отменить."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Отмена"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _resetFilters();
+                },
+                child:
+                    const Text("Сбросить", style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _resetFilters();
+    }
   }
 
   Widget _buildSubscriptionNameSection() {
@@ -400,9 +430,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
             ItemListWidget(
               items: provider.followers,
               dialogTitle: "Все подписчики",
-              chipColor: Theme
-                  .of(context)
-                  .primaryColor,
+              chipColor: Theme.of(context).primaryColor,
               textColor: Colors.black,
               fontWeight: FontWeight.bold,
             ),
@@ -432,7 +460,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   Widget _buildActionButtons() {
     return ActionButtons(
       onPrimaryPressed: _createDigest,
-      onSecondaryPressed: _resetFilters,
+      onSecondaryPressed: _confirmResetFilters,
       primaryText: 'Создать',
       secondaryText: 'Сбросить поля',
       primaryIcon: Icons.add,
