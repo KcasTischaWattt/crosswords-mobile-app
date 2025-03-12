@@ -63,6 +63,28 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         .setCurrentFollowerInput(_recipientController.text);
   }
 
+  Future<bool> _showExitConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Подтверждение выхода"),
+            content: const Text(
+                "Вы уверены, что хотите выйти? Все несохраненные данные будут потеряны."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Остаться"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Выйти", style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   Widget _buildDigestNameInput() {
     return Container(
       decoration: BoxDecoration(
@@ -471,23 +493,36 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
 
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSubscriptionNameSection(),
-              _buildFilterSection(provider),
-              _buildDescriptionField(),
-              _buildNotificationSettings(provider),
-              _buildRecipientSection(),
-              _buildFollowersSection(),
-              _buildActionButtons(),
-              const SizedBox(height: 16),
-            ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        bool shouldExit = await _showExitConfirmationDialog(context);
+
+        if (!context.mounted) return;
+
+        if (shouldExit) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSubscriptionNameSection(),
+                _buildFilterSection(provider),
+                _buildDescriptionField(),
+                _buildNotificationSettings(provider),
+                _buildRecipientSection(),
+                _buildFollowersSection(),
+                _buildActionButtons(),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
