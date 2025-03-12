@@ -8,9 +8,7 @@ import 'article_search_page.dart';
 class ArticlesPage extends StatefulWidget {
   final bool isAuthenticated;
 
-  const ArticlesPage(
-      {super.key,
-      required this.isAuthenticated});
+  const ArticlesPage({super.key, required this.isAuthenticated});
 
   @override
   _ArticlesPageState createState() => _ArticlesPageState();
@@ -136,7 +134,8 @@ class _ArticlesPageState extends State<ArticlesPage>
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ArticleDetailPage(article: article)),
+              builder: (context) => ArticleDetailPage(
+                  article: article, isAuthenticated: widget.isAuthenticated)),
         );
       },
       style: ElevatedButton.styleFrom(
