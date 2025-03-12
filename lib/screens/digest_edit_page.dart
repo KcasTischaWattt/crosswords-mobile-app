@@ -232,6 +232,19 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  Widget _buildDescriptionField() {
+    return Column(
+      children: [
+        ExpandingTextField(
+          controller: _descriptionController,
+          hintText: "Опиcание...",
+          maxLinesBeforeScroll: 7,
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context);
@@ -246,16 +259,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
             children: [
               _buildSubscriptionNameSection(),
               _buildFilterSection(provider),
-
-              // Описание
-              _buildSectionTitle("Описание"),
-              ExpandingTextField(
-                controller: _descriptionController,
-                hintText: "Опиcание...",
-                maxLinesBeforeScroll: 7,
-              ),
-
-              const SizedBox(height: 16),
+              _buildDescriptionField(),
 
               // Чекбоксы "Уведомления"
               _buildSectionTitle("Настройки уведомлений"),
