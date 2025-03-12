@@ -418,13 +418,15 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
       children: [
         _buildSectionTitle("Настройки уведомлений и приватности"),
         _buildCheckboxRow(),
-        CheckboxListTile(
-          title: const Text("Сделать публичным"),
-          value: provider.isPublic,
-          onChanged: (value) {
-            setState(() {
-              provider.setIsPublic(value!);
-            });
+        Consumer<SubscriptionProvider>(
+          builder: (context, provider, child) {
+            return CheckboxListTile(
+              title: const Text("Сделать публичным"),
+              value: provider.isPublic,
+              onChanged: (value) {
+                provider.setIsPublic(value!);
+              },
+            );
           },
         ),
         const SizedBox(height: 16),
