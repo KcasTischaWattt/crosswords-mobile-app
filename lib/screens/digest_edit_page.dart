@@ -57,7 +57,6 @@ class _DigestEditPageState extends State<DigestEditPage> {
     _titleController.dispose();
     _descriptionController.dispose();
 
-    Provider.of<SubscriptionProvider>(context, listen: false).reset();
     super.dispose();
   }
 
