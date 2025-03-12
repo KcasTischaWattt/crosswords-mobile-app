@@ -31,7 +31,8 @@ class _DigestEditPageState extends State<DigestEditPage> {
     provider.setDescription(widget.subscription.description);
     provider.setFollowers(widget.subscription.followers);
     provider.setSendToMail(widget.subscription.subscribeOptions.sendToMail);
-    provider.setMobileNotifications(widget.subscription.subscribeOptions.mobileNotifications);
+    provider.setMobileNotifications(
+        widget.subscription.subscribeOptions.mobileNotifications);
     provider.setIsPublic(widget.subscription.public);
 
     _titleController.text = widget.subscription.title;
@@ -54,11 +55,13 @@ class _DigestEditPageState extends State<DigestEditPage> {
   }
 
   void _onTitleChanged() {
-    Provider.of<SubscriptionProvider>(context, listen: false).setTitle(_titleController.text);
+    Provider.of<SubscriptionProvider>(context, listen: false)
+        .setTitle(_titleController.text);
   }
 
   void _onDescriptionChanged() {
-    Provider.of<SubscriptionProvider>(context, listen: false).setDescription(_descriptionController.text);
+    Provider.of<SubscriptionProvider>(context, listen: false)
+        .setDescription(_descriptionController.text);
   }
 
   void _saveChanges() {
@@ -106,10 +109,10 @@ class _DigestEditPageState extends State<DigestEditPage> {
   }
 
   Widget _buildCheckboxTile(
-      String title,
-      bool Function(SubscriptionProvider) getValue,
-      void Function(SubscriptionProvider, bool) setValue,
-      ) {
+    String title,
+    bool Function(SubscriptionProvider) getValue,
+    void Function(SubscriptionProvider, bool) setValue,
+  ) {
     return Consumer<SubscriptionProvider>(
       builder: (context, provider, child) {
         return CheckboxListTile(
@@ -185,20 +188,20 @@ class _DigestEditPageState extends State<DigestEditPage> {
               _buildSectionTitle("Настройки уведомлений"),
               _buildCheckboxTile(
                 "Получать уведомления на почту",
-                    (provider) => provider.sendToMail,
-                    (provider, value) => provider.setSendToMail(value),
+                (provider) => provider.sendToMail,
+                (provider, value) => provider.setSendToMail(value),
               ),
               _buildCheckboxTile(
                 "Получать мобильные уведомления",
-                    (provider) => provider.mobileNotifications,
-                    (provider, value) => provider.setMobileNotifications(value),
+                (provider) => provider.mobileNotifications,
+                (provider, value) => provider.setMobileNotifications(value),
               ),
 
               // Чекбокс "Сделать публичным"
               _buildCheckboxTile(
                 "Сделать публичным",
-                    (provider) => provider.isPublic,
-                    (provider, value) => provider.setIsPublic(value),
+                (provider) => provider.isPublic,
+                (provider, value) => provider.setIsPublic(value),
               ),
 
               const SizedBox(height: 16),
