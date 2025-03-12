@@ -136,7 +136,10 @@ class _DigestEditPageState extends State<DigestEditPage> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+              color: Theme
+                  .of(context)
+                  .bottomNavigationBarTheme
+                  .backgroundColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
@@ -212,6 +215,62 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  Widget _buildCheckboxRow() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isNarrow = constraints.maxWidth <= 395;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            isNarrow ? _buildCheckboxColumn() : _buildCheckboxRowLayout(),
+            const SizedBox(height: 12),
+            const Divider(thickness: 1, height: 20),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCheckboxColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildCheckboxTile(
+          "Почта",
+              (provider) => provider.sendToMail,
+              (provider, value) => provider.setSendToMail(value),
+        ),
+        _buildCheckboxTile(
+          "Приложение",
+              (provider) => provider.mobileNotifications,
+              (provider, value) => provider.setMobileNotifications(value),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCheckboxRowLayout() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildCheckboxTile(
+            "Почта",
+                (provider) => provider.sendToMail,
+                (provider, value) => provider.setSendToMail(value),
+          ),
+        ),
+        Expanded(
+          child: _buildCheckboxTile(
+            "Приложение",
+                (provider) => provider.mobileNotifications,
+                (provider, value) => provider.setMobileNotifications(value),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSubscriptionNameSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,6 +304,37 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  Widget _buildNotificationSettings(SubscriptionProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle("Настройки уведомлений и приватности"),
+        _buildCheckboxRow(),
+        CheckboxListTile(
+          title: const Text("Сделать публичным"),
+          value: provider.isPublic,
+          onChanged: (value) {
+            setState(() {
+              provider.setIsPublic(value!);
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildRecipientSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle("Добавить получателя"),
+        _buildRecipientField(),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context);
@@ -260,32 +350,8 @@ class _DigestEditPageState extends State<DigestEditPage> {
               _buildSubscriptionNameSection(),
               _buildFilterSection(provider),
               _buildDescriptionField(),
-
-              // Чекбоксы "Уведомления"
-              _buildSectionTitle("Настройки уведомлений"),
-              _buildCheckboxTile(
-                "Получать уведомления на почту",
-                (provider) => provider.sendToMail,
-                (provider, value) => provider.setSendToMail(value),
-              ),
-              _buildCheckboxTile(
-                "Получать мобильные уведомления",
-                (provider) => provider.mobileNotifications,
-                (provider, value) => provider.setMobileNotifications(value),
-              ),
-
-              // Чекбокс "Сделать публичным"
-              _buildCheckboxTile(
-                "Сделать публичным",
-                (provider) => provider.isPublic,
-                (provider, value) => provider.setIsPublic(value),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Поле добавления получателя
-              _buildSectionTitle("Добавить получателя"),
-              _buildRecipientField(),
+              _buildNotificationSettings(provider),
+              _buildRecipientSection(),
 
               // Отображение списка подписчиков
               Consumer<SubscriptionProvider>(
