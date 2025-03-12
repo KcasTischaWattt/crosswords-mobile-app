@@ -1,17 +1,19 @@
+import 'package:crosswords/screens/articles_page.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
   final VoidCallback onLogin;
   final VoidCallback toggleTheme;
+  final VoidCallback onContinueWithoutLogin;
   final bool isDarkMode;
 
   const LoginPage({
     super.key,
     required this.onLogin,
+    required this.onContinueWithoutLogin,
     required this.toggleTheme,
     required this.isDarkMode,
   });
-
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
@@ -62,7 +64,7 @@ class LoginPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: onLogin,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFD700),
+                  backgroundColor: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -72,6 +74,33 @@ class LoginPage extends StatelessWidget {
                 child: const Text(
                   'Войти',
                   style: TextStyle(fontSize: 20, color: Colors.black),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                ),
+                child: const Text(
+                  'Регистрация',
+                  style: TextStyle(fontSize: 20, color: Colors.black),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: onContinueWithoutLogin,
+                child: const Text(
+                  'Продолжить без регистрации',
+                  style: TextStyle(
+                    fontSize: 18,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ],

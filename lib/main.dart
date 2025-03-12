@@ -33,10 +33,18 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool isAuthenticated = false;
   bool isDarkMode = true;
+  bool showMainApp = false;
 
   void _login() {
     setState(() {
       isAuthenticated = true;
+      showMainApp = true;
+    });
+  }
+
+  void _continueWithoutLogin() {
+    setState(() {
+      showMainApp = true;
     });
   }
 
@@ -92,15 +100,17 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: isAuthenticated
+      home: showMainApp
           ? MainApp(
-              toggleTheme: _toggleTheme,
-              isAuthenticated: isAuthenticated,
-            )
+        toggleTheme: _toggleTheme,
+        isAuthenticated: isAuthenticated,
+      )
           : LoginPage(
-              onLogin: _login,
-              toggleTheme: _toggleTheme,
-              isDarkMode: isDarkMode),
+        onLogin: _login,
+        onContinueWithoutLogin: _continueWithoutLogin,
+        toggleTheme: _toggleTheme,
+        isDarkMode: isDarkMode,
+      ),
     );
   }
 }
