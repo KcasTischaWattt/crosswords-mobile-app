@@ -6,12 +6,10 @@ import 'article_detail_page.dart';
 import 'article_search_page.dart';
 
 class ArticlesPage extends StatefulWidget {
-  final bool isFavoriteDialogEnabled;
   final bool isAuthenticated;
 
   const ArticlesPage(
       {super.key,
-      required this.isFavoriteDialogEnabled,
       required this.isAuthenticated});
 
   @override
