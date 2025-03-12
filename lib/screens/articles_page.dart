@@ -7,8 +7,12 @@ import 'article_search_page.dart';
 
 class ArticlesPage extends StatefulWidget {
   final bool isFavoriteDialogEnabled;
+  final bool isAuthenticated;
 
-  const ArticlesPage({super.key, required this.isFavoriteDialogEnabled});
+  const ArticlesPage(
+      {super.key,
+      required this.isFavoriteDialogEnabled,
+      required this.isAuthenticated});
 
   @override
   _ArticlesPageState createState() => _ArticlesPageState();
@@ -41,7 +45,7 @@ class _ArticlesPageState extends State<ArticlesPage>
 
   bool _shouldLoadMore(ArticleProvider provider) {
     return _scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200 &&
+            _scrollController.position.maxScrollExtent - 200 &&
         !provider.isLoadingMore &&
         !provider.isLoading;
   }
@@ -69,16 +73,16 @@ class _ArticlesPageState extends State<ArticlesPage>
         IconButton(
           icon: provider.isLoading
               ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2))
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2))
               : Icon(
-            provider.showOnlyFavorites
-                ? Icons.favorite
-                : Icons.favorite_border,
-            color: provider.showOnlyFavorites ? Colors.red : Colors.grey,
-            size: 24,
-          ),
+                  provider.showOnlyFavorites
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: provider.showOnlyFavorites ? Colors.red : Colors.grey,
+                  size: 24,
+                ),
           onPressed: provider.isLoading ? null : provider.toggleShowFavorites,
         ),
       ],
@@ -113,8 +117,7 @@ class _ArticlesPageState extends State<ArticlesPage>
     final List<Article> allArticles = provider.articles;
     return provider.showOnlyFavorites
         ? allArticles
-            .where(
-                (article) => provider.favoriteArticles.contains(article.id))
+            .where((article) => provider.favoriteArticles.contains(article.id))
             .toList()
         : allArticles;
   }
@@ -131,21 +134,17 @@ class _ArticlesPageState extends State<ArticlesPage>
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ArticleDetailPage(article: article)),
+          MaterialPageRoute(
+              builder: (context) => ArticleDetailPage(article: article)),
         );
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor:
-        Theme.of(context).primaryColor,
-        padding: const EdgeInsets.symmetric(
-            horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-            borderRadius:
-            BorderRadius.circular(8)),
+        backgroundColor: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: const Text('Подробнее',
-          style: TextStyle(
-              color: Colors.black, fontSize: 18)),
+          style: TextStyle(color: Colors.black, fontSize: 18)),
     );
   }
 
@@ -155,7 +154,8 @@ class _ArticlesPageState extends State<ArticlesPage>
         Expanded(
           child: Text(
             'Источник: ${article.source}',
-            style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+            style:
+                TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
           ),
         ),
         const SizedBox(width: 15),
@@ -196,7 +196,8 @@ class _ArticlesPageState extends State<ArticlesPage>
 
   Widget _buildFavoriteButton(Article article, bool isFavorite) {
     return IconButton(
-      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: isFavorite ? Colors.red : Colors.grey),
+      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: isFavorite ? Colors.red : Colors.grey),
       onPressed: () async => await _toggleFavorite(article.id),
     );
   }
@@ -213,7 +214,8 @@ class _ArticlesPageState extends State<ArticlesPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: _buildArticleContent(article)),
-            _buildFavoriteButton(article, isFavorite),
+            if (widget.isAuthenticated)
+              _buildFavoriteButton(article, isFavorite),
           ],
         ),
       ),
@@ -226,7 +228,6 @@ class _ArticlesPageState extends State<ArticlesPage>
     }
 
     final List<Article> displayedArticles = _getDisplayedArticles(provider);
-
 
     return ListView.builder(
       controller: _scrollController,

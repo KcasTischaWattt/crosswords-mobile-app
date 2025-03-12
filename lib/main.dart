@@ -97,6 +97,7 @@ class _MyAppState extends State<MyApp> {
           ? MainApp(
               toggleTheme: _toggleTheme,
               isFavoriteDialogEnabled: isFavoriteDialogEnabled,
+              isAuthenticated: isAuthenticated,
             )
           : LoginPage(
               onLogin: _login,
@@ -107,11 +108,13 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MainApp extends StatefulWidget {
+  final bool isAuthenticated;
   final VoidCallback toggleTheme;
   final ValueNotifier<bool> isFavoriteDialogEnabled;
 
   const MainApp({
     super.key,
+    required this.isAuthenticated,
     required this.toggleTheme,
     required this.isFavoriteDialogEnabled,
   });
@@ -131,6 +134,7 @@ class _MainAppState extends State<MainApp> {
     _pages = [
       ArticlesPage(
         isFavoriteDialogEnabled: widget.isFavoriteDialogEnabled.value,
+        isAuthenticated: widget.isAuthenticated,
       ),
       DigestsPage(),
       NotificationsPage(),
