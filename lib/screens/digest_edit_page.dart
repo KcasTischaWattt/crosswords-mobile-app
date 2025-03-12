@@ -190,6 +190,48 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  Widget _buildDigestNameInput() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme
+            .of(context)
+            .bottomNavigationBarTheme
+            .backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: _titleController,
+        style: const TextStyle(fontSize: 18),
+        decoration: InputDecoration(
+          hintText: 'Название',
+          hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubscriptionNameSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle("Название подписки"),
+        _buildDigestNameInput(),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildFilterSection(SubscriptionProvider provider) {
+    return Column(
+      children: [
+        FilterExpansionPanels(provider: provider),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context);
@@ -202,11 +244,8 @@ class _DigestEditPageState extends State<DigestEditPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Название
-              _buildSectionTitle("Название подписки"),
-              TextField(controller: _titleController),
-
-              const SizedBox(height: 16),
+              _buildSubscriptionNameSection(),
+              _buildFilterSection(provider),
 
               // Описание
               _buildSectionTitle("Описание"),
