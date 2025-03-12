@@ -110,6 +110,28 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  Future<bool> _showExitConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Подтверждение выхода"),
+            content: const Text(
+                "Вы уверены, что хотите выйти? Все несохраненные данные будут потеряны."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Остаться"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Выйти", style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   Widget _buildCheckboxTile(
     String title,
     bool Function(SubscriptionProvider) getValue,
@@ -138,10 +160,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .bottomNavigationBarTheme
-                  .backgroundColor,
+              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
@@ -152,7 +171,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                 border: InputBorder.none,
                 contentPadding:
-                EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               ),
             ),
           ),
@@ -191,7 +210,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
                   _resetFilters();
                 },
                 child:
-                const Text("Сбросить", style: TextStyle(color: Colors.red)),
+                    const Text("Сбросить", style: TextStyle(color: Colors.red)),
               ),
             ],
           );
@@ -230,10 +249,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
   Widget _buildDigestNameInput() {
     return Container(
       decoration: BoxDecoration(
-        color: Theme
-            .of(context)
-            .bottomNavigationBarTheme
-            .backgroundColor,
+        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: TextField(
@@ -272,13 +288,13 @@ class _DigestEditPageState extends State<DigestEditPage> {
       children: [
         _buildCheckboxTile(
           "Почта",
-              (provider) => provider.sendToMail,
-              (provider, value) => provider.setSendToMail(value),
+          (provider) => provider.sendToMail,
+          (provider, value) => provider.setSendToMail(value),
         ),
         _buildCheckboxTile(
           "Приложение",
-              (provider) => provider.mobileNotifications,
-              (provider, value) => provider.setMobileNotifications(value),
+          (provider) => provider.mobileNotifications,
+          (provider, value) => provider.setMobileNotifications(value),
         ),
       ],
     );
@@ -290,15 +306,15 @@ class _DigestEditPageState extends State<DigestEditPage> {
         Expanded(
           child: _buildCheckboxTile(
             "Почта",
-                (provider) => provider.sendToMail,
-                (provider, value) => provider.setSendToMail(value),
+            (provider) => provider.sendToMail,
+            (provider, value) => provider.setSendToMail(value),
           ),
         ),
         Expanded(
           child: _buildCheckboxTile(
             "Приложение",
-                (provider) => provider.mobileNotifications,
-                (provider, value) => provider.setMobileNotifications(value),
+            (provider) => provider.mobileNotifications,
+            (provider, value) => provider.setMobileNotifications(value),
           ),
         ),
       ],
@@ -349,8 +365,8 @@ class _DigestEditPageState extends State<DigestEditPage> {
       builder: (context) {
         return AlertDialog(
           title: const Text("Подтверждение удаления"),
-          content: Text(
-              "Вы уверены, что хотите удалить '$user' из подписчиков?"),
+          content:
+              Text("Вы уверены, что хотите удалить '$user' из подписчиков?"),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -453,9 +469,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
             ItemListWidget(
               items: provider.followers,
               dialogTitle: "Все подписчики",
-              chipColor: Theme
-                  .of(context)
-                  .primaryColor,
+              chipColor: Theme.of(context).primaryColor,
               textColor: Colors.black,
               fontWeight: FontWeight.bold,
             ),
@@ -494,25 +508,38 @@ class _DigestEditPageState extends State<DigestEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<SubscriptionProvider>(context);
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
 
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSubscriptionNameSection(),
-              _buildFilterSection(provider),
-              _buildDescriptionField(),
-              _buildNotificationSettings(provider),
-              _buildRecipientSection(),
-              _buildFollowersSection(),
-              _buildActionButtons(),
-              const SizedBox(height: 16),
-            ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        bool shouldExit = await _showExitConfirmationDialog(context);
+
+        if (!context.mounted) return;
+
+        if (shouldExit) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSubscriptionNameSection(),
+                _buildFilterSection(provider),
+                _buildDescriptionField(),
+                _buildNotificationSettings(provider),
+                _buildRecipientSection(),
+                _buildFollowersSection(),
+                _buildActionButtons(),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
