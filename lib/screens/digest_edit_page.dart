@@ -123,7 +123,10 @@ class _DigestEditPageState extends State<DigestEditPage> {
                 child: const Text("Остаться"),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
+                onPressed: () {
+                  Provider.of<SubscriptionProvider>(context, listen: false).reset();
+                  Navigator.of(context).pop(true);
+                },
                 child: const Text("Выйти", style: TextStyle(color: Colors.red)),
               ),
             ],
@@ -521,6 +524,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
         if (!context.mounted) return;
 
         if (shouldExit) {
+          provider.reset();
           Navigator.of(context).pop();
         }
       },
