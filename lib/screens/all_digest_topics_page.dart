@@ -1,7 +1,7 @@
+import 'package:crosswords/data/models/subscription.dart';
+import 'package:crosswords/providers/subscription_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/subscription_provider.dart';
-import '../data/models/subscription.dart';
 import 'digest_edit_page.dart';
 
 class AllDigestTopicsPage extends StatefulWidget {
