@@ -11,15 +11,14 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     'Источник 2',
     'Источник 3',
     'Источник 4',
-    'Источник 5',
-    'Источник 6'
+    'Интерфакс',
+    'Коммерсантъ'
   ];
-  List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
+  List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'IT', 'Экономика'];
 
   int? _selectedSubscriptionId;
   bool _isLoading = false;
   String _selectedCategory = "Все дайджесты";
-
 
   List<String> _selectedSources = [];
   List<String> _selectedTags = [];
@@ -72,7 +71,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     if (_selectedCategory == "Все дайджесты") {
       return _subscriptions;
     } else if (_selectedCategory == "Подписки") {
-      return _subscriptions.where((sub) => sub.subscribeOptions.subscribed).toList();
+      return _subscriptions
+          .where((sub) => sub.subscribeOptions.subscribed)
+          .toList();
     } else if (_selectedCategory == "Приватные") {
       return _subscriptions.where((sub) => !sub.public).toList();
     }
@@ -134,6 +135,16 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  void setTags(List<String> tags) {
+    _selectedTags = tags;
+    notifyListeners();
+  }
+
+  void setSources(List<String> sources) {
+    _selectedSources = sources;
+    notifyListeners();
+  }
+
   bool addFollower(String value) {
     if (_followers.contains(value)) {
       return false;
@@ -165,6 +176,7 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     _currentFollowerInput = '';
     notifyListeners();
   }
+
   void addDefault() {
     // TODO добавление пользоваателя
     addFollower("default");

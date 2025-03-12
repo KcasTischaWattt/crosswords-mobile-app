@@ -31,6 +31,8 @@ class _DigestEditPageState extends State<DigestEditPage> {
     provider.setDescription(widget.subscription.description);
     provider.setFollowers(widget.subscription.followers);
     provider.setSendToMail(widget.subscription.subscribeOptions.sendToMail);
+    provider.setSources(widget.subscription.sources);
+    provider.setTags(widget.subscription.tags);
     provider.setMobileNotifications(
         widget.subscription.subscribeOptions.mobileNotifications);
     provider.setIsPublic(widget.subscription.public);
