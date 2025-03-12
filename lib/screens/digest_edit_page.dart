@@ -339,6 +339,11 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  void _resetFilters() {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+    provider.resetAndAddDefault();
+  }
+
   Widget _buildSubscriptionNameSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -469,15 +474,8 @@ class _DigestEditPageState extends State<DigestEditPage> {
               _buildNotificationSettings(provider),
               _buildRecipientSection(),
               _buildFollowersSection(),
-
-              // Кнопки управления
-              ActionButtons(
-                onPrimaryPressed: _saveChanges,
-                onSecondaryPressed: () => Navigator.pop(context),
-                primaryText: 'Сохранить',
-                secondaryText: 'Сбросить поля',
-                primaryIcon: Icons.save,
-              ),
+              _buildActionButtons(),
+              const SizedBox(height: 16),
             ],
           ),
         ),
