@@ -66,7 +66,10 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   Widget _buildDigestNameInput() {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        color: Theme
+            .of(context)
+            .bottomNavigationBarTheme
+            .backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: TextField(
@@ -105,13 +108,13 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
       children: [
         _buildCheckboxTile(
           "Почта",
-          (provider) => provider.sendToMail,
-          (provider, value) => provider.setSendToMail(value),
+              (provider) => provider.sendToMail,
+              (provider, value) => provider.setSendToMail(value),
         ),
         _buildCheckboxTile(
           "Приложение",
-          (provider) => provider.mobileNotifications,
-          (provider, value) => provider.setMobileNotifications(value),
+              (provider) => provider.mobileNotifications,
+              (provider, value) => provider.setMobileNotifications(value),
         ),
       ],
     );
@@ -123,15 +126,15 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         Expanded(
           child: _buildCheckboxTile(
             "Почта",
-            (provider) => provider.sendToMail,
-            (provider, value) => provider.setSendToMail(value),
+                (provider) => provider.sendToMail,
+                (provider, value) => provider.setSendToMail(value),
           ),
         ),
         Expanded(
           child: _buildCheckboxTile(
             "Приложение",
-            (provider) => provider.mobileNotifications,
-            (provider, value) => provider.setMobileNotifications(value),
+                (provider) => provider.mobileNotifications,
+                (provider, value) => provider.setMobileNotifications(value),
           ),
         ),
       ],
@@ -182,7 +185,8 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
       builder: (context) {
         return AlertDialog(
           title: const Text("Подтверждение удаления"),
-          content: Text("Вы уверены, что хотите удалить '$user' из подписчиков?"),
+          content: Text(
+              "Вы уверены, что хотите удалить '$user' из подписчиков?"),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context), // Отмена
@@ -203,11 +207,9 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     );
   }
 
-  Widget _buildCheckboxTile(
-    String title,
-    bool Function(SubscriptionProvider) getValue,
-    void Function(SubscriptionProvider, bool) setValue,
-  ) {
+  Widget _buildCheckboxTile(String title,
+      bool Function(SubscriptionProvider) getValue,
+      void Function(SubscriptionProvider, bool) setValue,) {
     return Consumer<SubscriptionProvider>(
       builder: (context, provider, child) {
         return CheckboxListTile(
@@ -231,7 +233,10 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+              color: Theme
+                  .of(context)
+                  .bottomNavigationBarTheme
+                  .backgroundColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
@@ -242,7 +247,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                 border: InputBorder.none,
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               ),
             ),
           ),
@@ -298,7 +303,9 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shadowColor: Colors.transparent,
@@ -320,6 +327,118 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     provider.resetAndAddDefault();
   }
 
+  Widget _buildSubscriptionNameSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle("Название подписки"),
+        _buildDigestNameInput(),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildFilterSection(SubscriptionProvider provider) {
+    return Column(
+      children: [
+        FilterExpansionPanels(provider: provider),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return Column(
+      children: [
+        ExpandingTextField(
+          controller: _descriptionController,
+          hintText: "Опиcание...",
+          maxLinesBeforeScroll: 7,
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildNotificationSettings(SubscriptionProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle("Настройки уведомлений и приватности"),
+        _buildCheckboxRow(),
+        CheckboxListTile(
+          title: const Text("Сделать публичным"),
+          value: provider.isPublic,
+          onChanged: (value) {
+            setState(() {
+              provider.setIsPublic(value!);
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildRecipientSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle("Добавить получателя"),
+        _buildRecipientField(),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildFollowersSection() {
+    return Consumer<SubscriptionProvider>(
+      builder: (context, provider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ItemListWidget(
+              items: provider.followers,
+              dialogTitle: "Все подписчики",
+              chipColor: Theme
+                  .of(context)
+                  .primaryColor,
+              textColor: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => _showManageFollowersDialog(context),
+                  child: Row(
+                    children: [
+                      Text("Настроить подписчиков",
+                          style: TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.settings, size: 24),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return ActionButtons(
+      onPrimaryPressed: _createDigest,
+      onSecondaryPressed: _resetFilters,
+      primaryText: 'Создать',
+      secondaryText: 'Сбросить поля',
+      primaryIcon: Icons.add,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
@@ -332,87 +451,13 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Название подписки
-              _buildSectionTitle("Название подписки"),
-              _buildDigestNameInput(),
-              const SizedBox(height: 16),
-
-              // Выбор тэгов и источников
-              FilterExpansionPanels(provider: provider),
-              const SizedBox(height: 16),
-
-              // Описание,
-              ExpandingTextField(
-                  controller: _descriptionController,
-                  hintText: "Опиcание...",
-                  maxLinesBeforeScroll: 7),
-              const SizedBox(height: 16),
-
-              // Чекбоксы "Уведомления"
-              _buildSectionTitle("Настройки уведомлений и приватности"),
-              _buildCheckboxRow(),
-
-              // Чекбокс "Сделать публичным"
-              CheckboxListTile(
-                title: const Text("Сделать публичным"),
-                value: provider.isPublic,
-                onChanged: (value) {
-                  setState(() {
-                    provider.setIsPublic(value!);
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Поле добавления получателя
-              _buildSectionTitle("Добавить получателя"),
-              _buildRecipientField(),
-              const SizedBox(height: 16),
-
-              Consumer<SubscriptionProvider>(
-                builder: (context, provider, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ItemListWidget(
-                        items: provider.followers,
-                        dialogTitle: "Все подписчики",
-                        chipColor: Theme.of(context).primaryColor,
-                        textColor: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () =>
-                                _showManageFollowersDialog(context),
-                            child: Row(
-                              children: [
-                                Text("Настроить подписчиков",
-                                    style: TextStyle(fontSize: 16)),
-                                const SizedBox(width: 8),
-                                const Icon(Icons.settings, size: 24),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Кнопка подтверждения
-              ActionButtons(
-                onPrimaryPressed: _createDigest,
-                onSecondaryPressed: _resetFilters,
-                primaryText: 'Создать',
-                secondaryText: 'Сбросить поля',
-                primaryIcon: Icons.add,
-              ),
+              _buildSubscriptionNameSection(),
+              _buildFilterSection(provider),
+              _buildDescriptionField(),
+              _buildNotificationSettings(provider),
+              _buildRecipientSection(),
+              _buildFollowersSection(),
+              _buildActionButtons(),
             ],
           ),
         ),
