@@ -44,12 +44,15 @@ class _DigestEditPageState extends State<DigestEditPage> {
 
     _titleController.addListener(_onTitleChanged);
     _descriptionController.addListener(_onDescriptionChanged);
+    _recipientController.addListener(_onRecipientChanged);
   }
 
   @override
   void dispose() {
     _titleController.removeListener(_onTitleChanged);
     _descriptionController.removeListener(_onDescriptionChanged);
+    _recipientController.removeListener(_onRecipientChanged);
+
     _recipientController.dispose();
     _titleController.dispose();
     _descriptionController.dispose();
@@ -66,6 +69,11 @@ class _DigestEditPageState extends State<DigestEditPage> {
   void _onDescriptionChanged() {
     Provider.of<SubscriptionProvider>(context, listen: false)
         .setDescription(_descriptionController.text);
+  }
+
+  void _onRecipientChanged() {
+    Provider.of<SubscriptionProvider>(context, listen: false)
+        .setCurrentFollowerInput(_recipientController.text);
   }
 
   void _saveChanges() {
