@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
 import '../data/models/subscription.dart';
+import 'digest_edit_page.dart';
 
 class AllDigestTopicsPage extends StatefulWidget {
   const AllDigestTopicsPage({super.key});
@@ -135,8 +136,11 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
   Widget _buildEditButton(Subscription subscription) {
     return IconButton(
       icon: const Icon(Icons.edit),
-      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Редактирование: ${subscription.title}")),
+      onPressed: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DigestEditPage(subscription: subscription),
+        ),
       ),
     );
   }
