@@ -374,6 +374,10 @@ class _DigestEditPageState extends State<DigestEditPage> {
   void _resetFilters() {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
     provider.resetAndAddDefault();
+
+    _titleController.text = provider.title;
+    _descriptionController.text = provider.description;
+    _recipientController.text = provider.currentFollowerInput;
   }
 
   Widget _buildSubscriptionNameSection() {
