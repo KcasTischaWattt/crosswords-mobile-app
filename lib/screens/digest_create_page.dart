@@ -250,8 +250,10 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
         IconButton(
           icon: const Icon(Icons.add_circle),
           onPressed: () {
-            _addFollower(_recipientController.text);
-            _recipientController.clear();
+            if (_recipientController.text.isNotEmpty) {
+              _addFollower(_recipientController.text);
+              _recipientController.clear();
+            }
           },
         ),
       ],
