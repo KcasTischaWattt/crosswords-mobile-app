@@ -458,6 +458,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               _buildRecipientSection(),
               _buildFollowersSection(),
               _buildActionButtons(),
+              const SizedBox(height: 16),
             ],
           ),
         ),
