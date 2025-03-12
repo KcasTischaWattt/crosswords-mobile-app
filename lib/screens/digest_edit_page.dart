@@ -134,11 +134,21 @@ class _DigestEditPageState extends State<DigestEditPage> {
     return Row(
       children: [
         Expanded(
-          child: TextField(
-            controller: _recipientController,
-            decoration: InputDecoration(
-              hintText: 'Добавить получателя',
-              border: OutlineInputBorder(),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: TextField(
+              controller: _recipientController,
+              style: const TextStyle(fontSize: 18),
+              decoration: InputDecoration(
+                hintText: 'Добавить получателя',
+                hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                border: InputBorder.none,
+                contentPadding:
+                EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              ),
             ),
           ),
         ),
@@ -146,13 +156,37 @@ class _DigestEditPageState extends State<DigestEditPage> {
           icon: const Icon(Icons.add_circle),
           onPressed: () {
             if (_recipientController.text.isNotEmpty) {
-              Provider.of<SubscriptionProvider>(context, listen: false)
-                  .addFollower(_recipientController.text);
+              _addFollower(_recipientController.text);
               _recipientController.clear();
             }
           },
         ),
       ],
+    );
+  }
+
+  void _addFollower(String follower) {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+    if (!provider.addFollower(follower)) {
+      _showErrorDialogMessage();
+    }
+  }
+
+  void _showErrorDialogMessage() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Ошибка"),
+          content: const Text("Пользователь уже добавлен"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 
