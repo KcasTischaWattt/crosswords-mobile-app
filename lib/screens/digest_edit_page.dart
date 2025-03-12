@@ -94,7 +94,7 @@ class _DigestEditPageState extends State<DigestEditPage> {
       elevation: 0,
       shadowColor: Colors.transparent,
       title: const Text(
-        'Редактирование подписки',
+        'Редактирование дайджеста',
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
     );
@@ -273,11 +273,77 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  void _showManageFollowersDialog(BuildContext context) {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Управление подписчиками"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: provider.followers.map((user) {
+                return ListTile(
+                  title: Text(user),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      _showDeleteConfirmationDialog(context, user);
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Закрыть"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String user) {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Подтверждение удаления"),
+          content: Text(
+              "Вы уверены, что хотите удалить '$user' из подписчиков?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Отмена"),
+            ),
+            TextButton(
+              onPressed: () {
+                provider.removeFollower(user);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                _showManageFollowersDialog(context);
+              },
+              child: const Text("Удалить", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildSubscriptionNameSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle("Название подписки"),
+        _buildSectionTitle("Название дайджеста"),
         _buildDigestNameInput(),
         const SizedBox(height: 16),
       ],
@@ -337,6 +403,54 @@ class _DigestEditPageState extends State<DigestEditPage> {
     );
   }
 
+  Widget _buildFollowersSection() {
+    return Consumer<SubscriptionProvider>(
+      builder: (context, provider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ItemListWidget(
+              items: provider.followers,
+              dialogTitle: "Все подписчики",
+              chipColor: Theme
+                  .of(context)
+                  .primaryColor,
+              textColor: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => _showManageFollowersDialog(context),
+                  child: Row(
+                    children: [
+                      Text("Настроить подписчиков",
+                          style: TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.settings, size: 24),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return ActionButtons(
+      onPrimaryPressed: _saveChanges,
+      onSecondaryPressed: _resetFilters,
+      primaryText: 'Создать',
+      secondaryText: 'Сбросить поля',
+      primaryIcon: Icons.add,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SubscriptionProvider>(context);
@@ -354,33 +468,14 @@ class _DigestEditPageState extends State<DigestEditPage> {
               _buildDescriptionField(),
               _buildNotificationSettings(provider),
               _buildRecipientSection(),
-
-              // Отображение списка подписчиков
-              Consumer<SubscriptionProvider>(
-                builder: (context, provider, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ItemListWidget(
-                        items: provider.followers,
-                        dialogTitle: "Все подписчики",
-                        chipColor: Theme.of(context).primaryColor,
-                        textColor: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ],
-                  );
-                },
-              ),
-
-              const SizedBox(height: 16),
+              _buildFollowersSection(),
 
               // Кнопки управления
               ActionButtons(
                 onPrimaryPressed: _saveChanges,
                 onSecondaryPressed: () => Navigator.pop(context),
                 primaryText: 'Сохранить',
-                secondaryText: 'Отмена',
+                secondaryText: 'Сбросить поля',
                 primaryIcon: Icons.save,
               ),
             ],

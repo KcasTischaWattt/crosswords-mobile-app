@@ -189,7 +189,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
               "Вы уверены, что хотите удалить '$user' из подписчиков?"),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context), // Отмена
+              onPressed: () => Navigator.pop(context),
               child: const Text("Отмена"),
             ),
             TextButton(
@@ -331,7 +331,7 @@ class _DigestCreatePageState extends State<DigestCreatePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle("Название подписки"),
+        _buildSectionTitle("Название дайджеста"),
         _buildDigestNameInput(),
         const SizedBox(height: 16),
       ],
