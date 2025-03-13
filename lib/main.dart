@@ -35,6 +35,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool? isAuthenticated;
+  bool? showMainApp;
   bool isDarkMode = true;
 
   @override
@@ -46,11 +47,17 @@ class _MyAppState extends State<MyApp> {
   Future<void> _checkAuthStatus() async {
     setState(() => isAuthenticated = null);
     bool authStatus = await ApiService.checkAuth();
-    setState(() => isAuthenticated = authStatus);
+    setState(() {
+      isAuthenticated = authStatus;
+      showMainApp = authStatus;
+    });
   }
 
-  void _onLoginSuccess() {
-    setState(() => isAuthenticated = true);
+  void _onContinueWithoutLogin() {
+    setState(() {
+      isAuthenticated = false;
+      showMainApp = true;
+    });
   }
 
   Future<void> _onLogout() async {
@@ -73,13 +80,14 @@ class _MyAppState extends State<MyApp> {
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: isAuthenticated == null
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-          : isAuthenticated!
-              ? MainApp(toggleTheme: _toggleTheme, onLogout: _onLogout)
+          : showMainApp!
+              ? MainApp(
+                  toggleTheme: _toggleTheme,
+                  onLogout: _onLogout,
+                  isAuthenticated: isAuthenticated!)
               : LoginPage(
                   setLogin: _checkAuthStatus,
-                  onContinueWithoutLogin: () {
-                    setState(() => isAuthenticated = false);
-                  },
+                  onContinueWithoutLogin: _onContinueWithoutLogin,
                   toggleTheme: _toggleTheme,
                   isDarkMode: isDarkMode,
                 ),
@@ -125,11 +133,13 @@ class _MyAppState extends State<MyApp> {
 
 class MainApp extends StatefulWidget {
   final VoidCallback toggleTheme;
+  final bool isAuthenticated;
   final Future<void> Function() onLogout;
 
   const MainApp({
     super.key,
     required this.toggleTheme,
+    required this.isAuthenticated,
     required this.onLogout,
   });
 
@@ -147,7 +157,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
     _pages = [
       ArticlesPage(
-        isAuthenticated: true,
+        isAuthenticated: widget.isAuthenticated,
       ),
       DigestsPage(),
       NotificationsPage(),
