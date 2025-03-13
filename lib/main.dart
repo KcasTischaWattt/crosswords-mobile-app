@@ -53,7 +53,8 @@ class _MyAppState extends State<MyApp> {
     setState(() => isAuthenticated = true);
   }
 
-  void _onLogout() {
+  void _onLogout() async {
+    await ApiService.logout();
     setState(() => isAuthenticated = false);
   }
 
@@ -75,7 +76,7 @@ class _MyAppState extends State<MyApp> {
           : isAuthenticated!
           ? MainApp(toggleTheme: _toggleTheme)
           : LoginPage(
-        onLogin: _checkAuthStatus,
+        setLogin: _checkAuthStatus,
         onContinueWithoutLogin: () {
           setState(() => isAuthenticated = false);
         },

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
-  final VoidCallback onLogin;
+  final VoidCallback setLogin;
   final VoidCallback toggleTheme;
   final VoidCallback onContinueWithoutLogin;
   final bool isDarkMode;
 
   const LoginPage({
     super.key,
-    required this.onLogin,
+    required this.setLogin,
     required this.onContinueWithoutLogin,
     required this.toggleTheme,
     required this.isDarkMode,
@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await ApiService.login("testuser", "password123");
-      widget.onLogin();
+      widget.setLogin();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Ошибка входа. Проверьте данные.")),
@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
       context,
       MaterialPageRoute(
         builder: (context) => RegisterPage(
-          onRegisterSuccess: widget.onLogin,
+          onRegisterSuccess: widget.setLogin,
           toggleTheme: widget.toggleTheme,
           isDarkMode: widget.isDarkMode,
         ),
