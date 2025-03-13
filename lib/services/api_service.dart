@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 
 class ApiService {
+  static final bool useMock = true;
+
   /// Экземпляр Dio с предопределенными параметрами и перехватчиками
   static final Dio _dio = Dio(
     BaseOptions(
