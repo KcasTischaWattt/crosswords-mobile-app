@@ -18,10 +18,7 @@ class LoginPage extends StatelessWidget {
 
   Future<void> _performLogin(BuildContext context) async {
     try {
-      await ApiService.post("/users/login", {
-        "username": "testuser",
-        "password": "password123",
-      });
+      await ApiService.login("testuser", "password123");
       onLogin();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -86,20 +83,23 @@ class LoginPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () => _performLogin(context),
                 style: _buttonStyle(context),
-                child: const Text('Войти', style: TextStyle(fontSize: 20, color: Colors.black)),
+                child: const Text('Войти',
+                    style: TextStyle(fontSize: 20, color: Colors.black)),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _navigateToRegister(context),
                 style: _buttonStyle(context),
-                child: const Text('Регистрация', style: TextStyle(fontSize: 20, color: Colors.black)),
+                child: const Text('Регистрация',
+                    style: TextStyle(fontSize: 20, color: Colors.black)),
               ),
               const SizedBox(height: 20),
               TextButton(
                 onPressed: onContinueWithoutLogin,
                 child: const Text(
                   'Продолжить без регистрации',
-                  style: TextStyle(fontSize: 18, decoration: TextDecoration.underline),
+                  style: TextStyle(
+                      fontSize: 18, decoration: TextDecoration.underline),
                 ),
               ),
             ],
