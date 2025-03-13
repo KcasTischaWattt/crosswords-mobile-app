@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'services/api_service.dart';
 import 'providers/article_provider.dart';
 import 'providers/digest_provider.dart';
 import 'providers/subscription_provider.dart';
@@ -9,6 +10,8 @@ import 'screens/digests_page.dart';
 import 'screens/notifications_page.dart';
 import 'screens/settings_page.dart';
 import 'screens/login_page.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(
@@ -31,21 +34,26 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isAuthenticated = false;
+  bool? isAuthenticated; // null = загрузка
   bool isDarkMode = true;
-  bool showMainApp = false;
 
-  void _login() {
-    setState(() {
-      isAuthenticated = true;
-      showMainApp = true;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthStatus();
   }
 
-  void _continueWithoutLogin() {
-    setState(() {
-      showMainApp = true;
-    });
+  Future<void> _checkAuthStatus() async {
+    try {
+      await ApiService.get("/users/me");
+      setState(() {
+        isAuthenticated = true;
+      });
+    } catch (e) {
+      setState(() {
+        isAuthenticated = false;
+      });
+    }
   }
 
   void _toggleTheme() {
@@ -57,71 +65,68 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-        primaryColor: const Color(0xFFFFD700),
-        secondaryHeaderColor: const Color(0xFF517ECF),
-        textTheme: GoogleFonts.latoTextTheme()
-            .apply(
-              bodyColor: Colors.black,
-              displayColor: Colors.black,
-            )
-            .copyWith(
-              bodyLarge: TextStyle(fontSize: 18),
-              bodyMedium: TextStyle(fontSize: 16),
-              bodySmall: TextStyle(fontSize: 14),
-            ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFFFFFFFF),
-          selectedItemColor: Color(0xFF474389),
-          unselectedItemColor: Colors.grey,
-        ),
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF121212),
-        primaryColor: const Color(0xFFFFD700),
-        secondaryHeaderColor: const Color(0xFF3E63A0),
-        textTheme: GoogleFonts.latoTextTheme()
-            .apply(
-              bodyColor: Colors.white,
-              displayColor: Colors.white,
-            )
-            .copyWith(
-              bodyLarge: TextStyle(fontSize: 18),
-              bodyMedium: TextStyle(fontSize: 16),
-              bodySmall: TextStyle(fontSize: 14),
-            ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFF1F1F1F),
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
-        ),
-      ),
+      navigatorKey: navigatorKey,
+      theme: _buildLightTheme(),
+      darkTheme: _buildDarkTheme(),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: showMainApp
-          ? MainApp(
-        toggleTheme: _toggleTheme,
-        isAuthenticated: isAuthenticated,
-      )
+      home: isAuthenticated == null
+          ? const Scaffold(body: Center(child: CircularProgressIndicator())) // Ожидание загрузки
+          : isAuthenticated!
+          ? MainApp(toggleTheme: _toggleTheme)
           : LoginPage(
-        onLogin: _login,
-        onContinueWithoutLogin: _continueWithoutLogin,
+        onLogin: _checkAuthStatus,
+        onContinueWithoutLogin: () {
+          setState(() => isAuthenticated = false);
+        },
         toggleTheme: _toggleTheme,
         isDarkMode: isDarkMode,
       ),
     );
   }
+
+  ThemeData _buildLightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+      primaryColor: const Color(0xFFFFD700),
+      secondaryHeaderColor: const Color(0xFF517ECF),
+      textTheme: GoogleFonts.latoTextTheme().apply(
+        bodyColor: Colors.black,
+        displayColor: Colors.black,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFFFFFFFF),
+        selectedItemColor: Color(0xFF474389),
+        unselectedItemColor: Colors.grey,
+      ),
+    );
+  }
+
+  ThemeData _buildDarkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      primaryColor: const Color(0xFFFFD700),
+      secondaryHeaderColor: const Color(0xFF3E63A0),
+      textTheme: GoogleFonts.latoTextTheme().apply(
+        bodyColor: Colors.white,
+        displayColor: Colors.white,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFF1F1F1F),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+      ),
+    );
+  }
 }
 
+
 class MainApp extends StatefulWidget {
-  final bool isAuthenticated;
   final VoidCallback toggleTheme;
 
   const MainApp({
     super.key,
-    required this.isAuthenticated,
     required this.toggleTheme,
   });
 
@@ -139,7 +144,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
     _pages = [
       ArticlesPage(
-        isAuthenticated: widget.isAuthenticated,
+        isAuthenticated: true,
       ),
       DigestsPage(),
       NotificationsPage(),
