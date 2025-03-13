@@ -1,3 +1,4 @@
+import 'package:crosswords/screens/register_page.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
@@ -50,6 +51,19 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+  void _navigateToRegister(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RegisterPage(
+          onRegisterSuccess: onLogin,
+          toggleTheme: toggleTheme,
+          isDarkMode: isDarkMode,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +90,7 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _navigateToRegister(context),
                 style: _buttonStyle(context),
                 child: const Text('Регистрация', style: TextStyle(fontSize: 20, color: Colors.black)),
               ),

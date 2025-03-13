@@ -39,6 +39,18 @@ class ApiService {
     );
   }
 
+  /// Регистрация пользователя
+  static Future<void> register(String username, String email, String password) async {
+    await _dio.post(
+      "/users/register",
+      data: {
+        "username": username,
+        "email": email,
+        "password": password,
+      },
+    );
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);
