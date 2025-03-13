@@ -86,10 +86,15 @@ class ApiService {
   static Future<void> logout() async {
     if (useMock) {
       await Future.delayed(const Duration(seconds: 1));
+      isAuthenticatedMock = false;
       return;
     }
 
-    await _dio.post("/users/logout");
+    try {
+      await _dio.post("/users/logout");
+    } catch (e) {
+      print("Ошибка при выходе: $e");
+    }
   }
 
   /// GET запрос к API
