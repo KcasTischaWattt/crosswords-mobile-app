@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
     setState(() => isAuthenticated = true);
   }
 
-  void _onLogout() async {
+  Future<void> _onLogout() async {
     await ApiService.logout();
     setState(() => isAuthenticated = false);
   }
@@ -72,11 +72,9 @@ class _MyAppState extends State<MyApp> {
       darkTheme: _buildDarkTheme(),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: isAuthenticated == null
-          ? const Scaffold(
-              body: Center(
-                  child: CircularProgressIndicator()))
+          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : isAuthenticated!
-              ? MainApp(toggleTheme: _toggleTheme)
+              ? MainApp(toggleTheme: _toggleTheme, onLogout: _onLogout)
               : LoginPage(
                   setLogin: _checkAuthStatus,
                   onContinueWithoutLogin: () {
@@ -127,10 +125,12 @@ class _MyAppState extends State<MyApp> {
 
 class MainApp extends StatefulWidget {
   final VoidCallback toggleTheme;
+  final Future<void> Function() onLogout;
 
   const MainApp({
     super.key,
     required this.toggleTheme,
+    required this.onLogout,
   });
 
   @override
@@ -153,6 +153,7 @@ class _MainAppState extends State<MainApp> {
       NotificationsPage(),
       SettingsPage(
         toggleTheme: widget.toggleTheme,
+        onLogout: widget.onLogout,
       ),
     ];
   }

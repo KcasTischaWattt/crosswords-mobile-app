@@ -30,7 +30,7 @@ class ApiService {
     navigatorKey.currentState?.pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (context) => LoginPage(
-          onLogin: () async {
+          setLogin: () async {
             navigatorKey.currentState?.pushReplacementNamed('/main');
           },
           onContinueWithoutLogin: () {

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
   final VoidCallback toggleTheme;
+  final Future<void> Function() onLogout;
 
   const SettingsPage({
     super.key,
     required this.toggleTheme,
+    required this.onLogout,
   });
 
   @override
@@ -32,6 +34,12 @@ class SettingsPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               child: const Text('Переключить тему', style: TextStyle(color: Colors.black)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await onLogout(); // Ждём завершения выхода
+              },
+              child: const Text("Выйти"),
             ),
           ],
         ),
