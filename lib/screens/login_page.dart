@@ -97,10 +97,12 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () => _performLogin(context),
+                onPressed: _loading ? null : () => _performLogin(context),
                 style: _buttonStyle(context),
-                child: const Text('Войти',
-                    style: TextStyle(fontSize: 20, color: Colors.black)),
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : const Text('Войти',
+                        style: TextStyle(fontSize: 20, color: Colors.black)),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
