@@ -4,8 +4,6 @@ import '../data/models/digest.dart';
 import 'package:provider/provider.dart';
 import 'widgets/item_chips_list_widget.dart';
 import 'widgets/custom_expansion_tile_widget.dart';
-import '../providers/subscription_provider.dart';
-import 'digest_edit_page.dart';
 
 class DigestDetailPage extends StatefulWidget {
   final Digest digest;

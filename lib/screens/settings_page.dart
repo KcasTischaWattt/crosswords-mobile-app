@@ -4,9 +4,9 @@ class SettingsPage extends StatelessWidget {
   final VoidCallback toggleTheme;
 
   const SettingsPage({
-    Key? key,
+    super.key,
     required this.toggleTheme,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
