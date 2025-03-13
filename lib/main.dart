@@ -62,7 +62,10 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _onLogout() async {
     await ApiService.logout();
-    setState(() => isAuthenticated = false);
+    setState(() {
+      isAuthenticated = false;
+      showMainApp = false;
+    });
   }
 
   void _toggleTheme() {
