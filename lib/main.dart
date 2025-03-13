@@ -72,17 +72,19 @@ class _MyAppState extends State<MyApp> {
       darkTheme: _buildDarkTheme(),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: isAuthenticated == null
-          ? const Scaffold(body: Center(child: CircularProgressIndicator())) // Ожидание загрузки
+          ? const Scaffold(
+              body: Center(
+                  child: CircularProgressIndicator()))
           : isAuthenticated!
-          ? MainApp(toggleTheme: _toggleTheme)
-          : LoginPage(
-        setLogin: _checkAuthStatus,
-        onContinueWithoutLogin: () {
-          setState(() => isAuthenticated = false);
-        },
-        toggleTheme: _toggleTheme,
-        isDarkMode: isDarkMode,
-      ),
+              ? MainApp(toggleTheme: _toggleTheme)
+              : LoginPage(
+                  setLogin: _checkAuthStatus,
+                  onContinueWithoutLogin: () {
+                    setState(() => isAuthenticated = false);
+                  },
+                  toggleTheme: _toggleTheme,
+                  isDarkMode: isDarkMode,
+                ),
     );
   }
 
@@ -122,7 +124,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
 
 class MainApp extends StatefulWidget {
   final VoidCallback toggleTheme;
