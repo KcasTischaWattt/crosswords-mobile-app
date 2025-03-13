@@ -6,6 +6,7 @@ import '../main.dart';
 class ApiService {
   // TODO поменять на false
   static final bool useMock = true;
+  static bool isAuthenticatedMock = false;
 
   /// Экземпляр Dio с предопределенными параметрами и перехватчиками
   static final Dio _dio = Dio(
@@ -47,7 +48,7 @@ class ApiService {
   static Future<bool> checkAuth() async {
     if (useMock) {
       await Future.delayed(const Duration(seconds: 1));
-      return false;
+      return isAuthenticatedMock;
     }
 
     try {
@@ -62,6 +63,7 @@ class ApiService {
   static Future<void> login(String username, String password) async {
     if (useMock) {
       await Future.delayed(const Duration(seconds: 1));
+      isAuthenticatedMock = true;
       return;
     }
 
