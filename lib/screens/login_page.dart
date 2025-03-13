@@ -19,7 +19,6 @@ class LoginPage extends StatelessWidget {
   Future<void> _performLogin(BuildContext context) async {
     try {
       await ApiService.login("testuser", "password123");
-      setState(() {});
       onLogin();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
