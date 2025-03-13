@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
-  final VoidCallback setLogin;
+  final Future<void> Function() setLogin;
   final VoidCallback toggleTheme;
   final VoidCallback onContinueWithoutLogin;
   final bool isDarkMode;
@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await ApiService.login("testuser", "password123");
-      widget.setLogin();
+      await widget.setLogin();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Ошибка входа. Проверьте данные.")),

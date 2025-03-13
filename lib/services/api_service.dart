@@ -17,31 +17,33 @@ class ApiService {
       headers: {"Content-Type": "application/json"},
     ),
   )..interceptors.add(InterceptorsWrapper(
-    onError: (DioException e, ErrorInterceptorHandler handler) {
-      if (e.response?.statusCode == 401) {
-        _handleUnauthorized();
-      }
-      return handler.next(e);
-    },
-  ));
+      onError: (DioException e, ErrorInterceptorHandler handler) {
+        if (e.response?.statusCode == 401) {
+          _handleUnauthorized();
+        }
+        return handler.next(e);
+      },
+    ));
 
   /// Перенаправляем пользователя на экран логина при 401
   static void _handleUnauthorized() {
-    navigatorKey.currentState?.pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) => LoginPage(
-          setLogin: () async {
-            navigatorKey.currentState?.pushReplacementNamed('/main');
-          },
-          onContinueWithoutLogin: () {
-            navigatorKey.currentState?.pushReplacementNamed('/main');
-          },
-          toggleTheme: () {},
-          isDarkMode: false,
+    if (navigatorKey.currentState?.canPop() == false) {
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+            setLogin: () async {
+              navigatorKey.currentState?.pushReplacementNamed('/main');
+            },
+            onContinueWithoutLogin: () {
+              navigatorKey.currentState?.pushReplacementNamed('/main');
+            },
+            toggleTheme: () {},
+            isDarkMode: false,
+          ),
         ),
-      ),
-          (route) => false,
-    );
+        (route) => false,
+      );
+    }
   }
 
   /// Проверка аутентификацию
@@ -67,11 +69,13 @@ class ApiService {
       return;
     }
 
-    await _dio.post("/users/login", data: {"username": username, "password": password});
+    await _dio.post("/users/login",
+        data: {"username": username, "password": password});
   }
 
   /// Регистрация пользователя
-  static Future<void> register(String username, String email, String password) async {
+  static Future<void> register(
+      String username, String email, String password) async {
     if (useMock) {
       await Future.delayed(const Duration(seconds: 1));
       return;
@@ -108,7 +112,8 @@ class ApiService {
   }
 
   /// POST запрос к API
-  static Future<Response> post(String endpoint, Map<String, dynamic> data) async {
+  static Future<Response> post(
+      String endpoint, Map<String, dynamic> data) async {
     return await _dio.post(endpoint, data: data);
   }
 }

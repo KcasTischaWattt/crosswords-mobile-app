@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
-  final VoidCallback onRegisterSuccess;
+  final Future<void> Function() onRegisterSuccess;
   final VoidCallback toggleTheme;
   final bool isDarkMode;
 
@@ -37,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _passwordController.text,
       );
 
-      widget.onRegisterSuccess();
+      await widget.onRegisterSuccess();
     } catch (e) {
       setState(() {
         _errorMessage = "Ошибка регистрации. Проверьте данные.";
