@@ -72,6 +72,11 @@ class ApiService {
 
   /// Регистрация пользователя
   static Future<void> register(String username, String email, String password) async {
+    if (useMock) {
+      await Future.delayed(const Duration(seconds: 1));
+      return;
+    }
+
     await _dio.post(
       "/users/register",
       data: {
