@@ -42,6 +42,31 @@ class ApiService {
     );
   }
 
+  /// Проверка аутентификацию
+  static Future<bool> checkAuth() async {
+    if (useMock) {
+      await Future.delayed(const Duration(seconds: 1));
+      return false;
+    }
+
+    try {
+      await _dio.get("/users/me");
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Логин пользователя
+  static Future<void> login(String username, String password) async {
+    if (useMock) {
+      await Future.delayed(const Duration(seconds: 1));
+      return;
+    }
+
+    await _dio.post("/users/login", data: {"username": username, "password": password});
+  }
+
   /// Регистрация пользователя
   static Future<void> register(String username, String email, String password) async {
     await _dio.post(
@@ -52,6 +77,16 @@ class ApiService {
         "password": password,
       },
     );
+  }
+
+  /// Логаут
+  static Future<void> logout() async {
+    if (useMock) {
+      await Future.delayed(const Duration(seconds: 1));
+      return;
+    }
+
+    await _dio.post("/users/logout");
   }
 
   /// GET запрос к API
