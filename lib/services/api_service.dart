@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 
 class ApiService {
+  /// Экземпляр Dio с предопределенными параметрами и перехватчиками
   static final Dio _dio = Dio(
     BaseOptions(
       baseUrl: "http://localhost:8081",
