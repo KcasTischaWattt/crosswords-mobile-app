@@ -2,7 +2,7 @@ import 'package:crosswords/screens/register_page.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   final VoidCallback onLogin;
   final VoidCallback toggleTheme;
   final VoidCallback onContinueWithoutLogin;
@@ -16,15 +16,30 @@ class LoginPage extends StatelessWidget {
     required this.isDarkMode,
   });
 
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool _loading = false;
+
   Future<void> _performLogin(BuildContext context) async {
+    setState(() {
+      _loading = true;
+    });
+
     try {
       await ApiService.login("testuser", "password123");
-      onLogin();
+      widget.onLogin();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Ошибка входа. Проверьте данные.")),
       );
     }
+
+    setState(() {
+      _loading = false;
+    });
   }
 
   AppBar _buildAppBar() {
@@ -33,8 +48,9 @@ class LoginPage extends StatelessWidget {
       elevation: 0,
       actions: [
         IconButton(
-          icon: Icon(isDarkMode ? Icons.wb_sunny : Icons.nights_stay, size: 28),
-          onPressed: toggleTheme,
+          icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
+              size: 28),
+          onPressed: widget.toggleTheme,
         ),
       ],
     );
@@ -53,9 +69,9 @@ class LoginPage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => RegisterPage(
-          onRegisterSuccess: onLogin,
-          toggleTheme: toggleTheme,
-          isDarkMode: isDarkMode,
+          onRegisterSuccess: widget.onLogin,
+          toggleTheme: widget.toggleTheme,
+          isDarkMode: widget.isDarkMode,
         ),
       ),
     );
@@ -95,7 +111,7 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               TextButton(
-                onPressed: onContinueWithoutLogin,
+                onPressed: widget.onContinueWithoutLogin,
                 child: const Text(
                   'Продолжить без регистрации',
                   style: TextStyle(

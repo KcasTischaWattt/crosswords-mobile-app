@@ -34,7 +34,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool? isAuthenticated; // null = загрузка
+  bool? isAuthenticated;
   bool isDarkMode = true;
 
   @override
@@ -44,16 +44,17 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkAuthStatus() async {
-    try {
-      await ApiService.get("/users/me");
-      setState(() {
-        isAuthenticated = true;
-      });
-    } catch (e) {
-      setState(() {
-        isAuthenticated = false;
-      });
-    }
+    setState(() => isAuthenticated = null);
+    bool authStatus = await ApiService.checkAuth();
+    setState(() => isAuthenticated = authStatus);
+  }
+
+  void _onLoginSuccess() {
+    setState(() => isAuthenticated = true);
+  }
+
+  void _onLogout() {
+    setState(() => isAuthenticated = false);
   }
 
   void _toggleTheme() {
