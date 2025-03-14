@@ -24,6 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _loading = false;
 
   Future<void> _performLogin(BuildContext context) async {
+    if (!mounted) return;
+
     setState(() {
       _loading = true;
     });
@@ -37,9 +39,11 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
 
-    setState(() {
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   AppBar _buildAppBar() {
