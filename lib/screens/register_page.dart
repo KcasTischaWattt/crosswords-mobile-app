@@ -62,7 +62,8 @@ class _RegisterPageState extends State<RegisterPage> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay, size: 28),
+            icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
+                size: 28),
             onPressed: widget.toggleTheme,
           ),
         ],
@@ -80,42 +81,122 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: "Ваше Имя"),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _nameController,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Ваше Имя',
+                    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                    border: InputBorder.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: _surnameController,
-                decoration: const InputDecoration(labelText: "Ваша Фамилия"),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _surnameController,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Ваша Фамилия',
+                    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                    border: InputBorder.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: "Имя пользователя"),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _usernameController,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Имя пользователя',
+                    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                    border: InputBorder.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: "Email"),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _usernameController,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                    border: InputBorder.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: "Пароль"),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _usernameController,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Пароль',
+                    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
+                    border: InputBorder.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              if (_errorMessage != null) Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+              if (_errorMessage != null)
+                Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: _loading ? null : _performRegistration,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
-                child: _loading ? const CircularProgressIndicator() : const Text('Зарегистрироваться', style: TextStyle(fontSize: 18, color: Colors.black)),
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : const Text('Зарегистрироваться',
+                        style: TextStyle(fontSize: 18, color: Colors.black)),
               ),
             ],
           ),
