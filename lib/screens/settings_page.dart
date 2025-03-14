@@ -64,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
       title: Text(title, style: TextStyle(fontSize: 14)),
       value: value,
       activeColor: theme.primaryColor,
-      inactiveTrackColor: Colors.grey,
+      inactiveTrackColor: theme.bottomNavigationBarTheme.backgroundColor,
       onChanged: onChanged,
     );
   }
@@ -81,21 +81,28 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showThemeBottomSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildBottomSheetTile("Светлая", () {
-              _setTheme("Светлая", ThemeMode.light);
-            }),
-            _buildBottomSheetTile("Тёмная", () {
-              _setTheme("Тёмная", ThemeMode.dark);
-            }),
-          ],
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildBottomSheetTile("Светлая", () {
+                _setTheme("Светлая", ThemeMode.light);
+              }),
+              _buildBottomSheetTile("Тёмная", () {
+                _setTheme("Тёмная", ThemeMode.dark);
+              }),
+            ],
+          ),
         );
       },
     );
