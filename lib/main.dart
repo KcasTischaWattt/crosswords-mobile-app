@@ -36,7 +36,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool? isAuthenticated;
   bool? showMainApp;
-  bool isDarkMode = true;
+  ThemeMode _themeMode = ThemeMode.dark;
 
   @override
   void initState() {
@@ -68,9 +68,15 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void _setTheme(ThemeMode newThemeMode) {
+    setState(() {
+      _themeMode = newThemeMode;
+    });
+  }
+
   void _toggleTheme() {
     setState(() {
-      isDarkMode = !isDarkMode;
+      _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
   }
 
@@ -80,19 +86,19 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: navigatorKey,
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
-      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      themeMode: _themeMode,
       home: isAuthenticated == null
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : showMainApp!
               ? MainApp(
-                  toggleTheme: _toggleTheme,
+                  setTheme: _setTheme,
                   onLogout: _onLogout,
                   isAuthenticated: isAuthenticated!)
               : LoginPage(
                   setLogin: _checkAuthStatus,
                   onContinueWithoutLogin: _onContinueWithoutLogin,
                   toggleTheme: _toggleTheme,
-                  isDarkMode: isDarkMode,
+                  isDarkMode: _themeMode == ThemeMode.dark,
                 ),
     );
   }
@@ -135,13 +141,13 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MainApp extends StatefulWidget {
-  final VoidCallback toggleTheme;
+  final void Function(ThemeMode) setTheme;
   final bool isAuthenticated;
   final Future<void> Function() onLogout;
 
   const MainApp({
     super.key,
-    required this.toggleTheme,
+    required this.setTheme,
     required this.isAuthenticated,
     required this.onLogout,
   });
@@ -165,7 +171,7 @@ class _MainAppState extends State<MainApp> {
       DigestsPage(),
       NotificationsPage(),
       SettingsPage(
-        toggleTheme: widget.toggleTheme,
+        setTheme: widget.setTheme,
         onLogout: widget.onLogout,
       ),
     ];

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SettingsPage extends StatefulWidget {
-  final VoidCallback toggleTheme;
+  final void Function(ThemeMode) setTheme;
   final Future<void> Function() onLogout;
 
   const SettingsPage({
     super.key,
-    required this.toggleTheme,
+    required this.setTheme,
     required this.onLogout,
   });
 
@@ -20,7 +20,10 @@ class _SettingsPageState extends State<SettingsPage> {
   bool incognitoMode = false;
   bool prioritizeBank = false;
   bool shakeToTransfer = true;
-  String themeMode = "Тёмная";
+
+  String get currentThemeName {
+    return Theme.of(context).brightness == Brightness.dark ? "Тёмная" : "Светлая";
+  }
 
   AppBar _buildAppBar() {
     return AppBar(
@@ -108,11 +111,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _setTheme(String mode, ThemeMode newThemeMode) {
-    setState(() {
-      themeMode = mode;
-    });
-    widget.toggleTheme();
+  void _setTheme(String mode, ThemeMode newThemeMode) {;
+    widget.setTheme(newThemeMode);
     Navigator.pop(context);
   }
 
@@ -140,7 +140,7 @@ class _SettingsPageState extends State<SettingsPage> {
             }, theme),
             _buildStaticTile('Автообновление', 'Включено', theme),
             _buildStaticTile('Язык', 'Русский', theme),
-            _buildStaticTile('Тема', themeMode, theme, onTap: _showThemeBottomSheet),
+            _buildStaticTile('Тема', currentThemeName, theme, onTap: _showThemeBottomSheet),
           ], cardColor!),
 
           SizedBox(height: 20),
