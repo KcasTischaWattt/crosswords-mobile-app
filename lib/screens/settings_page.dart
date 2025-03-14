@@ -20,6 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool incognitoMode = false;
   bool prioritizeBank = false;
   bool shakeToTransfer = true;
+  String themeMode = "Тёмная";
 
   AppBar _buildAppBar() {
     return AppBar(
@@ -68,12 +69,50 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildStaticTile(String title, String subtitle, ThemeData theme) {
+  Widget _buildStaticTile(String title, String subtitle, ThemeData theme, {VoidCallback? onTap}) {
     return ListTile(
       title: Text(title, style: TextStyle(fontSize: 14)),
       subtitle: subtitle.isNotEmpty ? Text(subtitle, style: TextStyle(color: Colors.grey)) : null,
       trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-      onTap: () {},
+      onTap: onTap,
+    );
+  }
+
+  void _showThemeBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildBottomSheetTile("Светлая", () {
+              _setTheme("Светлая", ThemeMode.light);
+            }),
+            _buildBottomSheetTile("Тёмная", () {
+              _setTheme("Тёмная", ThemeMode.dark);
+            }),
+          ],
+        );
+      },
+    );
+  }
+
+  void _setTheme(String mode, ThemeMode newThemeMode) {
+    setState(() {
+      themeMode = mode;
+    });
+    widget.toggleTheme();
+    Navigator.pop(context);
+  }
+
+  Widget _buildBottomSheetTile(String title, VoidCallback onTap) {
+    return ListTile(
+      title: Text(title, style: TextStyle(fontSize: 16)),
+      onTap: onTap,
     );
   }
 
@@ -94,7 +133,7 @@ class _SettingsPageState extends State<SettingsPage> {
             }, theme),
             _buildStaticTile('Автообновление', 'Включено', theme),
             _buildStaticTile('Язык', 'Русский', theme),
-            _buildStaticTile('Тема', 'Как в системе', theme),
+            _buildStaticTile('Тема', themeMode, theme, onTap: _showThemeBottomSheet),
           ], cardColor!),
 
           SizedBox(height: 20),
