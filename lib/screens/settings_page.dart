@@ -72,14 +72,20 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildStaticTile(String title, String subtitle, ThemeData theme, {VoidCallback? onTap}) {
-    return ListTile(
-      title: Text(title, style: TextStyle(fontSize: 14)),
-      subtitle: subtitle.isNotEmpty ? Text(subtitle, style: TextStyle(color: Colors.grey)) : null,
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-      onTap: onTap,
+  Widget _buildStaticTile(String title, String subtitle, ThemeData theme, {VoidCallback? onTap, bool isSelected = false}) {
+    return Material(
+      color: isSelected ? theme.primaryColor.withOpacity(0.1) : Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: ListTile(
+          title: Text(title, style: TextStyle(fontSize: 14)),
+          subtitle: subtitle.isNotEmpty ? Text(subtitle, style: TextStyle(color: Colors.grey)) : null,
+          trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+        ),
+      ),
     );
   }
+
 
   void _showThemeBottomSheet() {
     showModalBottomSheet(
