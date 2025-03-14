@@ -18,6 +18,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -32,6 +34,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       await ApiService.register(
+        _nameController.text,
+        _surnameController.text,
         _usernameController.text,
         _emailController.text,
         _passwordController.text,
@@ -76,6 +80,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: "Ваше Имя"),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _surnameController,
+                decoration: const InputDecoration(labelText: "Ваша Фамилия"),
+              ),
+              const SizedBox(height: 10),
               TextField(
                 controller: _usernameController,
                 decoration: const InputDecoration(labelText: "Имя пользователя"),
