@@ -53,7 +53,7 @@ class _ArticlesPageState extends State<ArticlesPage>
     }
   }
 
-  Future<void> _toggleFavorite(String articleId) async {
+  Future<void> _toggleFavorite(int articleId) async {
     await Provider.of<ArticleProvider>(context, listen: false)
         .toggleFavorite(articleId);
   }

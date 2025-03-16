@@ -1,5 +1,5 @@
 class Article {
-  final String id;
+  final int id;
   final String title;
   final String source;
   final String summary;

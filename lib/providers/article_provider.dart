@@ -10,7 +10,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3', 'Источник 4', 'Источник 5', 'Источник 6'];
   List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
 
-  final Set<String> _favoriteArticles = {}; // TODO убрать список ID избранных статей после подключения бэкэнда
+  final Set<int> _favoriteArticles = {}; // TODO убрать список ID избранных статей после подключения бэкэнда
   final List<Note> _notes = [];
   bool _isLoading = false;
   bool _showOnlyFavorites = false;
@@ -45,7 +45,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   List<String> get tags => _tags;
   List<Article> get articles => _articles;
   bool get isLoading => _isLoading;
-  Set<String> get favoriteArticles => _favoriteArticles;
+  Set<int> get favoriteArticles => _favoriteArticles;
   bool get showOnlyFavorites => _showOnlyFavorites;
   bool get isLoadingMore => _isLoadingMore;
   List<Note> get notes => _notes;
@@ -106,7 +106,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  Future<void> toggleFavorite(String articleId) async {
+  Future<void> toggleFavorite(int articleId) async {
     _isLoading = true;
     notifyListeners();
 
@@ -122,7 +122,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  bool isFavorite(String articleId) {
+  bool isFavorite(int articleId) {
     return _favoriteArticles.contains(articleId);
   }
 

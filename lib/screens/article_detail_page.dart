@@ -501,7 +501,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget _buildNotesSection(BuildContext context, ArticleProvider provider) {
     if (!widget.isAuthenticated) return const SizedBox.shrink();
 
-    final notes = provider.getNotesForArticle(int.parse(widget.article.id));
+    final notes = provider.getNotesForArticle(widget.article.id);
     if (notes.isEmpty) return const Text("Заметок пока нет.");
 
     return Column(
@@ -671,7 +671,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       });
     } else {
       // Добавление новой заметки
-      provider.addNote(int.parse(widget.article.id), text);
+      provider.addNote(widget.article.id, text);
       _commentController.clear();
     }
   }
