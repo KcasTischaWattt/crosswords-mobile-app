@@ -19,6 +19,8 @@ class _SettingsPageState extends State<SettingsPage> {
   bool addToDigest = false;
   bool emailNotifications = false;
   bool mobileNotifications = true;
+  bool sideMailNotifications = false;
+  bool sideMobileNotifications = false;
 
   String get currentThemeName {
     return Theme.of(context).brightness == Brightness.dark ? "Тёмная" : "Светлая";
@@ -152,6 +154,24 @@ class _SettingsPageState extends State<SettingsPage> {
             _buildSwitchTile('Разрешить добавлять меня в рассылку', addToDigest, (value) {
               setState(() => addToDigest = value);
             }, theme),
+
+            AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: addToDigest
+                  ? Column(
+                key: ValueKey<bool>(addToDigest),
+                children: [
+                  _buildSwitchTile('Разрешить сторонние уведомления на почту', sideMailNotifications, (value) {
+                    setState(() => sideMailNotifications = value);
+                  }, theme),
+                  _buildSwitchTile('Разрешить сторонние мобильные уведомления', sideMobileNotifications, (value) {
+                    setState(() => sideMobileNotifications = value);
+                  }, theme),
+                ],
+              )
+                  : SizedBox.shrink(),
+            ),
+
             _buildSwitchTile('Разрешить уведомления на почту', emailNotifications, (value) {
               setState(() => emailNotifications = value);
             }, theme),
