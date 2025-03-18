@@ -528,21 +528,9 @@ class _DigestsPageState extends State<DigestsPage> {
   List<String> _getPotentialOwners(Digest digest) {
     // TODO получение списка пользователей
     return [
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3"
+      "mdperestoronin@edu.hse.ru",
+      "avtseytin@edu.hse.ru",
+      "crutcrushesrlc@gmail.com",
     ];
   }
 
