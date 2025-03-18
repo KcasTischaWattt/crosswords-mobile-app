@@ -7,14 +7,35 @@ import '../data/models/search_params/article_search_params.dart';
 
 class ArticleProvider extends ChangeNotifier implements FilterProvider {
   List<Article> _articles = [];
-  List<String> _sources = ['Источник 1', 'Источник 2', 'Источник 3', 'Источник 4', 'Источник 5', 'Источник 6'];
-  List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
+  List<String> _sources = [
+    'Коммерсант',
+    'Интерфакс',
+    'ЦБ РФ',
+    'ЦБ Узбекистан',
+    'ЦБ Таджикистан',
+    'ЦБ Кыргызстан',
+    'ЦБ Азербайджан'
+  ];
+  List<String> _tags = [
+    'Политика',
+    'Экономика',
+    'Технологии',
+    'Спорт',
+    'Кредит',
+    'IT',
+    'Зарплаты',
+    'Кибербезопасность',
+    'Футбол',
+    'СБП'
+  ];
 
-  final Set<int> _favoriteArticles = {}; // TODO убрать список ID избранных статей после подключения бэкэнда
+  final Set<int> _favoriteArticles =
+      {}; // TODO убрать список ID избранных статей после подключения бэкэнда
   final List<Note> _notes = [];
   bool _isLoading = false;
   bool _showOnlyFavorites = false;
   bool _isLoadingMore = false;
+
   // TODO не забыть использовать для запроса к API
   int _currentPage = 1;
   final int _pageSize = 10;
@@ -41,21 +62,35 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
   @override
   List<String> get sources => _sources;
+
   @override
   List<String> get tags => _tags;
+
   List<Article> get articles => _articles;
+
   bool get isLoading => _isLoading;
+
   Set<int> get favoriteArticles => _favoriteArticles;
+
   bool get showOnlyFavorites => _showOnlyFavorites;
+
   bool get isLoadingMore => _isLoadingMore;
+
   List<Note> get notes => _notes;
+
   String get selectedSearchOption => _tempSearchParams.searchOption;
+
   bool get searchInText => _tempSearchParams.searchInText;
+
   String get searchQuery => _tempSearchParams.searchQuery;
+
   String get dateFrom => _tempSearchParams.dateFrom;
+
   String get dateTo => _tempSearchParams.dateTo;
+
   @override
   List<String> get selectedSources => _tempSearchParams.selectedSources;
+
   @override
   List<String> get selectedTags => _tempSearchParams.selectedTags;
 
@@ -153,13 +188,15 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
   @override
   void toggleSource(String source) {
-    final selectedSources = List<String>.from(_tempSearchParams.selectedSources);
+    final selectedSources =
+        List<String>.from(_tempSearchParams.selectedSources);
     if (selectedSources.contains(source)) {
       selectedSources.remove(source);
     } else {
       selectedSources.add(source);
     }
-    _tempSearchParams = _tempSearchParams.copyWith(selectedSources: selectedSources);
+    _tempSearchParams =
+        _tempSearchParams.copyWith(selectedSources: selectedSources);
     notifyListeners();
   }
 
@@ -229,7 +266,8 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   void updateNote(int noteId, String newText) {
     final index = _notes.indexWhere((note) => note.id == noteId);
     if (index == -1) return;
-    _notes[index] = _notes[index].copyWith(text: newText, updatedAt: DateTime.now().toIso8601String());
+    _notes[index] = _notes[index]
+        .copyWith(text: newText, updatedAt: DateTime.now().toIso8601String());
     notifyListeners();
   }
 

@@ -7,14 +7,26 @@ import '../data/models/subscribe_options.dart';
 class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   List<Subscription> _subscriptions = [];
   List<String> _sources = [
-    'Источник 1',
-    'Источник 2',
-    'Источник 3',
-    'Источник 4',
+    'Коммерсант',
     'Интерфакс',
-    'Коммерсантъ'
+    'ЦБ РФ',
+    'ЦБ Узбекистан',
+    'ЦБ Таджикистан',
+    'ЦБ Кыргызстан',
+    'ЦБ Азербайджан'
   ];
-  List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'IT', 'Экономика'];
+  List<String> _tags = [
+    'Политика',
+    'Экономика',
+    'Технологии',
+    'Спорт',
+    'Кредит',
+    'IT',
+    'Зарплаты',
+    'Кибербезопасность',
+    'Футбол',
+    'СБП'
+  ];
 
   int? _selectedSubscriptionId;
   bool _isLoading = false;

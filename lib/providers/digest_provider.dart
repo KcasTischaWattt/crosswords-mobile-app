@@ -7,14 +7,26 @@ import '../data/models/search_params/digest_search_params.dart';
 class DigestProvider extends ChangeNotifier implements FilterProvider {
   List<Digest> _digests = [];
   List<String> _sources = [
-    'Источник 1',
-    'Источник 2',
-    'Источник 3',
-    'Источник 4',
-    'Источник 5',
-    'Источник 6'
+    'Коммерсант',
+    'Интерфакс',
+    'ЦБ РФ',
+    'ЦБ Узбекистан',
+    'ЦБ Таджикистан',
+    'ЦБ Кыргызстан',
+    'ЦБ Азербайджан'
   ];
-  List<String> _tags = ['Тэг 1', 'Тэг 2', 'Тэг 3', 'Тэг 4', 'Тэг 5', 'Тэг 6'];
+  List<String> _tags = [
+    'Политика',
+    'Экономика',
+    'Технологии',
+    'Спорт',
+    'Кредит',
+    'IT',
+    'Зарплаты',
+    'Кибербезопасность',
+    'Футбол',
+    'СБП'
+  ];
 
   bool _isLoading = false;
   bool _isLoadingMore = false;
@@ -73,7 +85,9 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     if (_selectedCategory == "Все дайджесты") {
       return _digests;
     } else if (_selectedCategory == "Подписки") {
-      return _digests.where((digest) => digest.subscribeOptions.subscribed).toList();
+      return _digests
+          .where((digest) => digest.subscribeOptions.subscribed)
+          .toList();
     } else if (_selectedCategory == "Приватные") {
       return _digests.where((digest) => !digest.public).toList();
     }
