@@ -155,7 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
             _buildSwitchTile('Разрешить уведомления на почту', emailNotifications, (value) {
               setState(() => emailNotifications = value);
             }, theme),
-            _buildSwitchTile('Разрешить уведомления в приложении', mobileNotifications, (value) {
+            _buildSwitchTile('Разрешить мобильные уведомления', mobileNotifications, (value) {
               setState(() => mobileNotifications = value);
             }, theme),
             _buildStaticTile('Настройки уведомлений', '', theme),
