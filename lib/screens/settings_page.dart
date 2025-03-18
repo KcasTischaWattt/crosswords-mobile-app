@@ -16,9 +16,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool incognitoMode = false;
-  bool prioritizeBank = false;
-  bool shakeToTransfer = true;
+  bool addToDigest = false;
+  bool emailNotifications = false;
+  bool mobileNotifications = true;
 
   String get currentThemeName {
     return Theme.of(context).brightness == Brightness.dark ? "Тёмная" : "Светлая";
@@ -149,14 +149,14 @@ class _SettingsPageState extends State<SettingsPage> {
           SizedBox(height: 20),
 
           _buildSettingsBlock('Уведомления и раассылки', [
-            _buildSwitchTile('Разрешить добавлять меня в рассылку', incognitoMode, (value) {
-              setState(() => incognitoMode = value);
+            _buildSwitchTile('Разрешить добавлять меня в рассылку', addToDigest, (value) {
+              setState(() => addToDigest = value);
             }, theme),
-            _buildSwitchTile('Разрешить уведомления на почту', prioritizeBank, (value) {
-              setState(() => prioritizeBank = value);
+            _buildSwitchTile('Разрешить уведомления на почту', emailNotifications, (value) {
+              setState(() => emailNotifications = value);
             }, theme),
-            _buildSwitchTile('Разрешить уведомления в приложении', shakeToTransfer, (value) {
-              setState(() => shakeToTransfer = value);
+            _buildSwitchTile('Разрешить уведомления в приложении', mobileNotifications, (value) {
+              setState(() => mobileNotifications = value);
             }, theme),
             _buildStaticTile('Настройки уведомлений', '', theme),
           ], cardColor),
