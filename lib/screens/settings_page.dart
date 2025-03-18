@@ -16,7 +16,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool hideStories = true;
   bool incognitoMode = false;
   bool prioritizeBank = false;
   bool shakeToTransfer = true;
@@ -141,27 +140,25 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: EdgeInsets.all(16),
         children: [
           _buildSettingsBlock('Общие', [
-            _buildSwitchTile('Скрывать истории после просмотра', hideStories, (value) {
-              setState(() => hideStories = value);
-            }, theme),
-            _buildStaticTile('Автообновление', 'Включено', theme),
+            _buildStaticTile('Сменить почту', '', theme),
+            _buildStaticTile('Сменить пароль', '', theme),
             _buildStaticTile('Язык', 'Русский', theme),
             _buildStaticTile('Тема', currentThemeName, theme, onTap: _showThemeBottomSheet),
           ], cardColor!),
 
           SizedBox(height: 20),
 
-          _buildSettingsBlock('Контакты и переводы', [
-            _buildSwitchTile('Режим инкогнито', incognitoMode, (value) {
+          _buildSettingsBlock('Уведомления и раассылки', [
+            _buildSwitchTile('Разрешить добавлять меня в рассылку', incognitoMode, (value) {
               setState(() => incognitoMode = value);
             }, theme),
-            _buildSwitchTile('Сделать Т-Банк приоритетным в СБП', prioritizeBank, (value) {
+            _buildSwitchTile('Разрешить уведомления на почту', prioritizeBank, (value) {
               setState(() => prioritizeBank = value);
             }, theme),
-            _buildSwitchTile('Переводы по тряске телефона', shakeToTransfer, (value) {
+            _buildSwitchTile('Разрешить уведомления в приложении', shakeToTransfer, (value) {
               setState(() => shakeToTransfer = value);
             }, theme),
-            _buildStaticTile('Переводы себе между банками', '', theme),
+            _buildStaticTile('Настройки уведомлений', '', theme),
           ], cardColor),
         ],
       ),
