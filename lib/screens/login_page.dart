@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
@@ -38,15 +39,23 @@ class _LoginPageState extends State<LoginPage> {
 
       await widget.onLoginSuccess();
 
+    } on DioException catch (dioError) {
+      setState(() {
+        if (dioError.response?.statusCode == 401) {
+          _errorMessage = "Неверный логин или пароль.";
+        } else {
+          _errorMessage = "Ошибка сервера: ${dioError.response?.statusCode}";
+        }
+      });
     } catch (e) {
       setState(() {
-        _errorMessage = "Ошибка авторизации. Проверьте данные.";
+        _errorMessage = "Произошла ошибка: ${e.toString()}";
+      });
+    } finally {
+      setState(() {
+        _loading = false;
       });
     }
-
-    setState(() {
-      _loading = false;
-    });
   }
 
   Widget _buildInputField(TextEditingController controller, String labelText, {bool isPassword = false}) {
