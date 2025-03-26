@@ -1,14 +1,15 @@
 import 'package:crosswords/screens/register_page.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'package:crosswords/screens/login_page.dart';
 
-class LoginPage extends StatefulWidget {
+class AuthPage extends StatefulWidget {
   final Future<void> Function() setLogin;
   final VoidCallback toggleTheme;
   final VoidCallback onContinueWithoutLogin;
   final bool isDarkMode;
 
-  const LoginPage({
+  const AuthPage({
     super.key,
     required this.setLogin,
     required this.onContinueWithoutLogin,
@@ -17,10 +18,10 @@ class LoginPage extends StatefulWidget {
   });
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _AuthPageState createState() => _AuthPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _AuthPageState extends State<AuthPage> {
   bool _loading = false;
 
   Future<void> _performLogin(BuildContext context) async {
@@ -68,6 +69,19 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _navigateToLogin(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginPage(
+          onLoginSuccess: widget.setLogin,
+          toggleTheme: widget.toggleTheme,
+          isDarkMode: widget.isDarkMode,
+        ),
+      ),
+    );
+  }
+
   void _navigateToRegister(BuildContext context) {
     Navigator.push(
       context,
@@ -101,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: _loading ? null : () => _performLogin(context),
+                onPressed: _loading ? null : () => _navigateToLogin(context),
                 style: _buttonStyle(context),
                 child: _loading
                     ? const CircularProgressIndicator()

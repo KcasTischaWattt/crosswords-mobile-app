@@ -5,7 +5,7 @@ import '../main.dart';
 
 class ApiService {
   // TODO поменять на false
-  static final bool useMock = true;
+  static final bool useMock = false;
   static bool isAuthenticatedMock = false;
 
   /// Экземпляр Dio с предопределенными параметрами и перехватчиками
@@ -30,7 +30,7 @@ class ApiService {
     if (navigatorKey.currentState?.canPop() == false) {
       navigatorKey.currentState?.pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => LoginPage(
+          builder: (context) => AuthPage(
             setLogin: () async {
               navigatorKey.currentState?.pushReplacementNamed('/main');
             },
@@ -69,8 +69,14 @@ class ApiService {
       return;
     }
 
-    await _dio.post("/users/login",
-        data: {"username": username, "password": password});
+    final response = await _dio.post("/users/login", data: {
+      "username": username,
+      "password": password,
+    });
+
+    if (response.statusCode != 200) {
+      throw Exception("Login failed with status code ${response.statusCode}");
+    }
   }
 
   /// Регистрация пользователя

@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
                   setTheme: _setTheme,
                   onLogout: _onLogout,
                   isAuthenticated: isAuthenticated!)
-              : LoginPage(
+              : AuthPage(
                   setLogin: _checkAuthStatus,
                   onContinueWithoutLogin: _onContinueWithoutLogin,
                   toggleTheme: _toggleTheme,
