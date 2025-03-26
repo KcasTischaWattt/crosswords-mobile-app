@@ -5,7 +5,7 @@ import '../main.dart';
 
 class ApiService {
   // TODO поменять на false
-  static final bool useMock = false;
+  static final bool useMock = true;
   static bool isAuthenticatedMock = false;
 
   /// Экземпляр Dio с предопределенными параметрами и перехватчиками
