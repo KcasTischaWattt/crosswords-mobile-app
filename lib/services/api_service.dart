@@ -1,4 +1,4 @@
-import 'package:crosswords/screens/login_page.dart';
+import 'package:crosswords/screens/auth_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
