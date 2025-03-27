@@ -5,7 +5,7 @@ import '../main.dart';
 
 class ApiService {
   // TODO поменять на false
-  static final bool useMock = true;
+  static final bool useMock = false;
   static bool isAuthenticatedMock = false;
 
   /// Экземпляр Dio с предопределенными параметрами и перехватчиками
@@ -54,7 +54,7 @@ class ApiService {
     }
 
     try {
-      await _dio.get("/users/me");
+      await _dio.get("/users/check_auth");
       return true;
     } catch (e) {
       return false;

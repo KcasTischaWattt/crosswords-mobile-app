@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
 
     } on DioException catch (dioError) {
       setState(() {
-        if (dioError.response?.statusCode == 401) {
+        if (dioError.response?.statusCode == 400) {
           _errorMessage = "Неверный логин или пароль.";
         } else {
           _errorMessage = "Ошибка сервера: ${dioError.response?.statusCode}";

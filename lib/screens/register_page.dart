@@ -45,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
       await widget.onRegisterSuccess();
     } catch (e) {
       setState(() {
-        _errorMessage = "Ошибка регистрации. Проверьте данные.";
+        _errorMessage = "Ошибка регистрации: ${e.toString()}";
       });
     }
 
