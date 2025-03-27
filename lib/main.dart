@@ -87,6 +87,19 @@ class _MyAppState extends State<MyApp> {
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
       themeMode: _themeMode,
+      routes: {
+        '/main': (context) => MainApp(
+          setTheme: _setTheme,
+          onLogout: _onLogout,
+          isAuthenticated: isAuthenticated ?? false,
+        ),
+        '/auth': (context) => AuthPage(
+          setLogin: _checkAuthStatus,
+          onContinueWithoutLogin: _onContinueWithoutLogin,
+          toggleTheme: _toggleTheme,
+          isDarkMode: _themeMode == ThemeMode.dark,
+        ),
+      },
       home: isAuthenticated == null
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : showMainApp!
