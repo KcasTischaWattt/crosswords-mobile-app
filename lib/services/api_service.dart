@@ -1,4 +1,6 @@
 import 'package:crosswords/screens/auth_page.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
@@ -16,7 +18,15 @@ class ApiService {
       receiveTimeout: const Duration(seconds: 10),
       headers: {"Content-Type": "application/json"},
     ),
-  )..interceptors.add(InterceptorsWrapper(
+  );
+  static final CookieJar cookieJar = CookieJar();
+  static bool _interceptorsInitialized = false;
+
+  static void initializeInterceptors() {
+    if (_interceptorsInitialized) return;
+
+    _dio.interceptors.add(CookieManager(cookieJar));
+    _dio.interceptors.add(InterceptorsWrapper(
       onError: (DioException e, ErrorInterceptorHandler handler) {
         if (e.response?.statusCode == 401) {
           _handleUnauthorized();
@@ -24,6 +34,9 @@ class ApiService {
         return handler.next(e);
       },
     ));
+
+    _interceptorsInitialized = true;
+  }
 
   /// Перенаправляем пользователя на экран логина при 401
   static void _handleUnauthorized() {

@@ -14,6 +14,7 @@ import 'screens/auth_page.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
+  ApiService.initializeInterceptors();
   runApp(
     MultiProvider(
       providers: [
