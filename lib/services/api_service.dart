@@ -4,6 +4,8 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ApiService {
   // TODO поменять на false
@@ -25,7 +27,10 @@ class ApiService {
   static void initializeInterceptors() {
     if (_interceptorsInitialized) return;
 
-    _dio.interceptors.add(CookieManager(cookieJar));
+    if (!kIsWeb) {
+      _dio.interceptors.add(CookieManager(cookieJar));
+    }
+
     _dio.interceptors.add(InterceptorsWrapper(
       onError: (DioException e, ErrorInterceptorHandler handler) {
         if (e.response?.statusCode == 401) {
