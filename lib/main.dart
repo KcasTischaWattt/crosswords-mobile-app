@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
     if (savedTheme != null) {
       setState(() {
         _themeMode = ThemeMode.values.firstWhere(
-              (e) => e.name == savedTheme,
+          (e) => e.name == savedTheme,
           orElse: () => ThemeMode.system,
         );
       });
@@ -95,15 +95,15 @@ class _MyAppState extends State<MyApp> {
           themeMode: _themeMode,
           home: authProvider.showMainApp
               ? MainApp(
-            setTheme: _setTheme,
-            onLogout: _onLogout,
-            isAuthenticated: authProvider.isAuthenticated,
-          )
+                  setTheme: _setTheme,
+                  onLogout: _onLogout,
+                  isAuthenticated: authProvider.isAuthenticated,
+                )
               : AuthPage(
-            setLogin: () => authProvider.checkAuth(),
-            toggleTheme: _toggleTheme,
-            isDarkMode: _themeMode == ThemeMode.dark,
-          ),
+                  setLogin: () => authProvider.checkAuth(),
+                  toggleTheme: _toggleTheme,
+                  isDarkMode: _themeMode == ThemeMode.dark,
+                ),
         );
       },
     );
@@ -171,9 +171,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     _pages = [
-      ArticlesPage(
-        isAuthenticated: widget.isAuthenticated,
-      ),
+      ArticlesPage(),
       DigestsPage(),
       NotificationsPage(),
       SettingsPage(
@@ -187,11 +185,6 @@ class _MainAppState extends State<MainApp> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  Future<void> _saveThemeMode(ThemeMode mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('theme_mode', mode.name);
   }
 
   @override
@@ -238,4 +231,3 @@ extension CustomColors on ThemeData {
         : const Color(0xFFFF5252);
   }
 }
-

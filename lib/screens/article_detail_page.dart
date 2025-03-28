@@ -1,3 +1,4 @@
+import 'package:crosswords/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -15,10 +16,8 @@ import 'widgets/custom_expansion_tile_widget.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Article article;
-  final bool isAuthenticated;
 
-  const ArticleDetailPage(
-      {super.key, required this.article, required this.isAuthenticated});
+  const ArticleDetailPage({super.key, required this.article});
 
   @override
   _ArticleDetailPageState createState() => _ArticleDetailPageState();
@@ -384,18 +383,18 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
       actions: [
-        if (widget.isAuthenticated)
+        if (Provider.of<AuthProvider>(context, listen: false).isAuthenticated)
           IconButton(
             icon: provider.isLoading
                 ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2))
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2))
                 : Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? Colors.red : Colors.grey,
-              size: 24,
-            ),
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : Colors.grey,
+                    size: 24,
+                  ),
             onPressed: provider.isLoading ? null : _toggleFavorite,
           ),
       ],
@@ -499,7 +498,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   /// Построение списка заметок
   Widget _buildNotesSection(BuildContext context, ArticleProvider provider) {
-    if (!widget.isAuthenticated) return const SizedBox.shrink();
+    if (!Provider.of<AuthProvider>(context, listen: false).isAuthenticated)
+      return const SizedBox.shrink();
 
     final notes = provider.getNotesForArticle(widget.article.id);
     if (notes.isEmpty) return const Text("Заметок пока нет.");
@@ -590,7 +590,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   /// Построение поля ввода комментария
   Widget _buildCommentInput(BuildContext context, ArticleProvider provider) {
-    if (!widget.isAuthenticated) return const SizedBox.shrink();
+    if (!Provider.of<AuthProvider>(context, listen: false).isAuthenticated)
+      return const SizedBox.shrink();
 
     return Row(
       children: [

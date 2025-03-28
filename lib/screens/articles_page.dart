@@ -4,11 +4,10 @@ import '../providers/article_provider.dart';
 import '../data/models/article.dart';
 import 'article_detail_page.dart';
 import 'article_search_page.dart';
+import 'package:crosswords/providers/auth_provider.dart';
 
 class ArticlesPage extends StatefulWidget {
-  final bool isAuthenticated;
-
-  const ArticlesPage({super.key, required this.isAuthenticated});
+  const ArticlesPage({super.key});
 
   @override
   _ArticlesPageState createState() => _ArticlesPageState();
@@ -66,7 +65,7 @@ class _ArticlesPageState extends State<ArticlesPage>
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(width: 10),
-        if (widget.isAuthenticated)
+        if (Provider.of<AuthProvider>(context, listen: false).isAuthenticated)
           IconButton(
             icon: provider.isLoading
                 ? const SizedBox(
@@ -134,8 +133,7 @@ class _ArticlesPageState extends State<ArticlesPage>
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ArticleDetailPage(
-                  article: article, isAuthenticated: widget.isAuthenticated)),
+              builder: (context) => ArticleDetailPage(article: article)),
         );
       },
       style: ElevatedButton.styleFrom(
@@ -214,7 +212,8 @@ class _ArticlesPageState extends State<ArticlesPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: _buildArticleContent(article)),
-            if (widget.isAuthenticated)
+            if (Provider.of<AuthProvider>(context, listen: false)
+                .isAuthenticated)
               _buildFavoriteButton(article, isFavorite),
           ],
         ),
