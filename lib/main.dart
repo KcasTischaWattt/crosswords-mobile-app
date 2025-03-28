@@ -1,3 +1,4 @@
+import 'package:crosswords/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ArticleProvider()),
         ChangeNotifierProvider(create: (_) => DigestProvider()),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: const MyApp(),
     ),
@@ -35,36 +37,34 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool? isAuthenticated;
   bool? showMainApp;
   ThemeMode _themeMode = ThemeMode.dark;
 
   @override
   void initState() {
     super.initState();
-    _checkAuthStatus();
+    Future.microtask(
+        () => Provider.of<AuthProvider>(context, listen: false).checkAuth());
   }
 
   Future<void> _checkAuthStatus() async {
-    setState(() => isAuthenticated = null);
-    bool authStatus = await ApiService.checkAuth();
+    await Provider.of<AuthProvider>(context, listen: false).checkAuth();
     setState(() {
-      isAuthenticated = authStatus;
-      showMainApp = authStatus;
+      showMainApp =
+          Provider.of<AuthProvider>(context, listen: false).isAuthenticated;
     });
   }
 
   void _onContinueWithoutLogin() {
     setState(() {
-      isAuthenticated = false;
+      Provider.of<AuthProvider>(context, listen: false).setUnauthenticated();
       showMainApp = true;
     });
   }
 
   Future<void> _onLogout() async {
-    await ApiService.logout();
+    await Provider.of<AuthProvider>(context, listen: false).logout();
     setState(() {
-      isAuthenticated = false;
       showMainApp = false;
     });
   }
@@ -77,43 +77,47 @@ class _MyAppState extends State<MyApp> {
 
   void _toggleTheme() {
     setState(() {
-      _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+      _themeMode =
+          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      theme: _buildLightTheme(),
-      darkTheme: _buildDarkTheme(),
-      themeMode: _themeMode,
-      routes: {
-        '/main': (context) => MainApp(
-          setTheme: _setTheme,
-          onLogout: _onLogout,
-          isAuthenticated: isAuthenticated ?? false,
-        ),
-        '/auth': (context) => AuthPage(
-          setLogin: _checkAuthStatus,
-          onContinueWithoutLogin: _onContinueWithoutLogin,
-          toggleTheme: _toggleTheme,
-          isDarkMode: _themeMode == ThemeMode.dark,
-        ),
-      },
-      home: isAuthenticated == null
-          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-          : showMainApp!
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        return MaterialApp(
+          navigatorKey: navigatorKey,
+          theme: _buildLightTheme(),
+          darkTheme: _buildDarkTheme(),
+          themeMode: _themeMode,
+          routes: {
+            '/main': (context) => MainApp(
+              setTheme: _setTheme,
+              onLogout: _onLogout,
+              isAuthenticated: authProvider.isAuthenticated,
+            ),
+            '/auth': (context) => AuthPage(
+              setLogin: _checkAuthStatus,
+              onContinueWithoutLogin: _onContinueWithoutLogin,
+              toggleTheme: _toggleTheme,
+              isDarkMode: _themeMode == ThemeMode.dark,
+            ),
+          },
+          home: authProvider.isAuthenticated
               ? MainApp(
-                  setTheme: _setTheme,
-                  onLogout: _onLogout,
-                  isAuthenticated: isAuthenticated!)
+            setTheme: _setTheme,
+            onLogout: _onLogout,
+            isAuthenticated: authProvider.isAuthenticated,
+          )
               : AuthPage(
-                  setLogin: _checkAuthStatus,
-                  onContinueWithoutLogin: _onContinueWithoutLogin,
-                  toggleTheme: _toggleTheme,
-                  isDarkMode: _themeMode == ThemeMode.dark,
-                ),
+            setLogin: _checkAuthStatus,
+            onContinueWithoutLogin: _onContinueWithoutLogin,
+            toggleTheme: _toggleTheme,
+            isDarkMode: _themeMode == ThemeMode.dark,
+          ),
+        );
+      },
     );
   }
 

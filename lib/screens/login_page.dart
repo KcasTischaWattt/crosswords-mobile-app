@@ -1,5 +1,7 @@
+import 'package:crosswords/providers/auth_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -38,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       await widget.onLoginSuccess();
+      Provider.of<AuthProvider>(context, listen: false).setAuthenticated(true);
 
     } on DioException catch (dioError) {
       setState(() {

@@ -1,4 +1,6 @@
+import 'package:crosswords/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -43,6 +45,8 @@ class _RegisterPageState extends State<RegisterPage> {
       );
 
       await widget.onRegisterSuccess();
+
+      Provider.of<AuthProvider>(context, listen: false).setAuthenticated(true);
     } catch (e) {
       setState(() {
         _errorMessage = "Ошибка регистрации: ${e.toString()}";
