@@ -1,4 +1,8 @@
+import 'package:crosswords/providers/article_provider.dart';
+import 'package:crosswords/providers/digest_provider.dart';
+import 'package:crosswords/providers/subscription_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -40,7 +44,10 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
+    Provider.of<ArticleProvider>(context, listen: false).clear();
+    Provider.of<DigestProvider>(context, listen: false).clear();
+    Provider.of<SubscriptionProvider>(context, listen: false).clear();
     await ApiService.logout();
     _isAuthenticated = false;
     _showMainApp = false;

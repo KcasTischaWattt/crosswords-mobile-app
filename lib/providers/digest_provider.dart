@@ -5,7 +5,7 @@ import 'abstract/filter_provider.dart';
 import '../data/models/search_params/digest_search_params.dart';
 
 class DigestProvider extends ChangeNotifier implements FilterProvider {
-  List<Digest> _digests = [];
+  final List<Digest> _digests = [];
   List<String> _sources = [
     'Коммерсант',
     'Интерфакс',
@@ -215,4 +215,27 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   Future<void> loadDigests() async => _fetchDigests();
 
   Future<void> loadMoreDigests() async => _fetchDigests(isLoadMore: true);
+
+  void clear() {
+    _digests.clear();
+    _isLoading = false;
+    _isLoadingMore = false;
+    _currentPage = 1;
+    _selectedCategory = 'Все дайджесты';
+    _currentSearchParams = DigestSearchParams(
+      searchQuery: '',
+      dateFrom: '',
+      dateTo: '',
+      selectedSources: [],
+      selectedTags: [],
+    );
+    _tempSearchParams = DigestSearchParams(
+      searchQuery: '',
+      dateFrom: '',
+      dateTo: '',
+      selectedSources: [],
+      selectedTags: [],
+    );
+    notifyListeners();
+  }
 }

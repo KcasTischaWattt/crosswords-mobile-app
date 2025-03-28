@@ -6,7 +6,7 @@ import 'abstract/filter_provider.dart';
 import '../data/models/search_params/article_search_params.dart';
 
 class ArticleProvider extends ChangeNotifier implements FilterProvider {
-  List<Article> _articles = [];
+  final List<Article> _articles = [];
   List<String> _sources = [
     'Коммерсант',
     'Интерфакс',
@@ -278,5 +278,34 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
     // TODO Отправить запрос на удаление заметки на сервер
     // await ApiService.deleteNote(noteId);
+  }
+
+  void clear() {
+    _articles.clear();
+    _favoriteArticles.clear();
+    _notes.clear();
+    _isLoading = false;
+    _showOnlyFavorites = false;
+    _isLoadingMore = false;
+    _currentPage = 1;
+    _currentSearchParams = ArticleSearchParams(
+      searchQuery: '',
+      dateFrom: '',
+      dateTo: '',
+      selectedSources: [],
+      selectedTags: [],
+      searchInText: false,
+      searchOption: 'Поиск по смыслу',
+    );
+    _tempSearchParams = ArticleSearchParams(
+      searchQuery: '',
+      dateFrom: '',
+      dateTo: '',
+      selectedSources: [],
+      selectedTags: [],
+      searchInText: false,
+      searchOption: 'Поиск по смыслу',
+    );
+    notifyListeners();
   }
 }

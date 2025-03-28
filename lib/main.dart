@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _onLogout() async {
-    await Provider.of<AuthProvider>(context, listen: false).logout();
+    await Provider.of<AuthProvider>(context, listen: false).logout(context);
   }
 
   Future<void> _loadThemeMode() async {

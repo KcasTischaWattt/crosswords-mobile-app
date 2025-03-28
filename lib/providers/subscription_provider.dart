@@ -291,4 +291,22 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       _selectedTags.add(tag);
     }
   }
+
+  void clear() {
+    _subscriptions.clear();
+    _selectedSources.clear();
+    _selectedTags.clear();
+    _title = '';
+    _description = '';
+    _followers.clear();
+    _owner = '';
+    _sendToMail = false;
+    _mobileNotifications = false;
+    _isPublic = false;
+    _currentFollowerInput = '';
+    _isLoading = false;
+    _selectedCategory = "Все дайджесты";
+    _selectedSubscriptionId = null;
+    notifyListeners();
+  }
 }
