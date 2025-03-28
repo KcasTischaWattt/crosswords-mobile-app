@@ -11,6 +11,50 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
 
+  Future<void> _showAlertDialog(String title, String message) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: const Text('ОК'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onSubmit() {
+    final oldPassword = _oldPasswordController.text.trim();
+    final newPassword = _newPasswordController.text.trim();
+
+    if (oldPassword.isEmpty || newPassword.isEmpty) {
+      _showAlertDialog('Ошибка', 'Пожалуйста, заполните все поля.');
+      return;
+    }
+
+    if (oldPassword == newPassword) {
+      _showAlertDialog(
+        'Ошибка',
+        'Новый пароль не должен совпадать со старым.',
+      );
+      return;
+    }
+
+    // TODO: реализовать отправку нового пароля на сервер
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Пароль успешно изменён")),
+    );
+    Navigator.pop(context);
+  }
+
   Future<void> _confirmChange() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -32,11 +76,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
 
     if (confirmed == true) {
-      // TODO: реализовать отправку нового пароля на сервер
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Пароль успешно изменён")),
-      );
-      Navigator.pop(context);
+      _onSubmit();
     }
   }
 
