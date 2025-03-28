@@ -4,7 +4,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
-import 'dart:io' show Platform;
+import 'dart:io' show Directory, Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ApiService {
@@ -21,7 +21,9 @@ class ApiService {
       headers: {"Content-Type": "application/json"},
     ),
   );
-  static final CookieJar cookieJar = CookieJar();
+  static final PersistCookieJar cookieJar = PersistCookieJar(
+    storage: FileStorage('${Directory.systemTemp.path}/.cookies'),
+  );
   static bool _interceptorsInitialized = false;
 
   static void initializeInterceptors() {
