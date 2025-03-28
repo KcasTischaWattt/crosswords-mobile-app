@@ -77,6 +77,7 @@ class _MyAppState extends State<MyApp> {
       _themeMode =
           _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
+    _saveThemeMode(_themeMode);
   }
 
   Future<void> _saveThemeMode(ThemeMode mode) async {
