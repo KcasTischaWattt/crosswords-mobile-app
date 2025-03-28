@@ -1,3 +1,4 @@
+import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:crosswords/providers/abstract/filter_provider.dart';
 import 'package:flutter/material.dart';
 import '../data/models/subscription.dart';
@@ -5,28 +6,9 @@ import '../data/fake/fake_subscriptions.dart';
 import '../data/models/subscribe_options.dart';
 
 class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
-  List<Subscription> _subscriptions = [];
-  List<String> _sources = [
-    'Коммерсант',
-    'Интерфакс',
-    'ЦБ РФ',
-    'ЦБ Узбекистан',
-    'ЦБ Таджикистан',
-    'ЦБ Кыргызстан',
-    'ЦБ Азербайджан'
-  ];
-  List<String> _tags = [
-    'Политика',
-    'Экономика',
-    'Технологии',
-    'Спорт',
-    'Кредит',
-    'IT',
-    'Зарплаты',
-    'Кибербезопасность',
-    'Футбол',
-    'СБП'
-  ];
+  final List<Subscription> _subscriptions = [];
+  final List<String> _sources = List<String>.from(defaultSources);
+  final List<String> _tags = List<String>.from(defaultTags);
 
   int? _selectedSubscriptionId;
   bool _isLoading = false;

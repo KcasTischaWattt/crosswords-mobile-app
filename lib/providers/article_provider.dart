@@ -1,3 +1,4 @@
+import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:flutter/material.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
@@ -7,27 +8,8 @@ import '../data/models/search_params/article_search_params.dart';
 
 class ArticleProvider extends ChangeNotifier implements FilterProvider {
   final List<Article> _articles = [];
-  List<String> _sources = [
-    'Коммерсант',
-    'Интерфакс',
-    'ЦБ РФ',
-    'ЦБ Узбекистан',
-    'ЦБ Таджикистан',
-    'ЦБ Кыргызстан',
-    'ЦБ Азербайджан'
-  ];
-  List<String> _tags = [
-    'Политика',
-    'Экономика',
-    'Технологии',
-    'Спорт',
-    'Кредит',
-    'IT',
-    'Зарплаты',
-    'Кибербезопасность',
-    'Футбол',
-    'СБП'
-  ];
+  final List<String> _sources = List<String>.from(defaultSources);
+  final List<String> _tags = List<String>.from(defaultTags);
 
   final Set<int> _favoriteArticles =
       {}; // TODO убрать список ID избранных статей после подключения бэкэнда

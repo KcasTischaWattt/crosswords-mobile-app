@@ -1,3 +1,4 @@
+import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:flutter/material.dart';
 import '../data/models/digest.dart';
 import '../data/fake/fake_digests.dart';
@@ -6,27 +7,8 @@ import '../data/models/search_params/digest_search_params.dart';
 
 class DigestProvider extends ChangeNotifier implements FilterProvider {
   final List<Digest> _digests = [];
-  List<String> _sources = [
-    'Коммерсант',
-    'Интерфакс',
-    'ЦБ РФ',
-    'ЦБ Узбекистан',
-    'ЦБ Таджикистан',
-    'ЦБ Кыргызстан',
-    'ЦБ Азербайджан'
-  ];
-  List<String> _tags = [
-    'Политика',
-    'Экономика',
-    'Технологии',
-    'Спорт',
-    'Кредит',
-    'IT',
-    'Зарплаты',
-    'Кибербезопасность',
-    'Футбол',
-    'СБП'
-  ];
+  final List<String> _sources = List<String>.from(defaultSources);
+  final List<String> _tags = List<String>.from(defaultTags);
 
   bool _isLoading = false;
   bool _isLoadingMore = false;
