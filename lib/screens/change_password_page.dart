@@ -24,7 +24,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Подтвердить", style: TextStyle(color: Colors.red)),
+            child:
+                const Text("Подтвердить", style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -35,6 +36,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Пароль успешно изменён")),
       );
+      Navigator.pop(context);
     }
   }
 
@@ -50,7 +52,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         obscureText: true,
         decoration: InputDecoration(
           labelText: label,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: InputBorder.none,
         ),
       ),
@@ -61,7 +64,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Смена пароля", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: const Text("Смена пароля",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -80,10 +84,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 onPressed: _confirmChange,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text("Подтвердить", style: TextStyle(color: Colors.black, fontSize: 16)),
+                child: const Text("Подтвердить",
+                    style: TextStyle(color: Colors.black, fontSize: 16)),
               ),
             )
           ],
