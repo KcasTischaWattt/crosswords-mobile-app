@@ -1,5 +1,4 @@
-import 'package:crosswords/data/constants/tag_icons.dart';
-
+import 'package:crosswords/screens/widgets/subscription_avatar.dart';
 import '../data/models/subscribe_options.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -182,23 +181,6 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
-  Widget _buildTagIconAvatar(Subscription subscription) {
-    final firstTag = subscription.tags.isNotEmpty ? subscription.tags.first : null;
-    if (firstTag == null || !tagIcons.containsKey(firstTag)) {
-      return CircleAvatar(
-        radius: 25,
-        backgroundColor: Colors.grey[300],
-        child: Icon(Icons.person, size: 25, color: Colors.grey[600]),
-      );
-    }
-
-    return CircleAvatar(
-      radius: 25,
-      backgroundColor: Colors.white,
-      backgroundImage: AssetImage(tagIcons[firstTag]!),
-    );
-  }
-
   Widget _buildSubscriptionItem(Subscription subscription) {
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
     bool isSelected =
@@ -238,7 +220,7 @@ class _DigestsPageState extends State<DigestsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildTagIconAvatar(subscription),
+              SubscriptionAvatar(subscription: subscription),
               const SizedBox(height: 4),
               Text(
                 subscription.title,
