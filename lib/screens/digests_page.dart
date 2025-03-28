@@ -6,7 +6,7 @@ import 'package:velocity_x/velocity_x.dart';
 import '../providers/auth_provider.dart';
 import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
-import 'all_digest_topics_page.dart';
+import 'subscriptions_page.dart';
 import 'package:flutter/gestures.dart';
 import 'digest_search_page.dart';
 import '../providers/subscription_provider.dart';
@@ -252,7 +252,7 @@ class _DigestsPageState extends State<DigestsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const AllDigestTopicsPage()),
+                builder: (context) => const SubscriptionsPage()),
           );
         },
         child: const Text(

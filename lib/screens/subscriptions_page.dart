@@ -6,14 +6,14 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'digest_edit_page.dart';
 
-class AllDigestTopicsPage extends StatefulWidget {
-  const AllDigestTopicsPage({super.key});
+class SubscriptionsPage extends StatefulWidget {
+  const SubscriptionsPage({super.key});
 
   @override
-  _AllDigestTopicsPageState createState() => _AllDigestTopicsPageState();
+  _SubscriptionsPageState createState() => _SubscriptionsPageState();
 }
 
-class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
+class _SubscriptionsPageState extends State<SubscriptionsPage> {
   bool _showOnlySubscriptions = false;
 
   @override
