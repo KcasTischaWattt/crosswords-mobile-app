@@ -141,6 +141,31 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Future<bool?> _showLogoutConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Выход'),
+          content: const Text('Вы уверены, что хотите выйти из аккаунта?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text(
+                'Выйти',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildAuthButton(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final isAuth = authProvider.isAuthenticated;
@@ -151,7 +176,10 @@ class _SettingsPageState extends State<SettingsPage> {
       child: ElevatedButton(
         onPressed: () async {
           if (isAuth) {
-            await widget.onLogout();
+            final shouldLogout = await _showLogoutConfirmationDialog(context);
+            if (shouldLogout == true) {
+              await widget.onLogout();
+            }
           } else {
             Provider.of<AuthProvider>(context, listen: false)
                 .setUnauthenticated();
