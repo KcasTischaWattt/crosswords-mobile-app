@@ -80,17 +80,17 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       BuildContext context, BuildContext bottomSheetContext, Note note) {
     final menuItems = [
       {
-        'icon': Icons.content_copy,
+        'icons': Icons.content_copy,
         'text': "Копировать",
         'action': () => _copyNoteText(context, note)
       },
       {
-        'icon': Icons.edit,
+        'icons': Icons.edit,
         'text': "Редактировать",
         'action': () => _editNote(context, note)
       },
       {
-        'icon': Icons.delete,
+        'icons': Icons.delete,
         'text': "Удалить",
         'action': () => _confirmDeleteNote(context, bottomSheetContext, note)
       },
@@ -108,7 +108,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         mainAxisSize: MainAxisSize.min,
         children: menuItems.map((item) {
           return _buildMenuItem(
-            icon: item['icon'] as IconData,
+            icon: item['icons'] as IconData,
             text: item['text'] as String,
             onTap: item['action'] as VoidCallback,
           );

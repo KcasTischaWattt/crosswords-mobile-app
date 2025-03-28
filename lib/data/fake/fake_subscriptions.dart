@@ -29,7 +29,7 @@ List<Subscription> fakeSubscriptions = [
     title: 'Из мира еды',
     description: "самое вкусное",
     sources: ['Интерфакс', 'Коммерсантъ'],
-    tags: ['IT', 'Экономика'],
+    tags: ['Зарплаты', 'Экономика'],
     subscribeOptions: SubscribeOptions(
       subscribed: true,
       sendToMail: true,
@@ -52,7 +52,7 @@ List<Subscription> fakeSubscriptions = [
     description:
     "Another critical feature of the Smart Media Text Corpus is its annotation capability, allowing users to mark sections of articles, add notes, and categorize information.",
     sources: ['Интерфакс', 'Коммерсантъ'],
-    tags: ['IT', 'Экономика'],
+    tags: ['Политика', 'Экономика'],
     subscribeOptions: SubscribeOptions(
       subscribed: true,
       sendToMail: true,
@@ -74,7 +74,7 @@ List<Subscription> fakeSubscriptions = [
     title: 'Экономика России',
     description: "Анализ экономической ситуации в стране",
     sources: ['РБК', 'Коммерсантъ', 'ЦБ РФ'],
-    tags: ['Экономика', 'Финансы', 'Бизнес'],
+    tags: ['Экономика', 'СПБ', 'Кредит'],
     subscribeOptions: SubscribeOptions(
       subscribed: true,
       sendToMail: true,
@@ -96,7 +96,7 @@ List<Subscription> fakeSubscriptions = [
     title: 'Трансграничные переводы',
     description: "Всё о переводах в страны СНГ",
     sources: ['ЦБ Узбекистана', 'ЦБ Киргизии', 'ЦБ Азербайджана'],
-    tags: ['Экономика', 'Переводы'],
+    tags: ['Кредит', 'Экономика'],
     subscribeOptions: SubscribeOptions(
       subscribed: false,
       sendToMail: false,
@@ -118,7 +118,7 @@ List<Subscription> fakeSubscriptions = [
     title: 'Глубокий анализ современных тенденций в науке, технологиях и инновациях',
     description: "Детальный разбор последних исследований, научных открытий и инновационных технологий.",
     sources: ['Наука и Жизнь', 'Популярная механика', 'MIT Technology Review'],
-    tags: ['Наука', 'Технологии', 'Инновации', 'Исследования'],
+    tags: ['Технологии', 'Экономика', 'СБП', 'Кибербезопасность'],
     subscribeOptions: SubscribeOptions(
       subscribed: true,
       sendToMail: false,

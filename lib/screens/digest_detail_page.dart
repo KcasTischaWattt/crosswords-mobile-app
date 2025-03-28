@@ -24,7 +24,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
 
     if (isOwner) {
       menuItems.add({
-        'icon': Icons.edit,
+        'icons': Icons.edit,
         'text': "Редактировать",
         'action': () {
           Navigator.pop(context);
@@ -35,7 +35,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
 
     if (isSubscribed) {
       menuItems.add({
-        'icon': Icons.notifications,
+        'icons': Icons.notifications,
         'text': "Настройка уведомлений",
         'action': () {
           Navigator.pop(context);
@@ -45,7 +45,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     }
 
     menuItems.add({
-      'icon': isSubscribed ? Icons.unsubscribe : Icons.subscriptions,
+      'icons': isSubscribed ? Icons.unsubscribe : Icons.subscriptions,
       'text': isSubscribed ? "Отписаться" : "Подписаться",
       'action': () {
         Navigator.pop(context);
@@ -70,7 +70,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
             mainAxisSize: MainAxisSize.min,
             children: menuItems.map((item) {
               return ListTile(
-                leading: Icon(item['icon'] as IconData, size: 28),
+                leading: Icon(item['icons'] as IconData, size: 28),
                 title: Text(item['text'] as String, style: TextStyle(fontSize: 20)),
                 onTap: item['action'] as VoidCallback,
               );
