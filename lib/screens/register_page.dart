@@ -54,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = "Ошибка регистрации: ${e.toString()}";
+        _errorMessage = "Ошибка регистрации";
       });
     }
 
