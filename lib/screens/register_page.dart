@@ -46,10 +46,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
       await widget.onRegisterSuccess();
 
-      Provider.of<AuthProvider>(context, listen: false).setAuthenticated(true);
+      final ctx = context;
+      Provider.of<AuthProvider>(ctx, listen: false).setAuthenticated(true);
 
-      if (context.mounted) {
-        Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(ctx).pop();
       }
     } catch (e) {
       setState(() {
