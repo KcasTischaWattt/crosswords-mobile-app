@@ -36,10 +36,10 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   List<Digest> get digests => _digests;
 
   @override
-  List<String> get sources => _sources;
+  List<String> get sources => defaultSources;
 
   @override
-  List<String> get tags => _tags;
+  List<String> get tags => defaultTags;
 
   bool get isLoading => _isLoading;
 

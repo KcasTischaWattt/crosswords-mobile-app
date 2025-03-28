@@ -43,10 +43,10 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   );
 
   @override
-  List<String> get sources => _sources;
+  List<String> get sources => defaultSources;
 
   @override
-  List<String> get tags => _tags;
+  List<String> get tags => defaultTags;
 
   List<Article> get articles => _articles;
 

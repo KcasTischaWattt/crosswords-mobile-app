@@ -7,8 +7,6 @@ import '../data/models/subscribe_options.dart';
 
 class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   final List<Subscription> _subscriptions = [];
-  final List<String> _sources = List<String>.from(defaultSources);
-  final List<String> _tags = List<String>.from(defaultTags);
 
   int? _selectedSubscriptionId;
   bool _isLoading = false;
@@ -38,10 +36,10 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   List<String> get selectedTags => _selectedTags;
 
   @override
-  List<String> get sources => _sources;
+  List<String> get sources => defaultSources;
 
   @override
-  List<String> get tags => _tags;
+  List<String> get tags => defaultTags;
 
   bool get sendToMail => _sendToMail;
 

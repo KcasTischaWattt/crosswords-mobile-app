@@ -1,4 +1,6 @@
-const List<String> defaultSources = [
+import 'dart:collection';
+
+final List<String> _sources = [
   'Коммерсант',
   'Интерфакс',
   'ЦБ РФ',
@@ -8,7 +10,7 @@ const List<String> defaultSources = [
   'ЦБ Азербайджан',
 ];
 
-const List<String> defaultTags = [
+final List<String> _tags = [
   'Политика',
   'Экономика',
   'Технологии',
@@ -20,3 +22,6 @@ const List<String> defaultTags = [
   'Футбол',
   'СБП',
 ];
+
+final UnmodifiableListView<String> defaultSources = UnmodifiableListView(_sources);
+final UnmodifiableListView<String> defaultTags = UnmodifiableListView(_tags);
