@@ -11,6 +11,7 @@ import 'screens/digests_page.dart';
 import 'screens/notifications_page.dart';
 import 'screens/settings_page.dart';
 import 'screens/auth_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -42,6 +43,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _loadThemeMode();
     Future.microtask(
         () => Provider.of<AuthProvider>(context, listen: false).checkAuth());
   }
@@ -50,10 +52,24 @@ class _MyAppState extends State<MyApp> {
     await Provider.of<AuthProvider>(context, listen: false).logout();
   }
 
+  Future<void> _loadThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedTheme = prefs.getString('theme_mode');
+    if (savedTheme != null) {
+      setState(() {
+        _themeMode = ThemeMode.values.firstWhere(
+              (e) => e.name == savedTheme,
+          orElse: () => ThemeMode.system,
+        );
+      });
+    }
+  }
+
   void _setTheme(ThemeMode newThemeMode) {
     setState(() {
       _themeMode = newThemeMode;
     });
+    _saveThemeMode(newThemeMode);
   }
 
   void _toggleTheme() {
@@ -61,6 +77,11 @@ class _MyAppState extends State<MyApp> {
       _themeMode =
           _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
+  }
+
+  Future<void> _saveThemeMode(ThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('theme_mode', mode.name);
   }
 
   @override
@@ -166,6 +187,11 @@ class _MainAppState extends State<MainApp> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  Future<void> _saveThemeMode(ThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('theme_mode', mode.name);
   }
 
   @override

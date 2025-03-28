@@ -43,6 +43,7 @@ dependencies:
   dio: ^5.8.0+1
   cookie_jar: ^4.0.8
   dio_cookie_manager: ^3.2.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
