@@ -1,6 +1,5 @@
 import 'package:crosswords/main.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:crosswords/providers/auth_provider.dart';
 
@@ -186,8 +185,9 @@ class _SettingsPageState extends State<SettingsPage> {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              isAuth ? Theme.of(context).dangerColor : Theme.of(context).primaryColor,
+          backgroundColor: isAuth
+              ? Theme.of(context).dangerColor
+              : Theme.of(context).primaryColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -207,6 +207,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final theme = Theme.of(context);
     final cardColor =
         theme.bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900];
+    final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -217,55 +218,74 @@ class _SettingsPageState extends State<SettingsPage> {
           _buildSettingsBlock(
               'Общие',
               [
-                _buildStaticTile('Сменить почту', '', theme),
-                _buildStaticTile('Сменить пароль', '', theme),
+                if (isAuthenticated)
+                  _buildStaticTile('Сменить почту', '', theme),
+                if (isAuthenticated)
+                  _buildStaticTile('Сменить пароль', '', theme),
                 _buildStaticTile('Язык', 'Русский', theme),
                 _buildStaticTile('Тема', currentThemeName, theme,
                     onTap: _showThemeBottomSheet),
               ],
               cardColor!),
           SizedBox(height: 20),
-          _buildSettingsBlock(
-              'Уведомления и раассылки',
+          if (isAuthenticated)
+            _buildSettingsBlock(
+              'Уведомления и рассылки',
               [
                 _buildSwitchTile(
-                    'Разрешить добавлять меня в рассылку', addToDigest,
-                    (value) {
-                  setState(() => addToDigest = value);
-                }, theme),
+                  'Разрешить добавлять меня в рассылку',
+                  addToDigest,
+                  (value) {
+                    setState(() => addToDigest = value);
+                  },
+                  theme,
+                ),
                 AnimatedSwitcher(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   child: addToDigest
                       ? Column(
                           key: ValueKey<bool>(addToDigest),
                           children: [
                             _buildSwitchTile(
-                                'Разрешить сторонние уведомления на почту',
-                                sideMailNotifications, (value) {
-                              setState(() => sideMailNotifications = value);
-                            }, theme),
+                              'Разрешить сторонние уведомления на почту',
+                              sideMailNotifications,
+                              (value) {
+                                setState(() => sideMailNotifications = value);
+                              },
+                              theme,
+                            ),
                             _buildSwitchTile(
-                                'Разрешить сторонние мобильные уведомления',
-                                sideMobileNotifications, (value) {
-                              setState(() => sideMobileNotifications = value);
-                            }, theme),
+                              'Разрешить сторонние мобильные уведомления',
+                              sideMobileNotifications,
+                              (value) {
+                                setState(() => sideMobileNotifications = value);
+                              },
+                              theme,
+                            ),
                           ],
                         )
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink(),
                 ),
                 _buildSwitchTile(
-                    'Разрешить уведомления на почту', emailNotifications,
-                    (value) {
-                  setState(() => emailNotifications = value);
-                }, theme),
+                  'Разрешить уведомления на почту',
+                  emailNotifications,
+                  (value) {
+                    setState(() => emailNotifications = value);
+                  },
+                  theme,
+                ),
                 _buildSwitchTile(
-                    'Разрешить мобильные уведомления', mobileNotifications,
-                    (value) {
-                  setState(() => mobileNotifications = value);
-                }, theme),
+                  'Разрешить мобильные уведомления',
+                  mobileNotifications,
+                  (value) {
+                    setState(() => mobileNotifications = value);
+                  },
+                  theme,
+                ),
                 _buildStaticTile('Настройки уведомлений', '', theme),
               ],
-              cardColor),
+              cardColor,
+            ),
           const SizedBox(height: 10),
           _buildAuthButton(context),
           const SizedBox(height: 16),
