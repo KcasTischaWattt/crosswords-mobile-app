@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:crosswords/providers/auth_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   final void Function(ThemeMode) setTheme;
@@ -23,7 +25,9 @@ class _SettingsPageState extends State<SettingsPage> {
   bool sideMobileNotifications = false;
 
   String get currentThemeName {
-    return Theme.of(context).brightness == Brightness.dark ? "Тёмная" : "Светлая";
+    return Theme.of(context).brightness == Brightness.dark
+        ? "Тёмная"
+        : "Светлая";
   }
 
   AppBar _buildAppBar() {
@@ -40,7 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSettingsBlock(String title, List<Widget> children, Color cardColor) {
+  Widget _buildSettingsBlock(
+      String title, List<Widget> children, Color cardColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -63,7 +68,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSwitchTile(String title, bool value, Function(bool) onChanged, ThemeData theme) {
+  Widget _buildSwitchTile(
+      String title, bool value, Function(bool) onChanged, ThemeData theme) {
     return SwitchListTile(
       title: Text(title, style: TextStyle(fontSize: 14)),
       value: value,
@@ -73,20 +79,23 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildStaticTile(String title, String subtitle, ThemeData theme, {VoidCallback? onTap, bool isSelected = false}) {
+  Widget _buildStaticTile(String title, String subtitle, ThemeData theme,
+      {VoidCallback? onTap, bool isSelected = false}) {
     return Material(
-      color: isSelected ? theme.primaryColor.withOpacity(0.1) : Colors.transparent,
+      color:
+          isSelected ? theme.primaryColor.withOpacity(0.1) : Colors.transparent,
       child: InkWell(
         onTap: onTap,
         child: ListTile(
           title: Text(title, style: TextStyle(fontSize: 14)),
-          subtitle: subtitle.isNotEmpty ? Text(subtitle, style: TextStyle(color: Colors.grey)) : null,
+          subtitle: subtitle.isNotEmpty
+              ? Text(subtitle, style: TextStyle(color: Colors.grey))
+              : null,
           trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         ),
       ),
     );
   }
-
 
   void _showThemeBottomSheet() {
     showModalBottomSheet(
@@ -118,7 +127,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _setTheme(String mode, ThemeMode newThemeMode) {;
+  void _setTheme(String mode, ThemeMode newThemeMode) {
+    ;
     widget.setTheme(newThemeMode);
     Navigator.pop(context);
   }
@@ -130,10 +140,38 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildAuthButton(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    final isAuth = authProvider.isAuthenticated;
+    final buttonText = isAuth ? 'Выйти' : 'Войти';
+
+    return ElevatedButton(
+      onPressed: () async {
+        if (isAuth) {
+          await widget.onLogout();
+        } else {
+          Provider.of<AuthProvider>(context, listen: false)
+              .setUnauthenticated();
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(
+        buttonText,
+        style: const TextStyle(fontSize: 18, color: Colors.black),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cardColor = theme.bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900];
+    final cardColor =
+        theme.bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900];
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -141,48 +179,64 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          _buildSettingsBlock('Общие', [
-            _buildStaticTile('Сменить почту', '', theme),
-            _buildStaticTile('Сменить пароль', '', theme),
-            _buildStaticTile('Язык', 'Русский', theme),
-            _buildStaticTile('Тема', currentThemeName, theme, onTap: _showThemeBottomSheet),
-          ], cardColor!),
-
+          _buildSettingsBlock(
+              'Общие',
+              [
+                _buildStaticTile('Сменить почту', '', theme),
+                _buildStaticTile('Сменить пароль', '', theme),
+                _buildStaticTile('Язык', 'Русский', theme),
+                _buildStaticTile('Тема', currentThemeName, theme,
+                    onTap: _showThemeBottomSheet),
+              ],
+              cardColor!),
           SizedBox(height: 20),
-
-          _buildSettingsBlock('Уведомления и раассылки', [
-            _buildSwitchTile('Разрешить добавлять меня в рассылку', addToDigest, (value) {
-              setState(() => addToDigest = value);
-            }, theme),
-
-            AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: addToDigest
-                  ? Column(
-                key: ValueKey<bool>(addToDigest),
-                children: [
-                  _buildSwitchTile('Разрешить сторонние уведомления на почту', sideMailNotifications, (value) {
-                    setState(() => sideMailNotifications = value);
-                  }, theme),
-                  _buildSwitchTile('Разрешить сторонние мобильные уведомления', sideMobileNotifications, (value) {
-                    setState(() => sideMobileNotifications = value);
-                  }, theme),
-                ],
-              )
-                  : SizedBox.shrink(),
-            ),
-
-            _buildSwitchTile('Разрешить уведомления на почту', emailNotifications, (value) {
-              setState(() => emailNotifications = value);
-            }, theme),
-            _buildSwitchTile('Разрешить мобильные уведомления', mobileNotifications, (value) {
-              setState(() => mobileNotifications = value);
-            }, theme),
-            _buildStaticTile('Настройки уведомлений', '', theme),
-          ], cardColor),
+          _buildSettingsBlock(
+              'Уведомления и раассылки',
+              [
+                _buildSwitchTile(
+                    'Разрешить добавлять меня в рассылку', addToDigest,
+                    (value) {
+                  setState(() => addToDigest = value);
+                }, theme),
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 300),
+                  child: addToDigest
+                      ? Column(
+                          key: ValueKey<bool>(addToDigest),
+                          children: [
+                            _buildSwitchTile(
+                                'Разрешить сторонние уведомления на почту',
+                                sideMailNotifications, (value) {
+                              setState(() => sideMailNotifications = value);
+                            }, theme),
+                            _buildSwitchTile(
+                                'Разрешить сторонние мобильные уведомления',
+                                sideMobileNotifications, (value) {
+                              setState(() => sideMobileNotifications = value);
+                            }, theme),
+                          ],
+                        )
+                      : SizedBox.shrink(),
+                ),
+                _buildSwitchTile(
+                    'Разрешить уведомления на почту', emailNotifications,
+                    (value) {
+                  setState(() => emailNotifications = value);
+                }, theme),
+                _buildSwitchTile(
+                    'Разрешить мобильные уведомления', mobileNotifications,
+                    (value) {
+                  setState(() => mobileNotifications = value);
+                }, theme),
+                _buildStaticTile('Настройки уведомлений', '', theme),
+              ],
+              cardColor),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16),
+        child: _buildAuthButton(context),
       ),
     );
   }
 }
-
