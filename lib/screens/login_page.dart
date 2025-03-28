@@ -42,6 +42,10 @@ class _LoginPageState extends State<LoginPage> {
       await widget.onLoginSuccess();
       Provider.of<AuthProvider>(context, listen: false).setAuthenticated(true);
 
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+
     } on DioException catch (dioError) {
       setState(() {
         if (dioError.response?.statusCode == 400) {

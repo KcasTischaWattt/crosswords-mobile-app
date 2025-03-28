@@ -47,6 +47,10 @@ class _RegisterPageState extends State<RegisterPage> {
       await widget.onRegisterSuccess();
 
       Provider.of<AuthProvider>(context, listen: false).setAuthenticated(true);
+
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
     } catch (e) {
       setState(() {
         _errorMessage = "Ошибка регистрации: ${e.toString()}";
