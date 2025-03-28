@@ -84,10 +84,17 @@ class _MyAppState extends State<MyApp> {
     await prefs.setString('theme_mode', mode.name);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
+        if (authProvider.isLoading) {
+          return const MaterialApp(
+            home: SplashScreen(),
+          );
+        }
         return MaterialApp(
           navigatorKey: navigatorKey,
           theme: _buildLightTheme(),
@@ -229,5 +236,21 @@ extension CustomColors on ThemeData {
     return brightness == Brightness.dark
         ? const Color(0xFFEA4C46)
         : const Color(0xFFFF5252);
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          valueColor:
+          AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+        ),
+      ),
+    );
   }
 }

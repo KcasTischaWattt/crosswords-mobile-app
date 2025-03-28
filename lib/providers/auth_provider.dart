@@ -4,13 +4,21 @@ import '../services/api_service.dart';
 class AuthProvider with ChangeNotifier {
   bool _isAuthenticated = false;
   bool _showMainApp = false;
+  bool _isLoading = true;
 
   bool get isAuthenticated => _isAuthenticated;
   bool get showMainApp => _showMainApp;
+  bool get isLoading => _isLoading;
 
   Future<void> checkAuth() async {
+    _isLoading = true;
+    notifyListeners();
+
     _isAuthenticated = await ApiService.checkAuth();
     _showMainApp = _isAuthenticated;
+    notifyListeners();
+
+    _isLoading = false;
     notifyListeners();
   }
 
