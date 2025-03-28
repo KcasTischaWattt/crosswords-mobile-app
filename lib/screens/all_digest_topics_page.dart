@@ -324,20 +324,24 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
     );
   }
 
+  AppBar _buildAppBar() {
+    return AppBar(
+      toolbarHeight: 60,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+      title: const Text(
+        'Темы дайджестов',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 60,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        shadowColor: Colors.transparent,
-        title: const Text(
-          'Темы дайджестов',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: Column(
         children: [
           _buildOnlySubscriptionsToggle(),
