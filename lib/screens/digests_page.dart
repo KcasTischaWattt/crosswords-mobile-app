@@ -3,6 +3,7 @@ import '../data/models/subscribe_options.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
+import '../providers/auth_provider.dart';
 import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 import 'all_digest_topics_page.dart';
@@ -74,6 +75,9 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildCategoryButtons(DigestProvider digestProvider) {
+    final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
+    if (!isAuthenticated) return const SizedBox.shrink();
+
     final subscriptionProvider =
         Provider.of<SubscriptionProvider>(context, listen: false);
     return AnimatedSize(
@@ -512,6 +516,9 @@ class _DigestsPageState extends State<DigestsPage> {
   }
 
   Widget _buildDigestActions(Digest digest) {
+    final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
+    if (!isAuthenticated) return const SizedBox.shrink();
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -820,6 +827,7 @@ class _DigestsPageState extends State<DigestsPage> {
 
   AppBar _buildAppBar() {
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
+    final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
     final selectedSubscription = _getSelectedSubscription();
 
     return AppBar(
@@ -845,17 +853,17 @@ class _DigestsPageState extends State<DigestsPage> {
             )
           : null,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const DigestCreatePage(),
-              ),
-            );
-          },
-        ),
+        if (isAuthenticated)
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DigestCreatePage()),
+              );
+            },
+          ),
         IconButton(
           icon: const Icon(Icons.search),
           onPressed: () async {
