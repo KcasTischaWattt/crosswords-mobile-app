@@ -3,6 +3,7 @@ import 'package:crosswords/providers/subscription_provider.dart';
 import 'package:crosswords/screens/widgets/subscription_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import 'digest_edit_page.dart';
 
 class AllDigestTopicsPage extends StatefulWidget {
@@ -54,6 +55,28 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
       SubscriptionProvider provider, String newOwner) {
     provider.transferOwnership(subscription, newOwner);
     _toggleSubscription(subscription, provider);
+  }
+
+  Widget _buildOnlySubscriptionsToggle() {
+    final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
+    if (!isAuthenticated) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: ChoiceChip(
+          label: const Text("Только подписки"),
+          selected: _showOnlySubscriptions,
+          onSelected: (bool selected) {
+            // TODO обновление списка подписок
+            setState(() {
+              _showOnlySubscriptions = selected;
+            });
+          },
+        ),
+      ),
+    );
   }
 
   Widget _buildSubscriptionList(SubscriptionProvider provider) {
@@ -114,6 +137,9 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
 
   Widget _buildTrailingButtons(
       Subscription subscription, SubscriptionProvider provider) {
+    final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
+    if (!isAuthenticated) return const SizedBox.shrink();
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -314,22 +340,7 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: ChoiceChip(
-                label: const Text("Только подписки"),
-                selected: _showOnlySubscriptions,
-                onSelected: (bool selected) {
-                  // TODO обновление списка подписок
-                  setState(() {
-                    _showOnlySubscriptions = selected;
-                  });
-                },
-              ),
-            ),
-          ),
+          _buildOnlySubscriptionsToggle(),
           Expanded(
             child: Consumer<SubscriptionProvider>(
               builder: (context, provider, child) =>
