@@ -2,6 +2,8 @@ import 'package:crosswords/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:crosswords/providers/auth_provider.dart';
+import 'change_password_page.dart';
+import 'change_email_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final void Function(ThemeMode) setTheme;
@@ -202,6 +204,20 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  void _navigateToChangeEmail() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ChangeEmailPage()),
+    );
+  }
+
+  void _navigateToChangePassword() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -219,9 +235,11 @@ class _SettingsPageState extends State<SettingsPage> {
               'Общие',
               [
                 if (isAuthenticated)
-                  _buildStaticTile('Сменить почту', '', theme),
+                  _buildStaticTile('Сменить почту', '', theme,
+                      onTap: _navigateToChangeEmail),
                 if (isAuthenticated)
-                  _buildStaticTile('Сменить пароль', '', theme),
+                  _buildStaticTile('Сменить пароль', '', theme,
+                      onTap: _navigateToChangePassword),
                 _buildStaticTile('Язык', 'Русский', theme),
                 _buildStaticTile('Тема', currentThemeName, theme,
                     onTap: _showThemeBottomSheet),
