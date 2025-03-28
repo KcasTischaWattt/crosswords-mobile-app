@@ -1,3 +1,4 @@
+import 'package:crosswords/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -142,27 +143,33 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildAuthButton(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-
     final isAuth = authProvider.isAuthenticated;
     final buttonText = isAuth ? 'Выйти' : 'Войти';
 
-    return ElevatedButton(
-      onPressed: () async {
-        if (isAuth) {
-          await widget.onLogout();
-        } else {
-          Provider.of<AuthProvider>(context, listen: false)
-              .setUnauthenticated();
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).primaryColor,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(
-        buttonText,
-        style: const TextStyle(fontSize: 18, color: Colors.black),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: ElevatedButton(
+        onPressed: () async {
+          if (isAuth) {
+            await widget.onLogout();
+          } else {
+            Provider.of<AuthProvider>(context, listen: false)
+                .setUnauthenticated();
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor:
+              isAuth ? Theme.of(context).dangerColor : Theme.of(context).primaryColor,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+        child: Text(
+          buttonText,
+          style: const TextStyle(fontSize: 16, color: Colors.black),
+        ),
       ),
     );
   }
@@ -231,11 +238,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 _buildStaticTile('Настройки уведомлений', '', theme),
               ],
               cardColor),
+          const SizedBox(height: 10),
+          _buildAuthButton(context),
+          const SizedBox(height: 16),
         ],
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
-        child: _buildAuthButton(context),
       ),
     );
   }

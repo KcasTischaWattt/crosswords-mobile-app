@@ -204,3 +204,12 @@ class _MainAppState extends State<MainApp> {
     );
   }
 }
+
+extension CustomColors on ThemeData {
+  Color get dangerColor {
+    return brightness == Brightness.dark
+        ? const Color(0xFFEA4C46)
+        : const Color(0xFFFF5252);
+  }
+}
+
