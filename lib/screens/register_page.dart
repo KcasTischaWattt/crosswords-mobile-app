@@ -49,6 +49,12 @@ class _RegisterPageState extends State<RegisterPage> {
       final ctx = context;
       Provider.of<AuthProvider>(ctx, listen: false).setAuthenticated(true);
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text("Выполнен вход как ${_usernameController.text.trim()}")),
+      );
+
       if (mounted) {
         Navigator.of(ctx).pop();
       }
@@ -63,7 +69,8 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  Widget _buildInputField(TextEditingController controller, String labelText, {bool isPassword = false}) {
+  Widget _buildInputField(TextEditingController controller, String labelText,
+      {bool isPassword = false}) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
@@ -77,7 +84,8 @@ class _RegisterPageState extends State<RegisterPage> {
           labelText: labelText,
           hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         ),
       ),
     );
@@ -98,7 +106,8 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       child: _loading
           ? const CircularProgressIndicator()
-          : const Text('Зарегистрироваться', style: TextStyle(fontSize: 18, color: Colors.black)),
+          : const Text('Зарегистрироваться',
+              style: TextStyle(fontSize: 18, color: Colors.black)),
     );
   }
 
@@ -115,7 +124,8 @@ class _RegisterPageState extends State<RegisterPage> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay, size: 28),
+            icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
+                size: 28),
             onPressed: widget.toggleTheme,
           ),
         ],
@@ -128,7 +138,8 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               _buildRegisterIcon(),
               const SizedBox(height: 24),
-              const Text('Регистрация', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              const Text('Регистрация',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               _buildInputField(_nameController, 'Ваше Имя'),
               const SizedBox(height: 10),

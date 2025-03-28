@@ -44,10 +44,15 @@ class _LoginPageState extends State<LoginPage> {
       final ctx = context;
       Provider.of<AuthProvider>(ctx, listen: false).setAuthenticated(true);
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text("Выполнен вход как ${_usernameController.text.trim()}")),
+      );
+
       if (mounted) {
         Navigator.of(ctx).pop();
       }
-
     } on DioException catch (dioError) {
       setState(() {
         if (dioError.response?.statusCode == 400) {
@@ -67,7 +72,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Widget _buildInputField(TextEditingController controller, String labelText, {bool isPassword = false}) {
+  Widget _buildInputField(TextEditingController controller, String labelText,
+      {bool isPassword = false}) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
@@ -81,7 +87,8 @@ class _LoginPageState extends State<LoginPage> {
           labelText: labelText,
           hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         ),
       ),
     );
@@ -102,7 +109,8 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: _loading
           ? const CircularProgressIndicator()
-          : const Text('Войти', style: TextStyle(fontSize: 18, color: Colors.black)),
+          : const Text('Войти',
+              style: TextStyle(fontSize: 18, color: Colors.black)),
     );
   }
 
@@ -119,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay, size: 28),
+            icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
+                size: 28),
             onPressed: widget.toggleTheme,
           ),
         ],
@@ -132,7 +141,8 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               _buildRegisterIcon(),
               const SizedBox(height: 24),
-              const Text('Вход в аккаунт', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              const Text('Вход в аккаунт',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               _buildInputField(_usernameController, 'Логин'),
               const SizedBox(height: 10),
