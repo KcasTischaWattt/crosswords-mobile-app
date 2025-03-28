@@ -1,18 +1,18 @@
+import 'package:crosswords/providers/auth_provider.dart';
 import 'package:crosswords/screens/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import 'package:crosswords/screens/login_page.dart';
 
 class AuthPage extends StatefulWidget {
   final Future<void> Function() setLogin;
   final VoidCallback toggleTheme;
-  final VoidCallback onContinueWithoutLogin;
   final bool isDarkMode;
 
   const AuthPage({
     super.key,
     required this.setLogin,
-    required this.onContinueWithoutLogin,
     required this.toggleTheme,
     required this.isDarkMode,
   });
@@ -32,7 +32,7 @@ class _AuthPageState extends State<AuthPage> {
     });
 
     try {
-      await ApiService.login("testuser", "password123");
+      await ApiService.login("admin", "admin");
       await widget.setLogin();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +131,9 @@ class _AuthPageState extends State<AuthPage> {
               ),
               const SizedBox(height: 20),
               TextButton(
-                onPressed: widget.onContinueWithoutLogin,
+                onPressed: () {
+                  Provider.of<AuthProvider>(context, listen: false).continueWithoutLogin();
+                },
                 child: const Text(
                   'Продолжить без регистрации',
                   style: TextStyle(

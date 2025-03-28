@@ -37,7 +37,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool? showMainApp;
   ThemeMode _themeMode = ThemeMode.dark;
 
   @override
@@ -47,26 +46,8 @@ class _MyAppState extends State<MyApp> {
         () => Provider.of<AuthProvider>(context, listen: false).checkAuth());
   }
 
-  Future<void> _checkAuthStatus() async {
-    await Provider.of<AuthProvider>(context, listen: false).checkAuth();
-    setState(() {
-      showMainApp =
-          Provider.of<AuthProvider>(context, listen: false).isAuthenticated;
-    });
-  }
-
-  void _onContinueWithoutLogin() {
-    setState(() {
-      Provider.of<AuthProvider>(context, listen: false).setUnauthenticated();
-      showMainApp = true;
-    });
-  }
-
   Future<void> _onLogout() async {
     await Provider.of<AuthProvider>(context, listen: false).logout();
-    setState(() {
-      showMainApp = false;
-    });
   }
 
   void _setTheme(ThemeMode newThemeMode) {
@@ -91,28 +72,14 @@ class _MyAppState extends State<MyApp> {
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
           themeMode: _themeMode,
-          routes: {
-            '/main': (context) => MainApp(
-              setTheme: _setTheme,
-              onLogout: _onLogout,
-              isAuthenticated: authProvider.isAuthenticated,
-            ),
-            '/auth': (context) => AuthPage(
-              setLogin: _checkAuthStatus,
-              onContinueWithoutLogin: _onContinueWithoutLogin,
-              toggleTheme: _toggleTheme,
-              isDarkMode: _themeMode == ThemeMode.dark,
-            ),
-          },
-          home: authProvider.isAuthenticated
+          home: authProvider.showMainApp
               ? MainApp(
             setTheme: _setTheme,
             onLogout: _onLogout,
             isAuthenticated: authProvider.isAuthenticated,
           )
               : AuthPage(
-            setLogin: _checkAuthStatus,
-            onContinueWithoutLogin: _onContinueWithoutLogin,
+            setLogin: () => authProvider.checkAuth(),
             toggleTheme: _toggleTheme,
             isDarkMode: _themeMode == ThemeMode.dark,
           ),

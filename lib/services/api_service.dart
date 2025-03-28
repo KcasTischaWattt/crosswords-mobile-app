@@ -34,34 +34,14 @@ class ApiService {
     _dio.interceptors.add(InterceptorsWrapper(
       onError: (DioException e, ErrorInterceptorHandler handler) {
         if (e.response?.statusCode == 401) {
-          _handleUnauthorized();
+          /// TODO перенаправить на страницу логина
+          debugPrint("401 Unauthorized — пользователь неавторизован");
         }
         return handler.next(e);
       },
     ));
 
     _interceptorsInitialized = true;
-  }
-
-  /// Перенаправляем пользователя на экран логина при 401
-  static void _handleUnauthorized() {
-    if (navigatorKey.currentState?.canPop() == false) {
-      navigatorKey.currentState?.pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => AuthPage(
-            setLogin: () async {
-              navigatorKey.currentState?.pushReplacementNamed('/main');
-            },
-            onContinueWithoutLogin: () {
-              navigatorKey.currentState?.pushReplacementNamed('/main');
-            },
-            toggleTheme: () {},
-            isDarkMode: false,
-          ),
-        ),
-        (route) => false,
-      );
-    }
   }
 
   /// Проверка аутентификацию
