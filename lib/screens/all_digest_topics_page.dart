@@ -1,5 +1,6 @@
 import 'package:crosswords/data/models/subscription.dart';
 import 'package:crosswords/providers/subscription_provider.dart';
+import 'package:crosswords/screens/widgets/subscription_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'digest_edit_page.dart';
@@ -93,20 +94,12 @@ class _AllDigestTopicsPageState extends State<AllDigestTopicsPage> {
       child: SizedBox(
         height: 60,
         child: ListTile(
-          leading: _buildLeadingIcon(),
+          leading: SubscriptionAvatar(subscription: subscription),
           title: _buildTitle(subscription),
           trailing: _buildTrailingButtons(subscription, provider),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         ),
       ),
-    );
-  }
-
-  Widget _buildLeadingIcon() {
-    return CircleAvatar(
-      radius: 25,
-      backgroundColor: Colors.grey[300],
-      child: Icon(Icons.person, color: Colors.grey[600]),
     );
   }
 
