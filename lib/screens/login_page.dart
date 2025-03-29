@@ -133,25 +133,32 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildRegisterIcon(),
-              const SizedBox(height: 24),
-              const Text('Вход в аккаунт',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20),
-              _buildInputField(_usernameController, 'Логин'),
-              const SizedBox(height: 10),
-              _buildInputField(_passwordController, 'Пароль', isPassword: true),
-              const SizedBox(height: 20),
-              _buildErrorMessage(),
-              const SizedBox(height: 10),
-              _buildRegisterButton(),
-            ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40),
+                _buildRegisterIcon(),
+                const SizedBox(height: 24),
+                const Text(
+                  'Вход в аккаунт',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                _buildInputField(_usernameController, 'Логин'),
+                const SizedBox(height: 10),
+                _buildInputField(_passwordController, 'Пароль',
+                    isPassword: true),
+                const SizedBox(height: 20),
+                _buildErrorMessage(),
+                const SizedBox(height: 10),
+                _buildRegisterButton(),
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
