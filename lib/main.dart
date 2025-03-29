@@ -39,6 +39,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.dark;
+  bool _isThemeLoaded = false;
 
   @override
   void initState() {
@@ -55,12 +56,15 @@ class _MyAppState extends State<MyApp> {
   Future<void> _loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
     final savedTheme = prefs.getString('theme_mode');
-    if (savedTheme != null) {
+    if (mounted) {
       setState(() {
-        _themeMode = ThemeMode.values.firstWhere(
-          (e) => e.name == savedTheme,
-          orElse: () => ThemeMode.system,
-        );
+        _themeMode = savedTheme != null
+            ? ThemeMode.values.firstWhere(
+                (e) => e.name == savedTheme,
+                orElse: () => ThemeMode.system,
+              )
+            : ThemeMode.system;
+        _isThemeLoaded = true;
       });
     }
   }
@@ -85,17 +89,21 @@ class _MyAppState extends State<MyApp> {
     await prefs.setString('theme_mode', mode.name);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
+        final themeModeToUse = _isThemeLoaded ? _themeMode : ThemeMode.system;
+
         if (authProvider.isLoading) {
-          return const MaterialApp(
-            home: SplashScreen(),
+          return MaterialApp(
+            theme: _buildLightTheme(),
+            darkTheme: _buildDarkTheme(),
+            themeMode: themeModeToUse,
+            home: const SplashScreen(),
           );
         }
+
         return MaterialApp(
           navigatorKey: navigatorKey,
           theme: _buildLightTheme(),
@@ -248,8 +256,7 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: CircularProgressIndicator(
-          valueColor:
-          AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+          valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
         ),
       ),
     );
