@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:crosswords/providers/auth_provider.dart';
 import 'change_password_page.dart';
 import 'change_email_page.dart';
+import 'notifications_settings_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final void Function(ThemeMode) setTheme;
@@ -218,6 +219,13 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  void _navigateToNotificationSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MySubscriptionsPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -300,7 +308,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   theme,
                 ),
-                _buildStaticTile('Настройки уведомлений', '', theme),
+                _buildStaticTile('Настройки уведомлений', '', theme,
+                    onTap: _navigateToNotificationSettings),
               ],
               cardColor,
             ),
