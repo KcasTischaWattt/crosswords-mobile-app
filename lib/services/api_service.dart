@@ -15,7 +15,7 @@ class ApiService {
   /// Экземпляр Dio с предопределенными параметрами и перехватчиками
   static final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://10.0.2.2:8081",
+      baseUrl: "http://10.62.162.108:8081",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {"Content-Type": "application/json"},
