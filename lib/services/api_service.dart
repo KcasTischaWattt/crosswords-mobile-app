@@ -80,7 +80,7 @@ class ApiService {
   }
 
   /// Регистрация пользователя
-  static Future<void> register(String name, String surname, String username,
+  static Future<void> register(String name, String surname,
       String email, String password) async {
     if (useMock) {
       await Future.delayed(const Duration(seconds: 1));
@@ -92,7 +92,7 @@ class ApiService {
       data: {
         "name": name,
         "surname": surname,
-        "username": username,
+        "username": email,
         "email": email,
         "password": password,
       },

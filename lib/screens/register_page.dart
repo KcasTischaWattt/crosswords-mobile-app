@@ -22,7 +22,6 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -39,7 +38,6 @@ class _RegisterPageState extends State<RegisterPage> {
       await ApiService.register(
         _nameController.text,
         _surnameController.text,
-        _usernameController.text,
         _emailController.text,
         _passwordController.text,
       );
@@ -52,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content:
-                Text("Выполнен вход как ${_usernameController.text.trim()}")),
+                Text("Выполнен вход как ${_emailController.text.trim()}")),
       );
 
       if (mounted) {
@@ -147,8 +145,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 _buildInputField(_nameController, 'Ваше Имя'),
                 const SizedBox(height: 10),
                 _buildInputField(_surnameController, 'Ваша Фамилия'),
-                const SizedBox(height: 10),
-                _buildInputField(_usernameController, 'Имя пользователя'),
                 const SizedBox(height: 10),
                 _buildInputField(_emailController, 'Email'),
                 const SizedBox(height: 10),
