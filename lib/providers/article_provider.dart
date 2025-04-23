@@ -80,6 +80,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     return _notes.where((note) => note.articleId == articleId).toList();
   }
 
+  /// Метод для загрузки статей
   Future<void> loadArticles() async {
     _currentPage = 1;
     _isLoading = true;
@@ -102,6 +103,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  /// Метод для подгрузки статей (пагинация)
   Future<void> loadMoreArticles() async {
     if (_isLoadingMore || _isLoading) return;
 
