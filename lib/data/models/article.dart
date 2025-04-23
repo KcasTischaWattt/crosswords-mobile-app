@@ -32,7 +32,7 @@ class Article {
       text: json['text'],
       tags: List<String>.from(json['tags'] ?? []),
       date: json['date'],
-      favorite: json['favorite'] ?? false,
+      favorite: json['favourite'] ?? false,
       language: json['language'],
       url: json['URL'],
     );
