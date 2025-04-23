@@ -1,11 +1,9 @@
-import 'package:crosswords/screens/auth_page.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../data/models/article.dart';
-import '../main.dart';
-import 'dart:io' show Directory, Platform;
+import 'dart:io' show Directory;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ApiService {
@@ -81,8 +79,8 @@ class ApiService {
   }
 
   /// Регистрация пользователя
-  static Future<void> register(String name, String surname,
-      String email, String password) async {
+  static Future<void> register(
+      String name, String surname, String email, String password) async {
     if (useMock) {
       await Future.delayed(const Duration(seconds: 1));
       return;
@@ -111,7 +109,7 @@ class ApiService {
     try {
       await _dio.post("/users/logout");
     } catch (e) {
-      print("Ошибка при выходе: $e");
+      debugPrint("Ошибка при выходе: $e");
     }
   }
 
