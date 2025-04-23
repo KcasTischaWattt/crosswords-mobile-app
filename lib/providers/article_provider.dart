@@ -2,7 +2,7 @@ import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:flutter/material.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
-import '../data/fake/fake_articles.dart';
+import '../services/api_service.dart';
 import 'abstract/filter_provider.dart';
 import '../data/models/search_params/article_search_params.dart';
 
@@ -18,7 +18,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   bool _showOnlyFavorites = false;
   bool _isLoadingMore = false;
 
-  // TODO не забыть использовать для запроса к API
   int _currentPage = 1;
   final int _pageSize = 10;
 
@@ -83,18 +82,21 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
   Future<void> loadArticles() async {
     _currentPage = 1;
-    notifyListeners();
-
     _isLoading = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 1)); // Имитация задержки
-
-    // TODO загрузка данных
-    List<Article> newArticles = fakeArticles.toList();
-
-    _articles.replaceRange(0, _articles.length, newArticles);
-    _currentPage++;
+    try {
+      final searchParams = _currentSearchParams.toApiJson(
+          _currentPage, _pageSize, _showOnlyFavorites);
+      List<Article> newArticles =
+          await ApiService.fetchDocuments(searchParams: searchParams);
+      _articles
+        ..clear()
+        ..addAll(newArticles);
+      _currentPage++;
+    } catch (e) {
+      debugPrint("Ошибка при загрузке статей: $e");
+    }
 
     _isLoading = false;
     notifyListeners();
@@ -106,13 +108,17 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     _isLoadingMore = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 1)); // Имитация задержки
+    try {
+      final searchParams = _currentSearchParams.toApiJson(
+          _currentPage, _pageSize, _showOnlyFavorites);
+      List<Article> newArticles =
+          await ApiService.fetchDocuments(searchParams: searchParams);
+      _articles.addAll(newArticles);
+      _currentPage++;
+    } catch (e) {
+      debugPrint("Ошибка при загрузке статей: $e");
+    }
 
-    // TODO загрузка данных
-    List<Article> newArticles = fakeArticles.toList();
-
-    _articles.addAll(newArticles);
-    _currentPage++;
     _isLoadingMore = false;
     notifyListeners();
   }
@@ -253,7 +259,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  // Метод для удаления заметки
+  /// Метод для удаления заметки
   Future<void> deleteNote(int noteId) async {
     _notes.removeWhere((note) => note.id == noteId);
     notifyListeners();

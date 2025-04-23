@@ -3,6 +3,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import '../data/models/article.dart';
 import '../main.dart';
 import 'dart:io' show Directory, Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -112,6 +113,16 @@ class ApiService {
     } catch (e) {
       print("Ошибка при выходе: $e");
     }
+  }
+
+  /// Получение списка статей
+  static Future<List<Article>> fetchDocuments({
+    required Map<String, dynamic> searchParams,
+  }) async {
+    final response = await _dio.post("/documents/search", data: searchParams);
+
+    final List<dynamic> docsJson = response.data['documents'];
+    return docsJson.map((json) => Article.fromJson(json)).toList();
   }
 
   /// GET запрос к API

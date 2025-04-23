@@ -75,6 +75,23 @@ class ArticleSearchParams {
     );
   }
 
+  Map<String, dynamic> toApiJson(int page, int pageSize, bool isFavorite) {
+    return {
+      "language": null,
+      "sources": selectedSources.isEmpty ? null : selectedSources,
+      "tags": selectedTags.isEmpty ? null : selectedTags,
+      "folders": isFavorite ? ["favorite"] : null,
+      "search_body": searchQuery.isEmpty ? null : searchQuery,
+      "search_mode": searchOption,
+      "date_from": dateFrom.isEmpty ? null : dateFrom,
+      "date_to": dateTo.isEmpty ? null : dateTo,
+      "next_page": page,
+      "matches_per_page": pageSize,
+      "approval_percentage": 0.5,
+    };
+  }
+
+
   @override
   String toString() {
     return 'SearchParams(searchQuery: $searchQuery, dateFrom: $dateFrom, dateTo: $dateTo, '
