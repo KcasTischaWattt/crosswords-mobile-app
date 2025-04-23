@@ -123,6 +123,16 @@ class ApiService {
     return docsJson.map((json) => Article.fromJson(json)).toList();
   }
 
+  /// Добавление статьи в избранное
+  static Future<void> addToFavorites(int articleId) async {
+    await _dio.post("/documents/$articleId/add_to_favourites");
+  }
+
+  /// Удаление статьи из избранного
+  static Future<void> removeFromFavorites(int articleId) async {
+    await _dio.post("/documents/$articleId/remove_from_favourites");
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);

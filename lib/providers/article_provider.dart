@@ -11,8 +11,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   final List<String> _sources = List<String>.from(defaultSources);
   final List<String> _tags = List<String>.from(defaultTags);
 
-  final Set<int> _favoriteArticles =
-      {}; // TODO убрать список ID избранных статей после подключения бэкэнда
   final List<Note> _notes = [];
   bool _isLoading = false;
   bool _showOnlyFavorites = false;
@@ -50,8 +48,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   List<Article> get articles => _articles;
 
   bool get isLoading => _isLoading;
-
-  Set<int> get favoriteArticles => _favoriteArticles;
 
   bool get showOnlyFavorites => _showOnlyFavorites;
 
@@ -135,24 +131,41 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     _isLoading = true;
     notifyListeners();
 
-    // TODO запрос на сервер
-    await Future.delayed(const Duration(seconds: 1));
-    if (!_favoriteArticles.contains(articleId)) {
-      _favoriteArticles.add(articleId);
-    } else {
-      _favoriteArticles.remove(articleId);
+    try {
+      final index = _articles.indexWhere((article) => article.id == articleId);
+      if (index == -1) return;
+
+      final article = _articles[index];
+      if (article.favorite) {
+        await ApiService.removeFromFavorites(articleId);
+      } else {
+        await ApiService.addToFavorites(articleId);
+      }
+
+      _articles[index] = Article(
+        id: article.id,
+        title: article.title,
+        source: article.source,
+        summary: article.summary,
+        text: article.text,
+        tags: article.tags,
+        date: article.date,
+        favorite: !article.favorite,
+        language: article.language,
+        url: article.url,
+      );
+
+    } catch (e) {
+      debugPrint("Ошибка при переключении избранного: $e");
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  bool isFavorite(int articleId) {
-    return _favoriteArticles.contains(articleId);
-  }
-
   void toggleShowFavorites() {
     _showOnlyFavorites = !_showOnlyFavorites;
+    loadArticles();
     notifyListeners();
   }
 
@@ -272,7 +285,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
   void clear() {
     _articles.clear();
-    _favoriteArticles.clear();
     _notes.clear();
     _isLoading = false;
     _showOnlyFavorites = false;

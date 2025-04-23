@@ -80,7 +80,7 @@ class ArticleSearchParams {
       "language": null,
       "sources": selectedSources.isEmpty ? null : selectedSources,
       "tags": selectedTags.isEmpty ? null : selectedTags,
-      "folders": isFavorite ? ["favorite"] : null,
+      "folders": isFavorite ? ["Избранное"] : null,
       "search_body": searchQuery.isEmpty ? null : searchQuery,
       "search_mode": searchOption,
       "date_from": dateFrom.isEmpty ? null : dateFrom,

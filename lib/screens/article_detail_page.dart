@@ -681,8 +681,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
-    final bool isFavorite =
-        provider.favoriteArticles.contains(widget.article.id);
+    final bool isFavorite = widget.article.favorite;
     return PopScope(
       canPop: _editingNote == null && _commentController.text.isEmpty,
       onPopInvokedWithResult: (didPop, result) =>

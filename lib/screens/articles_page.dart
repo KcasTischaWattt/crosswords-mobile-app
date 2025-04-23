@@ -111,15 +111,6 @@ class _ArticlesPageState extends State<ArticlesPage>
     );
   }
 
-  List<Article> _getDisplayedArticles(ArticleProvider provider) {
-    final List<Article> allArticles = provider.articles;
-    return provider.showOnlyFavorites
-        ? allArticles
-            .where((article) => provider.favoriteArticles.contains(article.id))
-            .toList()
-        : allArticles;
-  }
-
   Widget _buildLoadingIndicator() {
     return const Padding(
       padding: EdgeInsets.all(12),
@@ -201,7 +192,7 @@ class _ArticlesPageState extends State<ArticlesPage>
   }
 
   Widget _buildArticleItem(Article article, ArticleProvider provider) {
-    final isFavorite = provider.favoriteArticles.contains(article.id);
+    final isFavorite = article.favorite;
     return Card(
       color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 1),
@@ -226,7 +217,7 @@ class _ArticlesPageState extends State<ArticlesPage>
       return const Center(child: CircularProgressIndicator());
     }
 
-    final List<Article> displayedArticles = _getDisplayedArticles(provider);
+    final List<Article> displayedArticles = provider.articles;
 
     return ListView.builder(
       controller: _scrollController,
