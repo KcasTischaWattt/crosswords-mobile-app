@@ -164,18 +164,8 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
         await ApiService.addToFavorites(articleId);
       }
 
-      _articles[index] = Article(
-        id: article.id,
-        title: article.title,
-        source: article.source,
-        summary: article.summary,
-        text: article.text,
-        tags: article.tags,
-        date: article.date,
-        favorite: !article.favorite,
-        language: article.language,
-        url: article.url,
-      );
+      _articles[index] =
+          _articles[index].copyWith(favorite: !_articles[index].favorite);
     } catch (e) {
       debugPrint("Ошибка при переключении избранного: $e");
     }
@@ -197,18 +187,8 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
         await ApiService.addToFavorites(_currentArticle!.id);
       }
 
-      _currentArticle = Article(
-        id: _currentArticle!.id,
-        title: _currentArticle!.title,
-        source: _currentArticle!.source,
-        summary: _currentArticle!.summary,
-        text: _currentArticle!.text,
-        tags: _currentArticle!.tags,
-        date: _currentArticle!.date,
-        favorite: !isFav,
-        language: _currentArticle!.language,
-        url: _currentArticle!.url,
-      );
+      _currentArticle =
+          _currentArticle!.copyWith(favorite: !_currentArticle!.favorite);
 
       notifyListeners();
     } catch (e) {
