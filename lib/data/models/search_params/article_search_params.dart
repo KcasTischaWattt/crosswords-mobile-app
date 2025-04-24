@@ -92,10 +92,6 @@ class ArticleSearchParams {
       "matches_per_page": pageSize,
       "approval_percentage": 0.5,
     };
-    /// TODO Убрать потом
-    if (searchOption == "Точный поиск") {
-      data["search_in_text"] = searchInText;
-    }
     return data;
   }
 
