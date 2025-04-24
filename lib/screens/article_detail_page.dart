@@ -73,8 +73,32 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   /// Переключение избранного
   Future<void> _toggleFavorite() async {
-    await Provider.of<ArticleProvider>(context, listen: false)
-        .toggleFavorite(_article!.id);
+    if (_article == null) return;
+
+    try {
+      await Provider.of<ArticleProvider>(context, listen: false)
+          .toggleFavorite(_article!.id);
+
+      setState(() {
+        _article = Article(
+          id: _article!.id,
+          title: _article!.title,
+          source: _article!.source,
+          summary: _article!.summary,
+          text: _article!.text,
+          tags: _article!.tags,
+          date: _article!.date,
+          favorite: !_article!.favorite,
+          language: _article!.language,
+          url: _article!.url,
+        );
+      });
+    } catch (e) {
+      debugPrint("Ошибка при переключении избранного: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Не удалось изменить избранное")),
+      );
+    }
   }
 
   /// Форматирование даты и времени
