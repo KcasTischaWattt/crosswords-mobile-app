@@ -80,7 +80,17 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
   }
 
   void _performSearch() {
-    Provider.of<ArticleProvider>(context, listen: false).applySearchParams();
+    final provider = Provider.of<ArticleProvider>(context, listen: false);
+
+    provider.applySearchParams();
+
+    if (provider.selectedSearchOption == "Поиск по ID") {
+      // TODO: реализовать поиск по ID
+      Navigator.pop(context);
+      return;
+    }
+
+    provider.loadArticles();
     Navigator.pop(context);
   }
 
