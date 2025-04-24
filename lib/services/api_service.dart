@@ -29,10 +29,19 @@ class ApiService {
 
   static void initializeInterceptors() {
     if (_interceptorsInitialized) return;
+    debugPrint(">>> Инициализация перехватчиков Dio");
 
     if (!kIsWeb) {
       _dio.interceptors.add(CookieManager(cookieJar));
     }
+
+    _dio.interceptors.add(LogInterceptor(
+      request: true,
+      requestBody: true,
+      responseBody: true,
+      responseHeader: false,
+      error: true,
+    ));
 
     _dio.interceptors.add(InterceptorsWrapper(
       onError: (DioException e, ErrorInterceptorHandler handler) {
