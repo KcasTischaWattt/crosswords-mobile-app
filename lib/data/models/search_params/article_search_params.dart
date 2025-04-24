@@ -76,13 +76,46 @@ class ArticleSearchParams {
   }
 
   Map<String, dynamic> toApiJson(int page, int pageSize, bool isFavorite) {
+    if (searchOption == "Точный поиск") {
+      return toApiJsonCertain(page, pageSize, isFavorite);
+    }
+    final Map<String, dynamic> data = {
+      "language": null,
+      "folders": isFavorite ? ["Избранное"] : null,
+      /// TODO : Uncomment when search mode is implemented
+      "search_mode": "certain",
+      // "search_mode": searchOption == "Поиск по смыслу" ? "semantic" : "id",
+      "next_page": page,
+      "matches_per_page": pageSize,
+      "approval_percentage": 0.5,
+    };
+
+    if (selectedSources.isNotEmpty) {
+      data["sources"] = selectedSources;
+    }
+    if (selectedTags.isNotEmpty) {
+      data["tags"] = selectedTags;
+    }
+    if (searchQuery.trim().isNotEmpty) {
+      data["search_body"] = searchQuery.trim();
+    }
+    if (dateFrom.isNotEmpty) {
+      data["date_from"] = dateFrom;
+    }
+    if (dateTo.isNotEmpty) {
+      data["date_to"] = dateTo;
+    }
+    return data;
+  }
+
+  Map<String, dynamic> toApiJsonCertain(int page, int pageSize, bool isFavorite) {
     return {
       "language": null,
       "sources": selectedSources.isEmpty ? null : selectedSources,
       "tags": selectedTags.isEmpty ? null : selectedTags,
       "folders": isFavorite ? ["Избранное"] : null,
       "search_body": searchQuery.isEmpty ? null : searchQuery,
-      "search_mode": searchOption,
+      "search_mode": "certain",
       "date_from": dateFrom.isEmpty ? null : dateFrom,
       "date_to": dateTo.isEmpty ? null : dateTo,
       "next_page": page,
