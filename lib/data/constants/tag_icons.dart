@@ -113,7 +113,7 @@ const Map<String, String> tagIcons = {
   'Энергетика': 'assets/icons/economy.png',
   'Эпидемии': 'assets/icons/science_health.png',
   'Журналистика': 'assets/icons/media.png',
-  'Расследования': 'assets/icons/incidents.png',
+  'Расследование': 'assets/icons/incidents.png',
   'Удаленка': 'assets/icons/education_social.png',
   'Рынок труда': 'assets/icons/education_social.png',
   'Инфраструктура': 'assets/icons/transport.png',
