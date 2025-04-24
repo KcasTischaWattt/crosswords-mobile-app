@@ -8,7 +8,6 @@ import '../providers/article_provider.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
 import 'package:flutter/services.dart';
-import '../services/api_service.dart';
 import 'widgets/fade_background.dart';
 import 'widgets/expanding_text_field.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,9 +24,6 @@ class ArticleDetailPage extends StatefulWidget {
 }
 
 class _ArticleDetailPageState extends State<ArticleDetailPage> {
-  Article? _article;
-  bool _isLoading = true;
-
   final TextEditingController _commentController = TextEditingController();
   Note? _editingNote;
   bool _isNotesExpanded = true;
@@ -36,7 +32,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   void initState() {
     super.initState();
-    _loadArticle();
+    Future.microtask(() {
+      Provider.of<ArticleProvider>(context, listen: false)
+          .loadArticleById(widget.articleId);
+    });
     _commentController.addListener(_onCommentChanged);
   }
 
@@ -47,21 +46,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     super.dispose();
   }
 
-  Future<void> _loadArticle() async {
-    try {
-      final article = await ApiService.getDocumentById(widget.articleId);
-      setState(() {
-        _article = article;
-        _isLoading = false;
-      });
-    } catch (e) {
-      debugPrint("Ошибка при загрузке статьи: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   /// Обработка изменения текста в поле ввода комментария
   void _onCommentChanged() {
     if (_editingNote == null) return;
@@ -69,36 +53,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       _hasTextChanged =
           _commentController.text.trim() != _editingNote!.text.trim();
     });
-  }
-
-  /// Переключение избранного
-  Future<void> _toggleFavorite() async {
-    if (_article == null) return;
-
-    try {
-      await Provider.of<ArticleProvider>(context, listen: false)
-          .toggleFavorite(_article!.id);
-
-      setState(() {
-        _article = Article(
-          id: _article!.id,
-          title: _article!.title,
-          source: _article!.source,
-          summary: _article!.summary,
-          text: _article!.text,
-          tags: _article!.tags,
-          date: _article!.date,
-          favorite: !_article!.favorite,
-          language: _article!.language,
-          url: _article!.url,
-        );
-      });
-    } catch (e) {
-      debugPrint("Ошибка при переключении избранного: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Не удалось изменить избранное")),
-      );
-    }
   }
 
   /// Форматирование даты и времени
@@ -439,7 +393,11 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     color: isFavorite ? Colors.red : Colors.grey,
                     size: 24,
                   ),
-            onPressed: provider.isLoading ? null : _toggleFavorite,
+            onPressed: provider.isLoading
+                ? null
+                : () async {
+                    await provider.toggleCurrentArticleFavorite();
+                  },
           ),
       ],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -451,19 +409,20 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   /// Построение информации о статье
   Widget _buildArticleContent(BuildContext context) {
+    final provider = Provider.of<ArticleProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        '${_article!.date} | ${_article!.source}'
+        '${provider.currentArticle!.date} | ${provider.currentArticle!.source}'
             .text
             .xl
             .color(Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey)
             .make(),
         const SizedBox(height: 8),
-        _article!.title.text.bold.xl3.make(),
+        provider.currentArticle!.title.text.bold.xl3.make(),
         const SizedBox(height: 16),
         ItemListWidget(
-          items: _article!.tags,
+          items: provider.currentArticle!.tags,
           dialogTitle: "Все теги",
           chipColor: Theme.of(context).secondaryHeaderColor,
           textColor: Colors.white,
@@ -486,7 +445,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       title: "Краткое содержание",
       icon: Icons.book,
       customContent: Text(
-        _article!.summary,
+        Provider.of<ArticleProvider>(context).currentArticle!.summary,
         style: TextStyle(
           fontSize: 18,
           color: Theme.of(context).textTheme.bodyLarge!.color,
@@ -505,7 +464,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        _article!.text,
+        Provider.of<ArticleProvider>(context).currentArticle!.text,
         style: TextStyle(
           fontSize: 18,
           color: Theme.of(context).textTheme.bodyLarge!.color,
@@ -529,7 +488,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   /// Построение кнопки "Читать оригинал"
   Widget _buildReadOriginalButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => _launchURL(_article!.url),
+      onPressed: () =>
+          _launchURL(Provider.of<ArticleProvider>(context).currentArticle!.url),
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
@@ -546,7 +506,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       return const SizedBox.shrink();
     }
 
-    final notes = provider.getNotesForArticle(_article!.id);
+    final notes = provider.getNotesForArticle(provider.currentArticle!.id);
     if (notes.isEmpty) return const Text("Заметок пока нет.");
 
     return Column(
@@ -718,7 +678,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       });
     } else {
       // Добавление новой заметки
-      provider.addNote(_article!.id, text);
+      provider.addNote(provider.currentArticle!.id, text);
       _commentController.clear();
     }
   }
@@ -727,14 +687,15 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ArticleProvider>(context);
+    final article = provider.currentArticle;
 
-    if (_isLoading) {
+    if (provider.isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (_article == null) {
+    if (article == null) {
       return const Scaffold(
         body: Center(child: Text("Ошибка загрузки статьи")),
       );
@@ -745,13 +706,12 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       onPopInvokedWithResult: (didPop, result) =>
           _handlePop(context, didPop, result),
       child: Scaffold(
-        appBar: _buildAppBar(context, _article!.favorite, provider),
+        appBar: _buildAppBar(context, article.favorite, provider),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Дата и источник
               _buildArticleContent(context),
               _buildNotesSection(context, provider),
               const SizedBox(height: 10),

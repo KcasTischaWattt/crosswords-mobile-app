@@ -11,6 +11,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   final List<String> _sources = List<String>.from(defaultSources);
   final List<String> _tags = List<String>.from(defaultTags);
 
+  Article? _currentArticle;
   final List<Note> _notes = [];
   bool _isLoading = false;
   bool _showOnlyFavorites = false;
@@ -46,6 +47,8 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   List<String> get tags => defaultTags;
 
   List<Article> get articles => _articles;
+
+  Article? get currentArticle => _currentArticle;
 
   bool get isLoading => _isLoading;
 
@@ -121,12 +124,31 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  /// Метод для получения статьи по ID
+  Future<void> loadArticleById(int id) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final article = await ApiService.getDocumentById(id);
+      _currentArticle = article;
+    } catch (e) {
+      debugPrint("Ошибка при загрузке статьи: $e");
+      _currentArticle = null;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Метод для получения избранных статей
   Future<void> fetchFavorites() async {
     // TODO запрос к API
     await Future.delayed(const Duration(seconds: 1));
     notifyListeners();
   }
 
+  /// Метод для переключения избранного
   Future<void> toggleFavorite(int articleId) async {
     _isLoading = true;
     notifyListeners();
@@ -154,13 +176,44 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
         language: article.language,
         url: article.url,
       );
-
     } catch (e) {
       debugPrint("Ошибка при переключении избранного: $e");
     }
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  /// Метод для переключения избранного у текущей статьи
+  Future<void> toggleCurrentArticleFavorite() async {
+    if (_currentArticle == null) return;
+
+    try {
+      final isFav = _currentArticle!.favorite;
+
+      if (isFav) {
+        await ApiService.removeFromFavorites(_currentArticle!.id);
+      } else {
+        await ApiService.addToFavorites(_currentArticle!.id);
+      }
+
+      _currentArticle = Article(
+        id: _currentArticle!.id,
+        title: _currentArticle!.title,
+        source: _currentArticle!.source,
+        summary: _currentArticle!.summary,
+        text: _currentArticle!.text,
+        tags: _currentArticle!.tags,
+        date: _currentArticle!.date,
+        favorite: !isFav,
+        language: _currentArticle!.language,
+        url: _currentArticle!.url,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Ошибка при переключении избранного: $e");
+    }
   }
 
   void toggleShowFavorites() {
