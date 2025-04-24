@@ -124,7 +124,7 @@ class _ArticlesPageState extends State<ArticlesPage>
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ArticleDetailPage(article: article)),
+              builder: (context) => ArticleDetailPage(articleId: article.id)),
         );
       },
       style: ElevatedButton.styleFrom(

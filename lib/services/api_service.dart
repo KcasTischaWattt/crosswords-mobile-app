@@ -133,6 +133,12 @@ class ApiService {
     await _dio.post("/documents/$articleId/remove_from_favourites");
   }
 
+  /// Получение избранных статей
+  static Future<Article> getDocumentById(int id) async {
+    final response = await _dio.get("/documents/$id");
+    return Article.fromJson(response.data);
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);
