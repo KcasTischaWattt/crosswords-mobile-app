@@ -18,7 +18,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   bool _showOnlyFavorites = false;
   bool _isLoadingMore = false;
 
-  int _currentPage = 1;
+  int _currentPage = 0;
   final int _pageSize = 10;
 
   ArticleSearchParams _currentSearchParams = ArticleSearchParams(
@@ -84,7 +84,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
   /// Метод для загрузки статей
   Future<void> loadArticles() async {
-    _currentPage = 1;
+    _currentPage = 0;
     _isLoading = true;
     notifyListeners();
 

@@ -84,10 +84,8 @@ class ArticleSearchParams {
       "sources": selectedSources.isEmpty ? null : selectedSources,
       "tags": selectedTags.isEmpty ? null : selectedTags,
       "folders": isFavorite ? ["Избранное"] : null,
-      "search_body": searchQuery.isEmpty ? "Тест" : searchQuery,
-      /// TODO : Uncomment when search mode is implemented
-      "search_mode": "certain",
-      // "search_mode": searchOption == "Поиск по смыслу" ? "semantic" : "id",
+      "search_body": searchQuery.isEmpty ? null : searchQuery,
+      "search_mode": searchOption == "Поиск по смыслу" ? "semantic" : "id",
       "date_from": dateFrom.isEmpty ? null : dateFrom,
       "date_to": dateTo.isEmpty ? null : dateTo,
       "next_page": page,
