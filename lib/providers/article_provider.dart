@@ -14,6 +14,7 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   Article? _currentArticle;
   final List<Note> _notes = [];
   bool _isLoading = false;
+  bool _isLoadingNotes = false;
   bool _showOnlyFavorites = false;
   bool _isLoadingMore = false;
 
@@ -51,6 +52,8 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   Article? get currentArticle => _currentArticle;
 
   bool get isLoading => _isLoading;
+
+  bool get isLoadingNotes => _isLoadingNotes;
 
   bool get showOnlyFavorites => _showOnlyFavorites;
 
@@ -272,12 +275,21 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  // TODO заагрузка заметок
+  /// Метод для загрузки заметок
   Future<void> loadNotes(int articleId) async {
-    _isLoading = true;
+    _isLoadingNotes = true;
     notifyListeners();
 
-    _isLoading = false;
+    try {
+      final notesFromServer = await ApiService.fetchComments(articleId);
+      _notes
+        ..removeWhere((note) => note.articleId == articleId)
+        ..addAll(notesFromServer);
+    } catch (e) {
+      debugPrint("Ошибка при загрузке комментариев: $e");
+    }
+
+    _isLoadingNotes = false;
     notifyListeners();
   }
 
@@ -285,35 +297,46 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
   Future<void> addNote(int articleId, String text) async {
     if (text.trim().isEmpty) return;
 
-    // TODO Отправить данные на сервер
-    final newNote = Note(
-      id: DateTime.now().millisecondsSinceEpoch,
-      text: text,
-      user: "User1",
-      articleId: articleId,
-      createdAt: DateTime.now().toIso8601String(),
-      updatedAt: DateTime.now().toIso8601String(),
-    );
-
-    _notes.add(newNote);
-    notifyListeners();
+    try {
+      final newNote = await ApiService.addComment(articleId, text);
+      _notes.add(newNote);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Ошибка при добавлении заметки: $e");
+    }
   }
 
-  void updateNote(int noteId, String newText) {
+  /// Метод для редактирования заметки
+  Future<void> updateNote(int noteId, String newText) async {
     final index = _notes.indexWhere((note) => note.id == noteId);
     if (index == -1) return;
-    _notes[index] = _notes[index]
-        .copyWith(text: newText, updatedAt: DateTime.now().toIso8601String());
-    notifyListeners();
+
+    final note = _notes[index];
+
+    try {
+      await ApiService.updateComment(note.articleId, noteId, newText);
+
+      _notes[index] = note.copyWith(
+        text: newText,
+        updatedAt: DateTime.now().toIso8601String(),
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Ошибка при редактировании заметки: $e");
+    }
   }
 
   /// Метод для удаления заметки
   Future<void> deleteNote(int noteId) async {
-    _notes.removeWhere((note) => note.id == noteId);
+    final note = _notes.firstWhere((n) => n.id == noteId);
+    _notes.removeWhere((n) => n.id == noteId);
     notifyListeners();
 
-    // TODO Отправить запрос на удаление заметки на сервер
-    // await ApiService.deleteNote(noteId);
+    try {
+      await ApiService.deleteComment(note.articleId, noteId);
+    } catch (e) {
+      debugPrint("Ошибка при удалении заметки: $e");
+    }
   }
 
   void clear() {

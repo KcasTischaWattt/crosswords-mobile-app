@@ -6,6 +6,8 @@ import '../data/models/article.dart';
 import 'dart:io' show Directory;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../data/models/note.dart';
+
 class ApiService {
   // TODO поменять на false
   static final bool useMock = false;
@@ -137,6 +139,50 @@ class ApiService {
   static Future<Article> getDocumentById(int id) async {
     final response = await _dio.get("/documents/$id");
     return Article.fromJson(response.data);
+  }
+
+  /// Получение списка комментариев к статье
+  static Future<List<Note>> fetchComments(int docId) async {
+    final response = await _dio.get("/documents/$docId/comment");
+    final commentsJson = response.data['comments'] as List<dynamic>;
+
+    return commentsJson.map((json) {
+      return Note(
+        id: json['id'],
+        text: json['text'],
+        articleId: docId,
+        createdAt: json['created_at'],
+        updatedAt: json['updated_at'],
+      );
+    }).toList();
+  }
+
+  /// Добавление комментария к статье
+  static Future<Note> addComment(int docId, String text) async {
+    final response = await _dio.post("/documents/$docId/comment", data: {
+      "text": text,
+    });
+
+    final json = response.data;
+    return Note(
+      id: json['id'],
+      text: json['text'],
+      articleId: docId,
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+    );
+  }
+
+  /// Обновление комментария
+  static Future<void> updateComment(int docId, int commentId, String text) async {
+    await _dio.put("/documents/$docId/comment/$commentId", data: {
+      "text": text,
+    });
+  }
+
+  /// Удаление комментария
+  static Future<void> deleteComment(int docId, int commentId) async {
+    await _dio.delete("/documents/$docId/comment/$commentId");
   }
 
   /// GET запрос к API

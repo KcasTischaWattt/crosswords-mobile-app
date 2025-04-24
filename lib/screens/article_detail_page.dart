@@ -32,9 +32,11 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<ArticleProvider>(context, listen: false)
-          .loadArticleById(widget.articleId);
+      final provider = Provider.of<ArticleProvider>(context, listen: false);
+      provider.loadArticleById(widget.articleId);
+      provider.loadNotes(widget.articleId);
     });
+
     _commentController.addListener(_onCommentChanged);
   }
 
@@ -503,6 +505,13 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   Widget _buildNotesSection(BuildContext context, ArticleProvider provider) {
     if (!Provider.of<AuthProvider>(context, listen: false).isAuthenticated) {
       return const SizedBox.shrink();
+    }
+
+    if (provider.isLoadingNotes) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 20),
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
 
     final notes = provider.getNotesForArticle(provider.currentArticle!.id);
