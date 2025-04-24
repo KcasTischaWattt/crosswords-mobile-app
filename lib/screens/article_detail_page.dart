@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
 import 'package:velocity_x/velocity_x.dart';
 import '../providers/article_provider.dart';
-import '../data/models/article.dart';
 import '../data/models/note.dart';
 import 'package:flutter/services.dart';
 import 'widgets/fade_background.dart';
