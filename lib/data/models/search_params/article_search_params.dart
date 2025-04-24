@@ -90,7 +90,6 @@ class ArticleSearchParams {
       "date_to": dateTo.isEmpty ? null : dateTo,
       "next_page": page,
       "matches_per_page": pageSize,
-      "approval_percentage": 0.5,
     };
     return data;
   }
@@ -108,7 +107,6 @@ class ArticleSearchParams {
       "search_in_text": searchInText,
       "next_page": page,
       "matches_per_page": pageSize,
-      "approval_percentage": 0.5,
     };
   }
 
