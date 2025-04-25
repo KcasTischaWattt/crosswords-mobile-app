@@ -6,7 +6,9 @@ import '../data/models/article.dart';
 import 'dart:io' show Directory;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../data/models/digest.dart';
 import '../data/models/note.dart';
+import '../data/models/subscription.dart';
 
 class ApiService {
   // TODO поменять на false
@@ -192,6 +194,14 @@ class ApiService {
   /// Удаление комментария
   static Future<void> deleteComment(int docId, int commentId) async {
     await _dio.delete("/documents/$docId/comment/$commentId");
+  }
+
+  /// Получение списка подписок
+  static Future<List<Subscription>> fetchAvailableSubscriptions() async {
+    final response = await _dio.get("/subscriptions/available");
+    final List<dynamic> jsonList = response.data['digest_subscriptions'];
+
+    return jsonList.map((json) => Subscription.fromJson(json)).toList();
   }
 
   /// GET запрос к API

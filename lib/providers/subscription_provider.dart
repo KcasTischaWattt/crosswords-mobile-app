@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../data/models/subscription.dart';
 import '../data/fake/fake_subscriptions.dart';
 import '../data/models/subscribe_options.dart';
+import '../services/api_service.dart';
 
 class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   final List<Subscription> _subscriptions = [];
@@ -242,13 +243,14 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     _isLoading = true;
     notifyListeners();
 
-    // TODO загрузка дайджестов
-    await Future.delayed(const Duration(seconds: 1));
-
-    List<Subscription> newDigests = fakeSubscriptions.toList();
-
-    _subscriptions.clear();
-    _subscriptions.addAll(newDigests);
+    try {
+      final newSubscriptions = await ApiService.fetchAvailableSubscriptions();
+      _subscriptions
+        ..clear()
+        ..addAll(newSubscriptions);
+    } catch (e) {
+      debugPrint("Ошибка при загрузке подписок: $e");
+    }
 
     _isLoading = false;
     notifyListeners();
