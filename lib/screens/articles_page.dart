@@ -220,6 +220,10 @@ class _ArticlesPageState extends State<ArticlesPage>
 
     final List<Article> displayedArticles = provider.articles;
 
+    if (displayedArticles.isEmpty) {
+      return const Center(child: Text("Документы не найдены"));
+    }
+
     return ListView.builder(
       controller: _scrollController,
       itemCount: displayedArticles.length + (provider.isLoadingMore ? 1 : 0),
