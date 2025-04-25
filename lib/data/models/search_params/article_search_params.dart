@@ -1,3 +1,4 @@
+/// Класс, представляющий параметры поиска статей
 class ArticleSearchParams {
   final String _searchQuery;
   final String _dateFrom;
@@ -7,14 +8,30 @@ class ArticleSearchParams {
   final bool _searchInText;
   final String _searchOption;
 
+  /// Поисковая строка (запрос пользователя).
   String get searchQuery => _searchQuery;
+
+  /// Дата начала диапазона фильтра по дате
   String get dateFrom => _dateFrom;
+
+  /// Дата окончания диапазона фильтра по дате
   String get dateTo => _dateTo;
+
+  /// Список выбранных источников
   List<String> get selectedSources => _selectedSources;
+
+  /// Список выбранных тегов
   List<String> get selectedTags => _selectedTags;
+
+  /// Флаг, указывающий, нужно ли искать в тексте статьи
   bool get searchInText => _searchInText;
+
+  /// Выбранный режим поиска.
+  ///
+  /// Возможные значения: "Поиск по смыслу", "Точный поиск", "Поиск по ID".
   String get searchOption => _searchOption;
 
+  /// Создает экземпляр параметров поиска
   ArticleSearchParams({
     required String searchQuery,
     required String dateFrom,
@@ -31,6 +48,7 @@ class ArticleSearchParams {
         _searchInText = searchInText,
         _searchOption = searchOption;
 
+  /// Создает экземпляр из JSON
   factory ArticleSearchParams.fromJson(Map<String, dynamic> json) {
     return ArticleSearchParams(
       searchQuery: json['search_query'],
@@ -43,6 +61,7 @@ class ArticleSearchParams {
     );
   }
 
+  /// Возвращает копию параметров поиска с возможностью переопределения значений
   ArticleSearchParams copyWith({
     String? searchQuery,
     String? dateFrom,
@@ -63,6 +82,9 @@ class ArticleSearchParams {
     );
   }
 
+  /// Сбрасывает все фильтры, кроме режима поиска
+  ///
+  /// Очищает запрос, даты, источники, теги и флаг `searchInText`
   ArticleSearchParams resetFilters() {
     return ArticleSearchParams(
       searchQuery: '',
@@ -75,42 +97,41 @@ class ArticleSearchParams {
     );
   }
 
+  /// Преобразует параметры в формат, ожидаемый API
+  ///
+  /// Учитывает режим поиска, фильтры, пагинацию и флаг избранного
   Map<String, dynamic> toApiJson(int page, int pageSize, bool isFavorite) {
-    if (searchOption == "Точный поиск") {
-      return toApiJsonCertain(page, pageSize, isFavorite);
-    }
-    final Map<String, dynamic> data = {
-      "language": null,
-      "sources": selectedSources.isEmpty ? null : selectedSources,
-      "tags": selectedTags.isEmpty ? null : selectedTags,
-      "folders": isFavorite ? ["Избранное"] : null,
-      "search_body": searchQuery.isEmpty ? null : searchQuery,
-      "search_mode": searchOption == "Поиск по смыслу" ? "semantic" : "id",
-      "date_from": dateFrom.isEmpty ? null : dateFrom,
-      "date_to": dateTo.isEmpty ? null : dateTo,
-      "next_page": page,
-      "matches_per_page": pageSize,
-    };
-    return data;
-  }
-
-  Map<String, dynamic> toApiJsonCertain(int page, int pageSize, bool isFavorite) {
+    final isCertain = searchOption == "Точный поиск";
     return {
       "language": null,
       "sources": selectedSources.isEmpty ? null : selectedSources,
       "tags": selectedTags.isEmpty ? null : selectedTags,
       "folders": isFavorite ? ["Избранное"] : null,
       "search_body": searchQuery.isEmpty ? null : searchQuery,
-      "search_mode": "certain",
+      "search_mode": _getSearchMode(),
+      "search_in_text": isCertain ? searchInText : null,
       "date_from": dateFrom.isEmpty ? null : dateFrom,
       "date_to": dateTo.isEmpty ? null : dateTo,
-      "search_in_text": searchInText,
       "next_page": page,
       "matches_per_page": pageSize,
     };
   }
 
+  /// Определяет строку значения `search_mode` для API в зависимости от режима
+  String _getSearchMode() {
+    switch (searchOption) {
+      case "Точный поиск":
+        return "certain";
+      case "Поиск по смыслу":
+        return "semantic";
+      case "Поиск по ID":
+        return "id";
+      default:
+        return "certain";
+    }
+  }
 
+  /// Возвращает строковое представление объекта
   @override
   String toString() {
     return 'SearchParams(searchQuery: $searchQuery, dateFrom: $dateFrom, dateTo: $dateTo, '
