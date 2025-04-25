@@ -158,7 +158,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Декорация контейнера аккордеона выбора типа поиска
+  /// Декорация контейнера аккордеона выбора типа поиска
   BoxDecoration _containerDecoration() {
     return BoxDecoration(
       color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
@@ -170,7 +170,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Заголовок аккордеона выбора типа поиска
+  /// Заголовок аккордеона выбора типа поиска
   Widget _buildAccordionHeader(ArticleProvider provider) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -189,7 +189,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Содержимое аккордеона выбора типа поиска
+  /// Содержимое аккордеона выбора типа поиска
   Widget _buildAccordionContent() {
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
@@ -218,7 +218,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Аккордеон выбора типа поиска
+  /// Аккордеон выбора типа поиска
   Widget _buildSearchAccordion(ArticleProvider provider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
@@ -239,7 +239,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Строка поиска
+  /// Виджет для поля ввода строки поиска
   Widget _buildSearchInput() {
     return Container(
       decoration: _containerDecoration(),
@@ -271,7 +271,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Чекбокс "Искать в тексте"
+  /// Чекбокс "Искать в тексте"
   Widget _buildCheckbox(ArticleProvider provider) {
     return CheckboxListTile(
       contentPadding: EdgeInsets.zero,
@@ -285,7 +285,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Виджет фильтров
+  /// Виджет фильтров
   Widget _buildFilters(ArticleProvider provider) {
     return Column(
       children: [
@@ -300,7 +300,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Поля выбора даты
+  /// Поля выбора даты
   Widget _buildDatePickers() {
     final provider = Provider.of<ArticleProvider>(context);
     return Row(
@@ -323,7 +323,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     );
   }
 
-  // Поле выбора даты
+  /// Поле выбора даты
   Widget _buildDatePickerField(String label, TextEditingController controller,
       Function(String) setDate) {
     return Container(
