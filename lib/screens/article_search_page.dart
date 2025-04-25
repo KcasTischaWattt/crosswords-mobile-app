@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/article_provider.dart';
+import 'article_detail_page.dart';
 import 'widgets/filter_expansion_panels.dart';
 import 'widgets/action_buttons.dart';
 
@@ -56,7 +57,8 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
   }
 
   void _onSearchQueryChanged() {
-    Provider.of<ArticleProvider>(context, listen: false).setSearchQuery(_searchController.text);
+    Provider.of<ArticleProvider>(context, listen: false)
+        .setSearchQuery(_searchController.text);
   }
 
   void _toggleSearchExpansion() {
@@ -65,8 +67,8 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     });
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller, Function(String) setDate) async {
+  Future<void> _selectDate(BuildContext context,
+      TextEditingController controller, Function(String) setDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -79,22 +81,69 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     }
   }
 
+  /// Метод для отображения Snackbar с сообщением
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  /// Метод для выполнения поиска по статьям
   void _performSearch() {
     final provider = Provider.of<ArticleProvider>(context, listen: false);
-
-    provider.applySearchParams();
-
     if (provider.selectedSearchOption == "Поиск по ID") {
-      // TODO: реализовать поиск по ID
-      Navigator.pop(context);
+      _handleSearchById(context);
       return;
     }
 
+    provider.applySearchParams();
     provider.loadArticles();
     Navigator.pop(context);
   }
 
-  // Виджет AppBar
+  /// Метод для обработки поиска по ID
+  Future<void> _handleSearchById(BuildContext context) async {
+    final provider = Provider.of<ArticleProvider>(context, listen: false);
+    final query = _searchController.text.trim();
+    try {
+      final found = await provider.searchArticleById(query);
+      if (!context.mounted) return;
+      if (found) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ArticleDetailPage(
+              articleId: provider.currentArticle!.id,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      _handleSearchError(e is Exception ? e : Exception("unknown"));
+    }
+  }
+
+  /// Метод для обработки ошибок поиска
+  void _handleSearchError(Exception e) {
+    switch (e.toString()) {
+      case 'Exception: empty':
+        _showSnackBar("Введите ID документа и повторите попытку");
+        break;
+      case 'Exception: not_numeric':
+        _showSnackBar("ID должен быть числом");
+        break;
+      case 'Exception: not_found':
+        _showSnackBar("Документ не найден");
+        break;
+      case 'Exception: server_error':
+        _showSnackBar("Ошибка сервера при поиске");
+        break;
+      default:
+        _showSnackBar("Неизвестная ошибка");
+    }
+  }
+
+  /// Виджет AppBar
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
@@ -147,24 +196,24 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
       curve: Curves.easeInOut,
       child: _isSearchExpanded
           ? Column(
-        children: [
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(vertical: 6),
-            title: const Text('Поиск по смыслу'),
-            onTap: () => _setSearchOption('Поиск по смыслу'),
-          ),
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(vertical: 6),
-            title: const Text('Точный поиск'),
-            onTap: () => _setSearchOption('Точный поиск'),
-          ),
-          ListTile(
-            contentPadding: const EdgeInsets.only(top: 6, bottom: 0),
-            title: const Text('Поиск по ID'),
-            onTap: () => _setSearchOption('Поиск по ID'),
-          ),
-        ],
-      )
+              children: [
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                  title: const Text('Поиск по смыслу'),
+                  onTap: () => _setSearchOption('Поиск по смыслу'),
+                ),
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                  title: const Text('Точный поиск'),
+                  onTap: () => _setSearchOption('Точный поиск'),
+                ),
+                ListTile(
+                  contentPadding: const EdgeInsets.only(top: 6, bottom: 0),
+                  title: const Text('Поиск по ID'),
+                  onTap: () => _setSearchOption('Поиск по ID'),
+                ),
+              ],
+            )
           : SizedBox.shrink(),
     );
   }
@@ -205,7 +254,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                 border: InputBorder.none,
                 contentPadding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               ),
             ),
           ),
@@ -256,9 +305,13 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
     final provider = Provider.of<ArticleProvider>(context);
     return Row(
       children: [
-        Expanded(child: _buildDatePickerField('Дата С', _dateFromController, provider.setDateFrom)),
+        Expanded(
+            child: _buildDatePickerField(
+                'Дата С', _dateFromController, provider.setDateFrom)),
         const SizedBox(width: 12),
-        Expanded(child: _buildDatePickerField('Дата По', _dateToController, provider.setDateTo)),
+        Expanded(
+            child: _buildDatePickerField(
+                'Дата По', _dateToController, provider.setDateTo)),
       ],
     );
   }
@@ -271,7 +324,8 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
   }
 
   // Поле выбора даты
-  Widget _buildDatePickerField(String label, TextEditingController controller, Function(String) setDate) {
+  Widget _buildDatePickerField(String label, TextEditingController controller,
+      Function(String) setDate) {
     return Container(
       decoration: _dateContainerDecoration(),
       child: TextField(
@@ -283,7 +337,8 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
           labelText: label,
           labelStyle: const TextStyle(fontSize: 14),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
       ),
     );
@@ -303,8 +358,10 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
               _buildSearchAccordion(provider),
               const SizedBox(height: 10),
               _buildSearchInput(),
-              if (provider.selectedSearchOption == 'Точный поиск') _buildCheckbox(provider),
-              if (provider.selectedSearchOption != 'Поиск по ID') _buildFilters(provider),
+              if (provider.selectedSearchOption == 'Точный поиск')
+                _buildCheckbox(provider),
+              if (provider.selectedSearchOption != 'Поиск по ID')
+                _buildFilters(provider),
               const SizedBox(height: 16),
               ActionButtons(
                 onPrimaryPressed: _performSearch,

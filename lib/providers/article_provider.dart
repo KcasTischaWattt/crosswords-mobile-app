@@ -1,4 +1,5 @@
 import 'package:crosswords/data/constants/filter_constants.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
@@ -142,6 +143,41 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  /// Возвращает true, если статья найдена и загружена
+  Future<bool> searchArticleById(String query) async {
+    if (query.trim().isEmpty) {
+      throw Exception("empty");
+    }
+
+    final id = int.tryParse(query.trim());
+    if (id == null) {
+      throw Exception("not_numeric");
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final article = await ApiService.getDocumentById(id);
+      _currentArticle = article;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      if (e.response?.statusCode == 404) {
+        throw Exception("not_found");
+      } else {
+        throw Exception("server_error");
+      }
+    } catch (_) {
+      _isLoading = false;
+      notifyListeners();
+      throw Exception("unknown");
+    }
   }
 
   /// Метод для получения избранных статей
