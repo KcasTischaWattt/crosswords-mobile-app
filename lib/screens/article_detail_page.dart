@@ -477,7 +477,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   /// Открытие ссылки во внешнем браузере
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
-    debugPrint("Opening URL: $uri");
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
