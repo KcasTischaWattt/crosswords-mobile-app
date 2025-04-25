@@ -204,6 +204,14 @@ class ApiService {
     return jsonList.map((json) => Subscription.fromJson(json)).toList();
   }
 
+  /// Получение списка подписок пользователя
+  static Future<List<Digest>> fetchDigests() async {
+    final response = await _dio.get("/digests");
+    final List<dynamic> jsonList = response.data['digests'];
+
+    return jsonList.map((json) => Digest.fromJson(json)).toList();
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);

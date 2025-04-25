@@ -1,7 +1,7 @@
 import 'subscribe_options.dart';
 
 class Digest {
-  final int id;
+  final String id;
   final String title;
   final double averageRating;
   final int userRating;
@@ -37,7 +37,7 @@ class Digest {
     double? averageRating,
     int? userRating,
     bool? public,
-    int? id,
+    String? id,
     String? title,
     List<String>? sources,
     String? description,

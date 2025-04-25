@@ -1,7 +1,7 @@
 import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:flutter/material.dart';
 import '../data/models/digest.dart';
-import '../data/fake/fake_digests.dart';
+import '../services/api_service.dart';
 import 'abstract/filter_provider.dart';
 import '../data/models/search_params/digest_search_params.dart';
 
@@ -12,7 +12,7 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
 
   bool _isLoading = false;
   bool _isLoadingMore = false;
-  int _currentPage = 1;
+  int _currentPage = 0;
   final int _pageSize = 10;
 
   String _selectedCategory = 'Все дайджесты';
@@ -159,38 +159,28 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
       _isLoadingMore = true;
     } else {
       _isLoading = true;
-      _currentPage = isLoadMore ? _currentPage : 1;
+      _currentPage = isLoadMore ? _currentPage : 0;
     }
 
     notifyListeners();
 
-    // TODO загрузка дайджестов
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final newDigests = await ApiService.fetchDigests();
 
-    List<Digest> newDigests;
-    if (isLoadMore) {
-      // TODO пагинация дайджестов
-      newDigests = fakeDigests.toList();
-    } else {
-      // TODO обычная загрузка
-      newDigests = fakeDigests.toList();
+      if (!isLoadMore) {
+        _digests.clear();
+      }
+
+      if (newDigests.isNotEmpty) {
+        _digests.addAll(newDigests);
+        _currentPage++;
+      }
+    } catch (e) {
+      debugPrint("Ошибка при загрузке дайджестов: $e");
     }
 
-    if (!isLoadMore) {
-      _digests.clear();
-    }
-
-    if (newDigests.isNotEmpty) {
-      _digests.addAll(newDigests);
-      _currentPage++;
-    }
-
-    if (isLoadMore) {
-      _isLoadingMore = false;
-    } else {
-      _isLoading = false;
-    }
-
+    _isLoading = false;
+    _isLoadingMore = false;
     notifyListeners();
   }
 

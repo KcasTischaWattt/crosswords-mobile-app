@@ -3,7 +3,7 @@ import '../models/subscribe_options.dart';
 
 List<Digest> fakeDigests = [
   Digest(
-    id: 1,
+    id: "1#1",
     title: 'Главное о спорте',
     averageRating: 4.6,
     userRating: 0,
@@ -33,7 +33,7 @@ List<Digest> fakeDigests = [
     ),
   ),
   Digest(
-    id: 2,
+    id: "2#2",
     title: 'Экономика России',
     averageRating: 4.2,
     userRating: 4,
