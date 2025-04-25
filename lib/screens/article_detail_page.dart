@@ -434,7 +434,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         const SizedBox(height: 16),
         _buildArticleText(context),
         const SizedBox(height: 20),
-        _buildReadOriginalButton(context),
+        _buildReadOriginalButton(context, provider.currentArticle!.url),
         const SizedBox(height: 20),
       ],
     );
@@ -477,6 +477,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   /// Открытие ссылки во внешнем браузере
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
+    debugPrint("Opening URL: $uri");
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
@@ -487,10 +488,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
 
   /// Построение кнопки "Читать оригинал"
-  Widget _buildReadOriginalButton(BuildContext context) {
+  Widget _buildReadOriginalButton(BuildContext context, String url) {
     return ElevatedButton(
-      onPressed: () =>
-          _launchURL(Provider.of<ArticleProvider>(context).currentArticle!.url),
+      onPressed: () => _launchURL(url),
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
