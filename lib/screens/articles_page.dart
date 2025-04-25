@@ -27,6 +27,7 @@ class _ArticlesPageState extends State<ArticlesPage>
       if (!mounted) return;
       final provider = Provider.of<ArticleProvider>(context, listen: false);
       if (provider.articles.isEmpty) {
+        provider.prepareSearchForAllDocuments();
         provider.loadArticles();
       }
     });

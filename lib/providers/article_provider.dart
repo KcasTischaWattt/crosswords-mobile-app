@@ -375,6 +375,25 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
+  /// Метод для подготовки параметров поиска
+  void prepareSearchForAllDocuments() {
+    if (_tempSearchParams.searchOption == "Поиск по ID") {
+      _currentSearchParams = ArticleSearchParams(
+        searchQuery: _tempSearchParams.searchQuery,
+        dateFrom: '',
+        dateTo: '',
+        selectedSources: [],
+        selectedTags: [],
+        searchInText: false,
+        searchOption: _tempSearchParams.searchOption,
+      );
+    } else {
+      applySearchParams();
+    }
+    notifyListeners();
+  }
+
+  /// Метод для очистки состояния провайдера
   void clear() {
     _articles.clear();
     _notes.clear();
