@@ -75,9 +75,6 @@ class UserSettingsProvider extends ChangeNotifier {
     if (oldPassword.isEmpty || newPassword.isEmpty) {
       return 'Пожалуйста, заполните все поля.';
     }
-    if (oldPassword == newPassword) {
-      return 'Новый пароль не должен совпадать со старым.';
-    }
     try {
       isPasswordChanging = true;
       notifyListeners();

@@ -1,3 +1,4 @@
+import 'package:crosswords/screens/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -102,6 +103,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userSettingsProvider = Provider.of<UserSettingsProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Смена пароля",
@@ -120,17 +123,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
-              child: ElevatedButton(
+              child: LoadingButton(
+                isLoading: userSettingsProvider.isPasswordChanging,
                 onPressed: _confirmChange,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text("Подтвердить",
-                    style: TextStyle(color: Colors.black, fontSize: 16)),
+                text: 'Подтвердить',
               ),
             )
           ],
