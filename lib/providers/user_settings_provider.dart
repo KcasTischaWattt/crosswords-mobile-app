@@ -52,34 +52,34 @@ class UserSettingsProvider extends ChangeNotifier {
     });
   }
 
-  void setSubscribable(bool value) {
+  Future<void> setSubscribable(bool value) async {
     _subscribable = value;
     notifyListeners();
-    _updateSettings();
+    await _updateSettings();
   }
 
-  void setSendToMail(bool value) {
+  Future<void> setSendToMail(bool value) async {
     _sendToMail = value;
     notifyListeners();
-    _updateSettings();
+    await  _updateSettings();
   }
 
-  void setMobileNotifications(bool value) {
+  Future<void> setMobileNotifications(bool value) async {
     _mobileNotifications = value;
     notifyListeners();
-    _updateSettings();
+    await  _updateSettings();
   }
 
-  void setPersonalSendToMail(bool value) {
+  Future<void> setPersonalSendToMail(bool value) async {
     _personalSendToMail = value;
     notifyListeners();
-    _updateSettings();
+    await  _updateSettings();
   }
 
-  void setPersonalMobileNotifications(bool value) {
+  Future<void> setPersonalMobileNotifications(bool value) async {
     _personalMobileNotifications = value;
     notifyListeners();
-    _updateSettings();
+    await  _updateSettings();
   }
 
   /// Смена пароля пользователя
