@@ -317,22 +317,22 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       final data = await ApiService.getUserSubscriptionSettings(email);
 
       if (data['subscribable'] != true) {
-        throw Exception('Пользователя нельзя добавить в рассылку');
+        throw ('Пользователя нельзя добавить в рассылку');
       }
 
       if (_followers.contains(email)) {
-        throw Exception('Этот пользователь уже добавлен');
+        throw ('Этот пользователь уже добавлен');
       }
 
       _followers.add(email);
       notifyListeners();
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        throw Exception('Пользователь не найден');
+        throw ('Пользователь не найден');
       } else if (e.response?.statusCode == 403) {
-        throw Exception('Пользователя нельзя добавить в рассылку');
+        throw ('Пользователя нельзя добавить в рассылку');
       } else {
-        throw Exception('Ошибка проверки пользователя: ${e.message}');
+        throw ('Ошибка проверки пользователя: ${e.message}');
       }
     } catch (e) {
       rethrow;
