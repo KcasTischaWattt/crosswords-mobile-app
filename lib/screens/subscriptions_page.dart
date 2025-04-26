@@ -1,6 +1,6 @@
 import 'package:crosswords/data/models/subscription.dart';
 import 'package:crosswords/providers/subscription_provider.dart';
-import 'package:crosswords/screens/widgets/loading_refresh_button.dart%20dart.dart';
+import 'package:crosswords/screens/widgets/loading_refresh_button.dart';
 import 'package:crosswords/screens/widgets/subscription_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
