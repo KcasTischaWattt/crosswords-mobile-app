@@ -15,15 +15,20 @@ class UserSettingsProvider extends ChangeNotifier {
   bool _isEmailChanging = false;
 
   bool get subscribable => _subscribable;
+
   bool get sendToMail => _sendToMail;
+
   bool get mobileNotifications => _mobileNotifications;
+
   bool get personalSendToMail => _personalSendToMail;
+
   bool get personalMobileNotifications => _personalMobileNotifications;
 
   bool get isLoading => _isLoading;
-  bool get isPasswordChanging => _isPasswordChanging;
-  bool get isEmailChanging => _isEmailChanging;
 
+  bool get isPasswordChanging => _isPasswordChanging;
+
+  bool get isEmailChanging => _isEmailChanging;
 
   Future<void> loadSettings() async {
     try {
@@ -61,25 +66,25 @@ class UserSettingsProvider extends ChangeNotifier {
   Future<void> setSendToMail(bool value) async {
     _sendToMail = value;
     notifyListeners();
-    await  _updateSettings();
+    await _updateSettings();
   }
 
   Future<void> setMobileNotifications(bool value) async {
     _mobileNotifications = value;
     notifyListeners();
-    await  _updateSettings();
+    await _updateSettings();
   }
 
   Future<void> setPersonalSendToMail(bool value) async {
     _personalSendToMail = value;
     notifyListeners();
-    await  _updateSettings();
+    await _updateSettings();
   }
 
   Future<void> setPersonalMobileNotifications(bool value) async {
     _personalMobileNotifications = value;
     notifyListeners();
-    await  _updateSettings();
+    await _updateSettings();
   }
 
   /// Смена пароля пользователя
