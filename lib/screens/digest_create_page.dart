@@ -24,16 +24,18 @@ class _DigestCreatePageState extends BaseDigestPage<DigestCreatePage> {
     try {
       await provider.createSubscription();
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Подписка успешно создана')),
       );
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка при создании подписки: $e')),
+        SnackBar(
+          content: Text(
+            e.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
       );
     }
   }

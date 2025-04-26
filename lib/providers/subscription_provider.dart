@@ -281,6 +281,14 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   }
 
   Future<void> createSubscription() async {
+    if (_title.trim().isEmpty ||
+        _description.trim().isEmpty ||
+        _selectedSources.isEmpty ||
+        _selectedTags.isEmpty ||
+        _followers.isEmpty) {
+      throw ('Заполните все обязательные поля');
+    }
+
     try {
       await ApiService.createSubscription(
         title: _title,
@@ -295,6 +303,16 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         ),
         isPublic: _isPublic,
       );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw ('Некорректные источники');
+      } else if (e.response?.statusCode == 401) {
+        throw ('Вы не авторизованы');
+      } else if (e.response?.statusCode == 404) {
+        throw ('Не найден один или несколько подписчиков');
+      } else {
+        throw ('Неизвестная ошибка: ${e.message}');
+      }
     } catch (e) {
       rethrow;
     }
