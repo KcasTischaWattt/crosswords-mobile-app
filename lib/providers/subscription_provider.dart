@@ -2,12 +2,12 @@ import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:crosswords/providers/abstract/filter_provider.dart';
 import 'package:flutter/material.dart';
 import '../data/models/subscription.dart';
-import '../data/fake/fake_subscriptions.dart';
 import '../data/models/subscribe_options.dart';
 import '../services/api_service.dart';
 
 class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   final List<Subscription> _subscriptions = [];
+  String _currentUserEmail = '';
 
   int? _selectedSubscriptionId;
   bool _isLoading = false;
@@ -27,6 +27,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   bool get isLoading => _isLoading;
 
   int? get selectedSubscriptionId => _selectedSubscriptionId;
+
+  String get currentUserEmail => _currentUserEmail;
 
   List<Subscription> get subscriptions => _subscriptions;
 
@@ -148,6 +150,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   }
 
   bool removeFollower(String value) {
+    if (value == _currentUserEmail) {
+      return false;
+    }
     if (!_followers.contains(value)) {
       return false;
     }
@@ -291,6 +296,18 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       );
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> fetchCurrentUserEmail() async {
+    try {
+      _currentUserEmail = await ApiService.getCurrentUserEmail();
+      if (!_followers.contains(_currentUserEmail)) {
+        _followers.insert(0, _currentUserEmail);
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Ошибка получения email пользователя: $e');
     }
   }
 

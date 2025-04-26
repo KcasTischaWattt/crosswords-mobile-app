@@ -22,9 +22,12 @@ class FollowersSection extends StatelessWidget {
                 child: ListView(
                   shrinkWrap: true,
                   children: provider.followers.map((user) {
+                    final isCurrentUser = user == provider.currentUserEmail;
                     return ListTile(
                       title: Text(user),
-                      trailing: IconButton(
+                      trailing: isCurrentUser
+                          ? null
+                          : IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
                           _showDeleteConfirmationDialog(context, user);

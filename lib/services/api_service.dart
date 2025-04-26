@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../data/models/article.dart';
 import 'dart:io' show Directory;
 import 'package:flutter/foundation.dart' show kIsWeb;
-
 import '../data/models/digest.dart';
 import '../data/models/note.dart';
 import '../data/models/subscribe_options.dart';
@@ -237,6 +236,12 @@ class ApiService {
     };
 
     await _dio.post("/subscriptions/create", data: data);
+  }
+
+  /// Получение пользовательского email
+  static Future<String> getCurrentUserEmail() async {
+    final response = await _dio.get("/users/get_email");
+    return response.data['email'];
   }
 
   /// GET запрос к API

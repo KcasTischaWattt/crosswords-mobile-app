@@ -14,7 +14,7 @@ class _DigestCreatePageState extends BaseDigestPage<DigestCreatePage> {
   @override
   void onInit(SubscriptionProvider provider) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      provider.addDefault();
+      provider.fetchCurrentUserEmail();
     });
   }
 
