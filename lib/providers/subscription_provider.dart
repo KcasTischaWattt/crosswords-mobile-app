@@ -24,6 +24,7 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   bool _mobileNotifications = false;
   bool _isPublic = false;
   String _currentFollowerInput = '';
+  bool _isCreating = false;
 
   bool get isLoading => _isLoading;
 
@@ -62,6 +63,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   String get currentFollowerInput => _currentFollowerInput;
 
   String get selectedCategory => _selectedCategory;
+
+  bool get isCreating => _isCreating;
 
   List<Subscription> get filteredSubscriptions {
     if (_selectedCategory == "Все дайджесты") {
@@ -289,6 +292,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       throw ('Заполните все обязательные поля');
     }
 
+    _isCreating = true;
+    notifyListeners();
+
     try {
       await ApiService.createSubscription(
         title: _title,
@@ -315,6 +321,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       }
     } catch (e) {
       rethrow;
+    } finally {
+      _isCreating = false;
+      notifyListeners();
     }
   }
 

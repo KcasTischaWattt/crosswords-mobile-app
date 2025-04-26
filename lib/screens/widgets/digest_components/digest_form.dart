@@ -62,6 +62,7 @@ class DigestForm extends StatelessWidget {
             primaryText: primaryButtonText,
             secondaryText: 'Сбросить поля',
             primaryIcon: primaryButtonIcon,
+            isLoading: Provider.of<SubscriptionProvider>(context).isCreating,
           ),
           const SizedBox(height: 16),
         ],
