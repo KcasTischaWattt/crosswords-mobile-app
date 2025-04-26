@@ -190,7 +190,7 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     _digests.clear();
     _isLoading = false;
     _isLoadingMore = false;
-    _currentPage = 1;
+    _currentPage = 0;
     _selectedCategory = 'Все дайджесты';
     _currentSearchParams = DigestSearchParams(
       searchQuery: '',

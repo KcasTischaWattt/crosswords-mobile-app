@@ -324,6 +324,13 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     );
   }
 
+  void _onRefreshPressed() async {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+
+    provider.clear();
+    await provider.loadSubscriptions();
+  }
+
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
@@ -335,8 +342,16 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
         'Темы дайджестов',
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: _onRefreshPressed,
+          tooltip: 'Обновить',
+        ),
+      ],
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -347,8 +362,14 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
           _buildOnlySubscriptionsToggle(),
           Expanded(
             child: Consumer<SubscriptionProvider>(
-              builder: (context, provider, child) =>
-                  _buildSubscriptionList(provider),
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return _buildSubscriptionList(provider);
+              },
             ),
           ),
         ],

@@ -251,8 +251,7 @@ class _DigestsPageState extends State<DigestsPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => const SubscriptionsPage()),
+            MaterialPageRoute(builder: (context) => const SubscriptionsPage()),
           );
         },
         child: const Text(
@@ -825,6 +824,18 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
+  void _onRefreshPressed() async {
+    final provider = Provider.of<DigestProvider>(context, listen: false);
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+
+    provider.clear();
+    subscriptionProvider.clear();
+
+    await provider.loadDigests();
+    await subscriptionProvider.loadSubscriptions();
+  }
+
+
   AppBar _buildAppBar() {
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
     final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
@@ -872,6 +883,11 @@ class _DigestsPageState extends State<DigestsPage> {
               MaterialPageRoute(builder: (context) => const DigestSearchPage()),
             );
           },
+        ),
+        IconButton(
+          icon: const Icon(Icons.refresh), // 👈 новая иконка
+          onPressed: _onRefreshPressed,
+          tooltip: 'Обновить',
         ),
       ],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
