@@ -241,90 +241,93 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: _buildAppBar(),
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: ListView(
-        padding: EdgeInsets.all(16),
-        children: [
-          _buildSettingsBlock(
-              'Общие',
-              [
+      body: userSettingsProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: EdgeInsets.all(16),
+              children: [
+                _buildSettingsBlock(
+                    'Общие',
+                    [
+                      if (isAuthenticated)
+                        _buildStaticTile('Сменить почту', '', theme,
+                            onTap: _navigateToChangeEmail),
+                      if (isAuthenticated)
+                        _buildStaticTile('Сменить пароль', '', theme,
+                            onTap: _navigateToChangePassword),
+                      _buildStaticTile('Язык', 'Русский', theme),
+                      _buildStaticTile('Тема', currentThemeName, theme,
+                          onTap: _showThemeBottomSheet),
+                    ],
+                    cardColor!),
+                SizedBox(height: 20),
                 if (isAuthenticated)
-                  _buildStaticTile('Сменить почту', '', theme,
-                      onTap: _navigateToChangeEmail),
-                if (isAuthenticated)
-                  _buildStaticTile('Сменить пароль', '', theme,
-                      onTap: _navigateToChangePassword),
-                _buildStaticTile('Язык', 'Русский', theme),
-                _buildStaticTile('Тема', currentThemeName, theme,
-                    onTap: _showThemeBottomSheet),
+                  _buildSettingsBlock(
+                    'Уведомления и рассылки',
+                    [
+                      _buildSwitchTile(
+                        'Разрешить добавлять меня в рассылку',
+                        userSettingsProvider.subscribable,
+                        (value) {
+                          userSettingsProvider.setSubscribable(value);
+                        },
+                        theme,
+                      ),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: userSettingsProvider.subscribable
+                            ? Column(
+                                key: ValueKey<bool>(
+                                    userSettingsProvider.subscribable),
+                                children: [
+                                  _buildSwitchTile(
+                                    'Разрешить сторонние уведомления на почту',
+                                    userSettingsProvider.sendToMail,
+                                    (value) {
+                                      userSettingsProvider.setSendToMail(value);
+                                    },
+                                    theme,
+                                  ),
+                                  _buildSwitchTile(
+                                    'Разрешить сторонние мобильные уведомления',
+                                    userSettingsProvider.mobileNotifications,
+                                    (value) {
+                                      userSettingsProvider
+                                          .setMobileNotifications(value);
+                                    },
+                                    theme,
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      _buildSwitchTile(
+                        'Разрешить уведомления на почту',
+                        userSettingsProvider.personalSendToMail,
+                        (value) {
+                          userSettingsProvider.setPersonalSendToMail(value);
+                        },
+                        theme,
+                      ),
+                      _buildSwitchTile(
+                        'Разрешить мобильные уведомления',
+                        userSettingsProvider.personalMobileNotifications,
+                        (value) {
+                          userSettingsProvider
+                              .setPersonalMobileNotifications(value);
+                        },
+                        theme,
+                      ),
+                      _buildStaticTile('Настройки уведомлений', '', theme,
+                          onTap: _navigateToNotificationSettings),
+                    ],
+                    cardColor,
+                  ),
+                const SizedBox(height: 10),
+                _buildAuthButton(context),
+                const SizedBox(height: 16),
               ],
-              cardColor!),
-          SizedBox(height: 20),
-          if (isAuthenticated)
-            _buildSettingsBlock(
-              'Уведомления и рассылки',
-              [
-                _buildSwitchTile(
-                  'Разрешить добавлять меня в рассылку',
-                  userSettingsProvider.subscribable,
-                  (value) {
-                    userSettingsProvider.setSubscribable(value);
-                  },
-                  theme,
-                ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: userSettingsProvider.subscribable
-                      ? Column(
-                          key:
-                              ValueKey<bool>(userSettingsProvider.subscribable),
-                          children: [
-                            _buildSwitchTile(
-                              'Разрешить сторонние уведомления на почту',
-                              userSettingsProvider.sendToMail,
-                              (value) {
-                                userSettingsProvider.setSendToMail(value);
-                              },
-                              theme,
-                            ),
-                            _buildSwitchTile(
-                              'Разрешить сторонние мобильные уведомления',
-                              userSettingsProvider.mobileNotifications,
-                              (value) {
-                                userSettingsProvider
-                                    .setMobileNotifications(value);
-                              },
-                              theme,
-                            ),
-                          ],
-                        )
-                      : const SizedBox.shrink(),
-                ),
-                _buildSwitchTile(
-                  'Разрешить уведомления на почту',
-                  userSettingsProvider.personalSendToMail,
-                  (value) {
-                    userSettingsProvider.setPersonalSendToMail(value);
-                  },
-                  theme,
-                ),
-                _buildSwitchTile(
-                  'Разрешить мобильные уведомления',
-                  userSettingsProvider.personalMobileNotifications,
-                  (value) {
-                    userSettingsProvider.setPersonalMobileNotifications(value);
-                  },
-                  theme,
-                ),
-                _buildStaticTile('Настройки уведомлений', '', theme,
-                    onTap: _navigateToNotificationSettings),
-              ],
-              cardColor,
             ),
-          const SizedBox(height: 10),
-          _buildAuthButton(context),
-          const SizedBox(height: 16),
-        ],
-      ),
     );
   }
 }
