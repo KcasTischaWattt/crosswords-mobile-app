@@ -274,6 +274,26 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
+  Future<void> createSubscription() async {
+    try {
+      await ApiService.createSubscription(
+        title: _title,
+        description: _description,
+        sources: _selectedSources,
+        tags: _selectedTags,
+        followers: _followers,
+        subscribeOptions: SubscribeOptions(
+          sendToMail: _sendToMail,
+          mobileNotifications: _mobileNotifications,
+          subscribed: true,
+        ),
+        isPublic: _isPublic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void clear() {
     _subscriptions.clear();
     _selectedSources.clear();

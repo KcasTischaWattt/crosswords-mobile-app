@@ -1,6 +1,7 @@
 import 'package:crosswords/providers/subscription_provider.dart';
 import 'package:crosswords/screens/base_digest_change_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DigestCreatePage extends StatefulWidget {
   const DigestCreatePage({super.key});
@@ -18,9 +19,23 @@ class _DigestCreatePageState extends BaseDigestPage<DigestCreatePage> {
   }
 
   @override
-  void onPrimaryPressed() {
-    // TODO: Добавить логику создания дайджеста
-    Navigator.pop(context);
+  void onPrimaryPressed() async {
+    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
+    try {
+      await provider.createSubscription();
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Подписка успешно создана')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка при создании подписки: $e')),
+      );
+    }
   }
 
   @override

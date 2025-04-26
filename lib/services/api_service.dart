@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../data/models/digest.dart';
 import '../data/models/note.dart';
+import '../data/models/subscribe_options.dart';
 import '../data/models/subscription.dart';
 
 class ApiService {
@@ -210,6 +211,32 @@ class ApiService {
     final List<dynamic> jsonList = response.data['digests'];
 
     return jsonList.map((json) => Digest.fromJson(json)).toList();
+  }
+
+  /// Создание подписки
+  static Future<void> createSubscription({
+    required String title,
+    required String description,
+    required List<String> sources,
+    required List<String> tags,
+    required List<String> followers,
+    required SubscribeOptions subscribeOptions,
+    required bool isPublic,
+  }) async {
+    final data = {
+      "title": title,
+      "description": description,
+      "sources": sources,
+      "tags": tags,
+      "followers": followers,
+      "subscribe_options": {
+        "send_to_mail": subscribeOptions.sendToMail,
+        "mobile_notifications": subscribeOptions.mobileNotifications,
+      },
+      "public": isPublic,
+    };
+
+    await _dio.post("/subscriptions/create", data: data);
   }
 
   /// GET запрос к API
