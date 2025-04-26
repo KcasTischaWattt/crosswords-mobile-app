@@ -244,6 +244,16 @@ class ApiService {
     return response.data['email'];
   }
 
+  /// Получение информации о настройках пользователя
+  static Future<Map<String, dynamic>> getUserSubscriptionSettings(String email) async {
+    final response = await _dio.post(
+      "/users/subscription_settings/check",
+      data: {"username": email},
+    );
+    return response.data;
+  }
+
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);

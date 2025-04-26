@@ -28,11 +28,11 @@ class FollowersSection extends StatelessWidget {
                       trailing: isCurrentUser
                           ? null
                           : IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _showDeleteConfirmationDialog(context, user);
-                        },
-                      ),
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                _showDeleteConfirmationDialog(context, user);
+                              },
+                            ),
                     );
                   }).toList(),
                 ),
@@ -114,10 +114,18 @@ class FollowersSection extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.add_circle),
-                  onPressed: () {
-                    if (recipientController.text.isNotEmpty) {
-                      provider.addFollower(recipientController.text);
+                  onPressed: () async {
+                    final provider = Provider.of<SubscriptionProvider>(context,
+                        listen: false);
+                    final email = recipientController.text.trim();
+                    if (email.isEmpty) return;
+                    try {
+                      await provider.addFollowerWithValidation(email);
                       recipientController.clear();
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(e.toString())),
+                      );
                     }
                   },
                 ),

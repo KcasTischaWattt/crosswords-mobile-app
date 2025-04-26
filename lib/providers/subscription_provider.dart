@@ -1,5 +1,6 @@
 import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:crosswords/providers/abstract/filter_provider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../data/models/subscription.dart';
 import '../data/models/subscribe_options.dart';
@@ -308,6 +309,33 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       notifyListeners();
     } catch (e) {
       debugPrint('Ошибка получения email пользователя: $e');
+    }
+  }
+
+  Future<void> addFollowerWithValidation(String email) async {
+    try {
+      final data = await ApiService.getUserSubscriptionSettings(email);
+
+      if (data['subscribable'] != true) {
+        throw Exception('Пользователя нельзя добавить в рассылку');
+      }
+
+      if (_followers.contains(email)) {
+        throw Exception('Этот пользователь уже добавлен');
+      }
+
+      _followers.add(email);
+      notifyListeners();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw Exception('Пользователь не найден');
+      } else if (e.response?.statusCode == 403) {
+        throw Exception('Пользователя нельзя добавить в рассылку');
+      } else {
+        throw Exception('Ошибка проверки пользователя: ${e.message}');
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
