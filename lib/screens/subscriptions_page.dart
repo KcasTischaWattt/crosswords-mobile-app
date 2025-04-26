@@ -1,5 +1,6 @@
 import 'package:crosswords/data/models/subscription.dart';
 import 'package:crosswords/providers/subscription_provider.dart';
+import 'package:crosswords/screens/widgets/loading_refresh_button.dart%20dart.dart';
 import 'package:crosswords/screens/widgets/subscription_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,13 +14,32 @@ class SubscriptionsPage extends StatefulWidget {
   _SubscriptionsPageState createState() => _SubscriptionsPageState();
 }
 
-class _SubscriptionsPageState extends State<SubscriptionsPage> {
+class _SubscriptionsPageState extends State<SubscriptionsPage>
+    with SingleTickerProviderStateMixin {
   bool _showOnlySubscriptions = false;
+  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
+
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+    _rotationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _rotationController.repeat();
+      }
+    });
+
     _loadSubscriptions();
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
   }
 
   void _loadSubscriptions() {
@@ -332,6 +352,9 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
   }
 
   AppBar _buildAppBar() {
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
+
     return AppBar(
       toolbarHeight: 60,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -343,15 +366,15 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: _onRefreshPressed,
-          tooltip: 'Обновить',
+        LoadingRefreshButton(
+          onRefresh: () async {
+            await subscriptionProvider.loadSubscriptions();
+          },
+          isDisabled: subscriptionProvider.isLoading,
         ),
       ],
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

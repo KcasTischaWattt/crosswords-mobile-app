@@ -1,3 +1,4 @@
+import 'package:crosswords/screens/widgets/loading_refresh_button.dart%20dart.dart';
 import 'package:crosswords/screens/widgets/subscription_avatar.dart';
 import '../data/models/subscribe_options.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +22,26 @@ class DigestsPage extends StatefulWidget {
   _DigestsPageState createState() => _DigestsPageState();
 }
 
-class _DigestsPageState extends State<DigestsPage> {
+class _DigestsPageState extends State<DigestsPage>
+    with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
+  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+    _rotationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _rotationController.repeat();
+      }
+    });
 
     Future.microtask(() {
       if (!mounted) return;
@@ -48,8 +61,8 @@ class _DigestsPageState extends State<DigestsPage> {
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
-
     _scrollController.dispose();
+    _rotationController.dispose();
     super.dispose();
   }
 
@@ -824,20 +837,9 @@ class _DigestsPageState extends State<DigestsPage> {
     );
   }
 
-  void _onRefreshPressed() async {
-    final provider = Provider.of<DigestProvider>(context, listen: false);
-    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
-
-    provider.clear();
-    subscriptionProvider.clear();
-
-    await provider.loadDigests();
-    await subscriptionProvider.loadSubscriptions();
-  }
-
-
   AppBar _buildAppBar() {
     final subscriptionProvider = Provider.of<SubscriptionProvider>(context);
+    final digestProvider = Provider.of<DigestProvider>(context);
     final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
     final selectedSubscription = _getSelectedSubscription();
 
@@ -884,10 +886,13 @@ class _DigestsPageState extends State<DigestsPage> {
             );
           },
         ),
-        IconButton(
-          icon: const Icon(Icons.refresh), // 👈 новая иконка
-          onPressed: _onRefreshPressed,
-          tooltip: 'Обновить',
+        LoadingRefreshButton(
+          onRefresh: () async {
+            await digestProvider.loadDigests();
+            await subscriptionProvider.loadSubscriptions();
+          },
+          isDisabled:
+              digestProvider.isLoading || subscriptionProvider.isLoading,
         ),
       ],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

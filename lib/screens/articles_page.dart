@@ -1,3 +1,4 @@
+import 'package:crosswords/screens/widgets/loading_refresh_button.dart%20dart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/article_provider.dart';
@@ -16,12 +17,24 @@ class ArticlesPage extends StatefulWidget {
 class _ArticlesPageState extends State<ArticlesPage>
     with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
+  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+
+    _rotationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _rotationController.repeat();
+      }
+    });
 
     Future.microtask(() {
       if (!mounted) return;
@@ -36,6 +49,7 @@ class _ArticlesPageState extends State<ArticlesPage>
   @override
   void dispose() {
     _scrollController.dispose();
+    _rotationController.dispose();
     super.dispose();
   }
 
@@ -104,24 +118,22 @@ class _ArticlesPageState extends State<ArticlesPage>
     return AppBar(
       toolbarHeight: 60,
       title: _buildTitle(provider),
-      actions: [
-        _buildSearchButton(),
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: () {
-            final provider = Provider.of<ArticleProvider>(context, listen: false);
-            provider.prepareSearchForAllDocuments();
-            provider.loadArticles();
-          },
-        ),
-      ],
+        actions: [
+          _buildSearchButton(),
+          LoadingRefreshButton(
+            onRefresh: () async {
+              provider.prepareSearchForAllDocuments();
+              await provider.loadArticles();
+            },
+            isDisabled: provider.isLoading,
+          ),
+        ],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shadowColor: Colors.transparent,
     );
   }
-
 
   Widget _buildLoadingIndicator() {
     return const Padding(
