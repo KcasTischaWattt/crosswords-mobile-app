@@ -4,34 +4,45 @@ import '../services/api_service.dart';
 import 'package:flutter/material.dart';
 
 class UserSettingsProvider extends ChangeNotifier {
-  bool subscribable = false;
-  bool sendToMail = false;
-  bool mobileNotifications = false;
-  bool personalSendToMail = false;
-  bool personalMobileNotifications = false;
+  bool _subscribable = false;
+  bool _sendToMail = false;
+  bool _mobileNotifications = false;
+  bool _personalSendToMail = false;
+  bool _personalMobileNotifications = false;
 
-  bool isLoading = false;
-  bool isPasswordChanging = false;
-  bool isEmailChanging = false;
+  bool _isLoading = false;
+  bool _isPasswordChanging = false;
+  bool _isEmailChanging = false;
+
+  bool get subscribable => _subscribable;
+  bool get sendToMail => _sendToMail;
+  bool get mobileNotifications => _mobileNotifications;
+  bool get personalSendToMail => _personalSendToMail;
+  bool get personalMobileNotifications => _personalMobileNotifications;
+
+  bool get isLoading => _isLoading;
+  bool get isPasswordChanging => _isPasswordChanging;
+  bool get isEmailChanging => _isEmailChanging;
+
 
   Future<void> loadSettings() async {
     try {
-      isLoading = true;
+      _isLoading = true;
       notifyListeners();
       final response = await ApiService.get('/users/personal_info');
-      subscribable = response.data['subscribable'];
-      sendToMail = response.data['send_to_mail'];
-      mobileNotifications = response.data['mobile_notifications'];
-      personalSendToMail = response.data['personal_send_to_mail'];
-      personalMobileNotifications =
+      _subscribable = response.data['subscribable'];
+      _sendToMail = response.data['send_to_mail'];
+      _mobileNotifications = response.data['mobile_notifications'];
+      _personalSendToMail = response.data['personal_send_to_mail'];
+      _personalMobileNotifications =
           response.data['personal_mobile_notifications'];
     } finally {
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> updateSettings() async {
+  Future<void> _updateSettings() async {
     await ApiService.put('/users/subscription_settings/set', data: {
       'subscribable': subscribable,
       'send_to_mail': sendToMail,
@@ -42,33 +53,33 @@ class UserSettingsProvider extends ChangeNotifier {
   }
 
   void setSubscribable(bool value) {
-    subscribable = value;
+    _subscribable = value;
     notifyListeners();
-    updateSettings();
+    _updateSettings();
   }
 
   void setSendToMail(bool value) {
-    sendToMail = value;
+    _sendToMail = value;
     notifyListeners();
-    updateSettings();
+    _updateSettings();
   }
 
   void setMobileNotifications(bool value) {
-    mobileNotifications = value;
+    _mobileNotifications = value;
     notifyListeners();
-    updateSettings();
+    _updateSettings();
   }
 
   void setPersonalSendToMail(bool value) {
-    personalSendToMail = value;
+    _personalSendToMail = value;
     notifyListeners();
-    updateSettings();
+    _updateSettings();
   }
 
   void setPersonalMobileNotifications(bool value) {
-    personalMobileNotifications = value;
+    _personalMobileNotifications = value;
     notifyListeners();
-    updateSettings();
+    _updateSettings();
   }
 
   /// Смена пароля пользователя
@@ -77,7 +88,7 @@ class UserSettingsProvider extends ChangeNotifier {
       return 'Пожалуйста, заполните все поля.';
     }
     try {
-      isPasswordChanging = true;
+      _isPasswordChanging = true;
       notifyListeners();
       await ApiService.changePassword(oldPassword, newPassword);
       return null;
@@ -92,7 +103,7 @@ class UserSettingsProvider extends ChangeNotifier {
     } catch (e) {
       return 'Произошла непредвиденная ошибка.';
     } finally {
-      isPasswordChanging = false;
+      _isPasswordChanging = false;
       notifyListeners();
     }
   }
@@ -102,7 +113,7 @@ class UserSettingsProvider extends ChangeNotifier {
       return 'Пожалуйста, заполните поле почты.';
     }
     try {
-      isEmailChanging = true;
+      _isEmailChanging = true;
       notifyListeners();
       await ApiService.changeEmail(newEmail);
       return null;
@@ -115,7 +126,7 @@ class UserSettingsProvider extends ChangeNotifier {
     } catch (e) {
       return 'Произошла непредвиденная ошибка.';
     } finally {
-      isEmailChanging = false;
+      _isEmailChanging = false;
       notifyListeners();
     }
   }
