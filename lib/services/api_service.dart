@@ -205,10 +205,18 @@ class ApiService {
   }
 
   /// Получение списка подписок пользователя
-  static Future<List<Digest>> fetchDigests() async {
-    final response = await _dio.get("/digests");
+  static Future<List<Digest>> fetchDigests({
+    required int pageNumber,
+    required int matchesPerPage,
+  }) async {
+    final response = await _dio.get(
+      "/digests",
+      queryParameters: {
+        "page_number": pageNumber,
+        "matches_per_page": matchesPerPage,
+      },
+    );
     final List<dynamic> jsonList = response.data['digests'];
-
     return jsonList.map((json) => Digest.fromJson(json)).toList();
   }
 

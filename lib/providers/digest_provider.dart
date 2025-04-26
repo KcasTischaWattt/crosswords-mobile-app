@@ -157,13 +157,18 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
       _isLoadingMore = true;
     } else {
       _isLoading = true;
-      _currentPage = isLoadMore ? _currentPage : 0;
+      if (!isLoadMore) {
+        _currentPage = 0;
+      }
     }
 
     notifyListeners();
 
     try {
-      final newDigests = await ApiService.fetchDigests();
+      final newDigests = await ApiService.fetchDigests(
+        pageNumber: _currentPage,
+        matchesPerPage: _pageSize,
+      );
 
       if (!isLoadMore) {
         _digests.clear();
