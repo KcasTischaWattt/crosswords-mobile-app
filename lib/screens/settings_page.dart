@@ -1,4 +1,5 @@
 import 'package:crosswords/main.dart';
+import 'package:crosswords/providers/user_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:crosswords/providers/auth_provider.dart';
@@ -21,11 +22,13 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool addToDigest = false;
-  bool emailNotifications = false;
-  bool mobileNotifications = true;
-  bool sideMailNotifications = false;
-  bool sideMobileNotifications = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserSettingsProvider>(context, listen: false).loadSettings();
+    });
+  }
 
   String get currentThemeName {
     return Theme.of(context).brightness == Brightness.dark
@@ -232,6 +235,8 @@ class _SettingsPageState extends State<SettingsPage> {
     final cardColor =
         theme.bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900];
     final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
+    final userSettingsProvider =
+        Provider.of<UserSettingsProvider>(context, listen: true);
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -260,31 +265,33 @@ class _SettingsPageState extends State<SettingsPage> {
               [
                 _buildSwitchTile(
                   'Разрешить добавлять меня в рассылку',
-                  addToDigest,
+                  userSettingsProvider.subscribable,
                   (value) {
-                    setState(() => addToDigest = value);
+                    userSettingsProvider.setSubscribable(value);
                   },
                   theme,
                 ),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
-                  child: addToDigest
+                  child: userSettingsProvider.subscribable
                       ? Column(
-                          key: ValueKey<bool>(addToDigest),
+                          key:
+                              ValueKey<bool>(userSettingsProvider.subscribable),
                           children: [
                             _buildSwitchTile(
                               'Разрешить сторонние уведомления на почту',
-                              sideMailNotifications,
+                              userSettingsProvider.sendToMail,
                               (value) {
-                                setState(() => sideMailNotifications = value);
+                                userSettingsProvider.setSendToMail(value);
                               },
                               theme,
                             ),
                             _buildSwitchTile(
                               'Разрешить сторонние мобильные уведомления',
-                              sideMobileNotifications,
+                              userSettingsProvider.mobileNotifications,
                               (value) {
-                                setState(() => sideMobileNotifications = value);
+                                userSettingsProvider
+                                    .setMobileNotifications(value);
                               },
                               theme,
                             ),
@@ -294,17 +301,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 _buildSwitchTile(
                   'Разрешить уведомления на почту',
-                  emailNotifications,
+                  userSettingsProvider.personalSendToMail,
                   (value) {
-                    setState(() => emailNotifications = value);
+                    userSettingsProvider.setPersonalSendToMail(value);
                   },
                   theme,
                 ),
                 _buildSwitchTile(
                   'Разрешить мобильные уведомления',
-                  mobileNotifications,
+                  userSettingsProvider.personalMobileNotifications,
                   (value) {
-                    setState(() => mobileNotifications = value);
+                    userSettingsProvider.setPersonalMobileNotifications(value);
                   },
                   theme,
                 ),

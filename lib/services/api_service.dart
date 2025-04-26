@@ -264,4 +264,9 @@ class ApiService {
       String endpoint, Map<String, dynamic> data) async {
     return await _dio.post(endpoint, data: data);
   }
+
+  /// PUT запрос к API
+  static Future<Response> put(String endpoint, {Map<String, dynamic>? data}) async {
+    return await _dio.put(endpoint, data: data);
+  }
 }

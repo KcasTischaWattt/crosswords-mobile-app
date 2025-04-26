@@ -1,3 +1,4 @@
+import 'package:crosswords/providers/user_settings_provider.dart';
 import 'package:crosswords/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => DigestProvider()),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => UserSettingsProvider()),
       ],
       child: const MyApp(),
     ),
