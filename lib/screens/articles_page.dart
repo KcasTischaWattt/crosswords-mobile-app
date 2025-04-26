@@ -104,13 +104,24 @@ class _ArticlesPageState extends State<ArticlesPage>
     return AppBar(
       toolbarHeight: 60,
       title: _buildTitle(provider),
-      actions: [_buildSearchButton()],
+      actions: [
+        _buildSearchButton(),
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: () {
+            final provider = Provider.of<ArticleProvider>(context, listen: false);
+            provider.prepareSearchForAllDocuments();
+            provider.loadArticles();
+          },
+        ),
+      ],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shadowColor: Colors.transparent,
     );
   }
+
 
   Widget _buildLoadingIndicator() {
     return const Padding(
