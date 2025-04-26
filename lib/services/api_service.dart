@@ -253,6 +253,16 @@ class ApiService {
     return response.data;
   }
 
+  /// Смена пароля
+  static Future<void> changePassword(String oldPassword, String newPassword) async {
+    await _dio.patch(
+      "/users/change/password",
+      data: {
+        "old_password": oldPassword,
+        "new_password": newPassword,
+      },
+    );
+  }
 
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {

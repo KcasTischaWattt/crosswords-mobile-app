@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../services/api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +11,7 @@ class UserSettingsProvider extends ChangeNotifier {
   bool personalMobileNotifications = false;
 
   bool isLoading = false;
+  bool isPasswordChanging = false;
 
   Future<void> loadSettings() async {
     try {
@@ -19,7 +22,8 @@ class UserSettingsProvider extends ChangeNotifier {
       sendToMail = response.data['send_to_mail'];
       mobileNotifications = response.data['mobile_notifications'];
       personalSendToMail = response.data['personal_send_to_mail'];
-      personalMobileNotifications = response.data['personal_mobile_notifications'];
+      personalMobileNotifications =
+          response.data['personal_mobile_notifications'];
     } finally {
       isLoading = false;
       notifyListeners();
@@ -64,5 +68,34 @@ class UserSettingsProvider extends ChangeNotifier {
     personalMobileNotifications = value;
     notifyListeners();
     updateSettings();
+  }
+
+  /// Смена пароля пользователя
+  Future<String?> changePassword(String oldPassword, String newPassword) async {
+    if (oldPassword.isEmpty || newPassword.isEmpty) {
+      return 'Пожалуйста, заполните все поля.';
+    }
+    if (oldPassword == newPassword) {
+      return 'Новый пароль не должен совпадать со старым.';
+    }
+    try {
+      isPasswordChanging = true;
+      notifyListeners();
+      await ApiService.changePassword(oldPassword, newPassword);
+      return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        return 'Новый пароль не должен совпадать со старым.';
+      } else if (e.response?.statusCode == 403) {
+        return 'Старый пароль неверный.';
+      } else {
+        return 'Не удалось изменить пароль. Попробуйте позже.';
+      }
+    } catch (e) {
+      return 'Произошла непредвиденная ошибка.';
+    } finally {
+      isPasswordChanging = false;
+      notifyListeners();
+    }
   }
 }

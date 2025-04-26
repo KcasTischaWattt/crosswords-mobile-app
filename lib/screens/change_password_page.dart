@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/user_settings_provider.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -31,28 +34,25 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  void _onSubmit() {
+  void _onSubmit() async {
     final oldPassword = _oldPasswordController.text.trim();
     final newPassword = _newPasswordController.text.trim();
 
-    if (oldPassword.isEmpty || newPassword.isEmpty) {
-      _showAlertDialog('Ошибка', 'Пожалуйста, заполните все поля.');
-      return;
-    }
+    final userSettingsProvider =
+        Provider.of<UserSettingsProvider>(context, listen: false);
+    final errorMessage =
+        await userSettingsProvider.changePassword(oldPassword, newPassword);
 
-    if (oldPassword == newPassword) {
-      _showAlertDialog(
-        'Ошибка',
-        'Новый пароль не должен совпадать со старым.',
-      );
-      return;
+    if (errorMessage == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Пароль успешно изменён")),
+        );
+        Navigator.pop(context);
+      }
+    } else {
+      _showAlertDialog('Ошибка', errorMessage);
     }
-
-    // TODO: реализовать отправку нового пароля на сервер
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Пароль успешно изменён")),
-    );
-    Navigator.pop(context);
   }
 
   Future<void> _confirmChange() async {
