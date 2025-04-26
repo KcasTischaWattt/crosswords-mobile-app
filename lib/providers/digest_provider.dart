@@ -7,8 +7,6 @@ import '../data/models/search_params/digest_search_params.dart';
 
 class DigestProvider extends ChangeNotifier implements FilterProvider {
   final List<Digest> _digests = [];
-  final List<String> _sources = List<String>.from(defaultSources);
-  final List<String> _tags = List<String>.from(defaultTags);
 
   bool _isLoading = false;
   bool _isLoadingMore = false;

@@ -9,8 +9,6 @@ import '../data/models/search_params/article_search_params.dart';
 
 class ArticleProvider extends ChangeNotifier implements FilterProvider {
   final List<Article> _articles = [];
-  final List<String> _sources = List<String>.from(defaultSources);
-  final List<String> _tags = List<String>.from(defaultTags);
 
   Article? _currentArticle;
   final List<Note> _notes = [];
