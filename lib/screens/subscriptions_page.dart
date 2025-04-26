@@ -17,28 +17,15 @@ class SubscriptionsPage extends StatefulWidget {
 class _SubscriptionsPageState extends State<SubscriptionsPage>
     with SingleTickerProviderStateMixin {
   bool _showOnlySubscriptions = false;
-  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
-
-    _rotationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-    _rotationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _rotationController.repeat();
-      }
-    });
-
     _loadSubscriptions();
   }
 
   @override
   void dispose() {
-    _rotationController.dispose();
     super.dispose();
   }
 
@@ -342,13 +329,6 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
         );
       },
     );
-  }
-
-  void _onRefreshPressed() async {
-    final provider = Provider.of<SubscriptionProvider>(context, listen: false);
-
-    provider.clear();
-    await provider.loadSubscriptions();
   }
 
   AppBar _buildAppBar() {

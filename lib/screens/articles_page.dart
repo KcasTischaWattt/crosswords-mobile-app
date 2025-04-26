@@ -17,24 +17,12 @@ class ArticlesPage extends StatefulWidget {
 class _ArticlesPageState extends State<ArticlesPage>
     with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
-  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
-
-    _rotationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-
-    _rotationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _rotationController.repeat();
-      }
-    });
 
     Future.microtask(() {
       if (!mounted) return;
@@ -49,7 +37,6 @@ class _ArticlesPageState extends State<ArticlesPage>
   @override
   void dispose() {
     _scrollController.dispose();
-    _rotationController.dispose();
     super.dispose();
   }
 
