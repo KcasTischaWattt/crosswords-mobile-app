@@ -12,6 +12,7 @@ class UserSettingsProvider extends ChangeNotifier {
 
   bool isLoading = false;
   bool isPasswordChanging = false;
+  bool isEmailChanging = false;
 
   Future<void> loadSettings() async {
     try {
@@ -92,6 +93,29 @@ class UserSettingsProvider extends ChangeNotifier {
       return 'Произошла непредвиденная ошибка.';
     } finally {
       isPasswordChanging = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> changeEmail(String newEmail) async {
+    if (newEmail.isEmpty) {
+      return 'Пожалуйста, заполните поле почты.';
+    }
+    try {
+      isEmailChanging = true;
+      notifyListeners();
+      await ApiService.changeEmail(newEmail);
+      return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        return 'Новый email не должен совпадать со старым';
+      } else {
+        return 'Не удалось изменить почту. Попробуйте позже.';
+      }
+    } catch (e) {
+      return 'Произошла непредвиденная ошибка.';
+    } finally {
+      isEmailChanging = false;
       notifyListeners();
     }
   }

@@ -1,4 +1,8 @@
+import 'package:crosswords/screens/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/user_settings_provider.dart';
 
 class ChangeEmailPage extends StatefulWidget {
   const ChangeEmailPage({super.key});
@@ -10,32 +14,26 @@ class ChangeEmailPage extends StatefulWidget {
 class _ChangeEmailPageState extends State<ChangeEmailPage> {
   final TextEditingController _emailController = TextEditingController();
 
-  Future<void> _confirmChange() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Подтвердить смену почты"),
-        content: const Text("Вы уверены, что хотите изменить почту?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Отмена"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child:
-                const Text("Подтвердить", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+  Future<void> _onSubmit() async {
+    final newEmail = _emailController.text.trim();
 
-    if (confirmed == true) {
-      // TODO: реализовать отправку нового email на сервер
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email успешно изменён")),
-      );
-      Navigator.pop(context);
+    final userSettingsProvider =
+        Provider.of<UserSettingsProvider>(context, listen: false);
+    final errorMessage = await userSettingsProvider.changeEmail(newEmail);
+
+    if (errorMessage == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Email успешно изменён")),
+        );
+        Navigator.pop(context);
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
     }
   }
 
@@ -60,6 +58,8 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userSettingsProvider = Provider.of<UserSettingsProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Смена почты",
@@ -77,17 +77,10 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
-              child: ElevatedButton(
-                onPressed: _confirmChange,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text("Подтвердить",
-                    style: TextStyle(color: Colors.black, fontSize: 16)),
+              child: LoadingButton(
+                isLoading: userSettingsProvider.isEmailChanging,
+                onPressed: _onSubmit,
+                text: "Подтвердить",
               ),
             )
           ],
