@@ -264,6 +264,16 @@ class ApiService {
     );
   }
 
+  /// Смена email пользователя
+  static Future<void> changeEmail(String newEmail) async {
+    await _dio.patch(
+      "/users/change/email",
+      data: {
+        "new_email": newEmail,
+      },
+    );
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);
