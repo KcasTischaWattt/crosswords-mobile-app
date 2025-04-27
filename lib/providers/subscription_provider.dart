@@ -568,10 +568,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
       notifyListeners();
 
-      // Вызов загрузки подписок остается тут, если нужно
       await loadSubscriptions();
 
-      // Теперь через переданный context
       final digestProvider = Provider.of<DigestProvider>(context, listen: false);
       await digestProvider.loadDigests();
     } catch (e) {
