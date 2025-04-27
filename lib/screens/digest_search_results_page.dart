@@ -17,6 +17,7 @@ class DigestSearchResultsPage extends StatefulWidget {
 
 class _DigestSearchResultsPageState extends State<DigestSearchResultsPage> {
   late ScrollController _scrollController;
+  String? _loadingDigestId;
 
   @override
   void initState() {
@@ -238,36 +239,56 @@ class _DigestSearchResultsPageState extends State<DigestSearchResultsPage> {
       children: [
         Text(digest.date, style: const TextStyle(fontSize: 14)),
         ElevatedButton(
-          onPressed: () async {
-            final digestProvider =
-                Provider.of<DigestProvider>(context, listen: false);
+          onPressed: _loadingDigestId == digest.id
+              ? null
+              : () async {
+                  setState(() {
+                    _loadingDigestId = digest.id;
+                  });
 
-            try {
-              final fullDigest = await digestProvider.loadDigestById(digest.id);
-              if (!mounted) return;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DigestDetailPage(digest: fullDigest),
-                ),
-              );
-            } catch (e) {
-              if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
-              );
-            }
-          },
+                  final digestProvider =
+                      Provider.of<DigestProvider>(context, listen: false);
+
+                  try {
+                    final fullDigest =
+                        await digestProvider.loadDigestById(digest.id);
+                    if (!mounted) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DigestDetailPage(digest: fullDigest),
+                      ),
+                    );
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
+                    );
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        _loadingDigestId = null;
+                      });
+                    }
+                  }
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
-          child: const Text(
-            'Подробнее',
-            style: TextStyle(color: Colors.black, fontSize: 18),
-          ),
+          child: _loadingDigestId == digest.id
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text(
+                  'Подробнее',
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                ),
         ),
       ],
     );

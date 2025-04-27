@@ -25,6 +25,7 @@ class DigestsPage extends StatefulWidget {
 class _DigestsPageState extends State<DigestsPage>
     with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
+  String? _loadingDigestId;
 
   @override
   void initState() {
@@ -755,33 +756,54 @@ class _DigestsPageState extends State<DigestsPage>
 
   Widget _buildReadMoreButton(Digest digest) {
     return ElevatedButton(
-      onPressed: () async {
-        try {
-          final digestProvider =
-              Provider.of<DigestProvider>(context, listen: false);
-          final fullDigest = await digestProvider.loadDigestById(digest.id);
-          if (!mounted) return;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DigestDetailPage(digest: fullDigest),
-            ),
-          );
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
-          );
-        }
-      },
+      onPressed: _loadingDigestId == digest.id
+          ? null
+          : () async {
+              setState(() {
+                _loadingDigestId = digest.id;
+              });
+
+              final digestProvider =
+                  Provider.of<DigestProvider>(context, listen: false);
+
+              try {
+                final fullDigest =
+                    await digestProvider.loadDigestById(digest.id);
+                if (!mounted) return;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DigestDetailPage(digest: fullDigest),
+                  ),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
+                );
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _loadingDigestId = null;
+                  });
+                }
+              }
+            },
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      child: const Text(
-        'Подробнее',
-        style: TextStyle(color: Colors.black, fontSize: 18),
-      ),
+      child: _loadingDigestId == digest.id
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Text(
+              'Подробнее',
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
     );
   }
 
