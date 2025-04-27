@@ -2,9 +2,8 @@ import 'dart:collection';
 import 'package:crosswords/data/constants/tag_icons.dart';
 
 final List<String> _sources = [
-  'Коммерсант',
+  'Коммерсантъ',
   'Интерфакс',
-  'ЦБ РФ',
   'ЦБ Узбекистан',
   'ЦБ Таджикистан',
   'ЦБ Кыргызстан',
