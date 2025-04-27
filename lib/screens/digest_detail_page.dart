@@ -282,7 +282,9 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
         children: List.generate(5, (index) {
           return IconButton(
             icon: Icon(
-              index < widget.digest.userRating ? Icons.star : Icons.star_border,
+              widget.digest.userRating != null && index < widget.digest.userRating!
+                  ? Icons.star
+                  : Icons.star_border,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {

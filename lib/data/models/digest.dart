@@ -3,8 +3,8 @@ import 'subscribe_options.dart';
 class Digest {
   final String id;
   final String title;
-  final double averageRating;
-  final int userRating;
+  final double? averageRating;
+  final int? userRating;
   final List<String> sources;
   final String description;
   final String text;
@@ -70,8 +70,12 @@ class Digest {
   /// Метод для преобразования JSON в объект Digest
   factory Digest.fromJson(Map<String, dynamic> json) {
     return Digest(
-      averageRating: json['averageRating'],
-      userRating: json['userRating'],
+      averageRating: json['average_rating'] != null
+          ? (json['average_rating'] as num).toDouble()
+          : null,
+      userRating: json['user_rating'] != null
+          ? (json['user_rating'] as num).toInt()
+          : null,
       public: json['public'],
       id: json['id'],
       title: json['title'],
@@ -80,10 +84,10 @@ class Digest {
       text: json['text'],
       tags: List<String>.from(json['tags']),
       date: json['date'],
-      isOwner: json['isOwner'],
+      isOwner: json['is_owner'],
       owner: json['owner'],
       urls: List<String>.from(json['urls']),
-      subscribeOptions: SubscribeOptions.fromJson(json['subscribeOptions']),
+      subscribeOptions: SubscribeOptions.fromJson(json['subscribe_options']),
     );
   }
 
