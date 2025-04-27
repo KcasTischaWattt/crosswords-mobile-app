@@ -324,9 +324,33 @@ class ApiService {
   }
 
   /// Получение подписки по ID дайджеста
-  static Future<Subscription> fetchSubscriptionByDigestId(String digestId) async {
+  static Future<Subscription> fetchSubscriptionByDigestId(
+      String digestId) async {
     final response = await _dio.get('/digests/$digestId/subscription');
     return Subscription.fromJson(response.data);
+  }
+
+  /// Проверка, является ли текущий пользователь владельцем подписки
+  static Future<bool> checkOwnership(int subscriptionId) async {
+    final response =
+        await _dio.get('/subscriptions/$subscriptionId/check_ownership');
+    return response.data['is_owner'] ?? false;
+  }
+
+  /// Получение списка подписчиков подписки
+  static Future<List<String>> fetchSubscriptionFollowers(
+      int subscriptionId) async {
+    final response = await _dio.get('/subscriptions/$subscriptionId/followers');
+    final List<dynamic> followers = response.data['followers'] ?? [];
+    return followers.map((e) => e.toString()).toList();
+  }
+
+  /// Передача прав владения подпиской
+  static Future<void> changeSubscriptionOwner(
+      int subscriptionId, String newOwnerEmail) async {
+    await _dio.patch('/subscriptions/$subscriptionId/change_owner', data: {
+      "new_owner": newOwnerEmail,
+    });
   }
 
   /// GET запрос к API

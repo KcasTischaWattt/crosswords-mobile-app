@@ -400,6 +400,10 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
+  Future<Subscription> fetchSubscriptionByDigestId(String digestId) async {
+    return await ApiService.fetchSubscriptionByDigestId(digestId);
+  }
+
   Future<void> toggleSubscriptionByDigest(Digest digest) async {
     final newSubscribedState = !digest.subscribeOptions.subscribed;
 
@@ -425,6 +429,35 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       notifyListeners();
     } catch (e) {
       debugPrint('Ошибка переключения подписки через дайджест: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> isCurrentUserOwner(int subscriptionId) async {
+    try {
+      return await ApiService.checkOwnership(subscriptionId);
+    } catch (e) {
+      debugPrint('Ошибка проверки владельца: $e');
+      return false;
+    }
+  }
+
+  Future<List<String>> getSubscriptionFollowers(int subscriptionId) async {
+    try {
+      final followers = await ApiService.fetchSubscriptionFollowers(subscriptionId);
+      followers.removeWhere((email) => email == _currentUserEmail);
+      return followers;
+    } catch (e) {
+      debugPrint('Ошибка получения подписчиков: $e');
+      return [];
+    }
+  }
+
+  Future<void> transferSubscriptionOwnership(int subscriptionId, String newOwnerEmail) async {
+    try {
+      await ApiService.changeSubscriptionOwner(subscriptionId, newOwnerEmail);
+    } catch (e) {
+      debugPrint('Ошибка передачи владения: $e');
       rethrow;
     }
   }

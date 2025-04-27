@@ -529,29 +529,23 @@ class _DigestsPageState extends State<DigestsPage>
     );
   }
 
-  List<String> _getPotentialOwners(Digest digest) {
-    // TODO получение списка пользователей
-    return [
-      "mdperestoronin@edu.hse.ru",
-      "avtseytin@edu.hse.ru",
-      "crutcrushesrlc@gmail.com",
-    ];
-  }
+  void _transferOwnership(Digest digest, DigestProvider provider, int subscriptionId, String newOwner) async {
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
 
-  void _transferOwnership(
-      Digest digest, DigestProvider provider, String newOwner) {
-    // TODO передача владельца
-    _toggleSubscription(digest);
-  }
-
-  void _showTransferOwnershipDialog(Digest digest, DigestProvider provider) {
-    List<String> potentialOwners = _getPotentialOwners(digest);
-
-    if (potentialOwners.isEmpty) {
-      _toggleSubscription(digest);
-      return;
+    try {
+      await subscriptionProvider.transferSubscriptionOwnership(subscriptionId, newOwner);
+      await _toggleSubscription(digest);
+    } catch (e) {
+      debugPrint('Ошибка передачи владения: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка передачи владельца: $e')),
+        );
+      }
     }
+  }
 
+  void _showTransferOwnershipDialog(Digest digest, DigestProvider provider, int subscriptionId, List<String> followers) {
     String? selectedOwner;
 
     showDialog(
@@ -560,47 +554,36 @@ class _DigestsPageState extends State<DigestsPage>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text("Выберите нового владельца"),
-              content: SizedBox(
-                width: double.maxFinite,
+              title: const Text('Выберите нового владельца'),
+              content: SingleChildScrollView(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: potentialOwners.map((owner) {
-                            return RadioListTile<String>(
-                              title: Text(owner),
-                              value: owner,
-                              groupValue: selectedOwner,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedOwner = value;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ],
+                  children: followers.map((email) {
+                    return RadioListTile<String>(
+                      title: Text(email),
+                      value: email,
+                      groupValue: selectedOwner,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedOwner = value;
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Отмена"),
+                  child: const Text('Отмена'),
                 ),
                 TextButton(
                   onPressed: selectedOwner == null
                       ? null
                       : () {
-                          Navigator.pop(context);
-                          _transferOwnership(digest, provider, selectedOwner!);
-                        },
-                  child: const Text("Передать и отписаться",
-                      style: TextStyle(color: Colors.red)),
+                    Navigator.pop(context);
+                    _transferOwnership(digest, provider, subscriptionId, selectedOwner!);
+                  },
+                  child: const Text('Передать и отписаться', style: TextStyle(color: Colors.red)),
                 ),
               ],
             );
@@ -610,33 +593,27 @@ class _DigestsPageState extends State<DigestsPage>
     );
   }
 
-  void _showUnsubscribeDialog(Digest digest, DigestProvider provider) {
-    String message = digest.public
-        ? "Вы уверены, что хотите отписаться от \"${digest.title}\"?"
-        : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
 
+  void _showUnsubscribeDialog(Digest digest, DigestProvider provider) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Отмена подписки"),
-          content: Text(message),
+          title: const Text('Отмена подписки'),
+          content: Text(digest.public
+              ? 'Вы уверены, что хотите отписаться от "${digest.title}"?'
+              : 'Этот дайджест приватный. Чтобы снова подписаться, вам придётся запросить разрешение у владельца. Отписаться?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Отмена"),
+              child: const Text('Отмена'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context);
-                if (digest.isOwner) {
-                  _showTransferOwnershipDialog(digest, provider);
-                } else {
-                  _toggleSubscription(digest);
-                }
+                await _handleUnsubscribe(digest, provider);
               },
-              child:
-                  const Text("Отписаться", style: TextStyle(color: Colors.red)),
+              child: const Text('Отписаться', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -644,7 +621,62 @@ class _DigestsPageState extends State<DigestsPage>
     );
   }
 
-  void _toggleSubscription(Digest digest) async {
+  void _showLastOwnerWarning(Digest digest) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Внимание!'),
+          content: Text('Вы последний подписчик на эту подписку.\n\nПосле отписки подписка и все связанные дайджесты будут удалены. Продолжить?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _toggleSubscription(digest);
+              },
+              child: const Text('Удалить и отписаться', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _handleUnsubscribe(Digest digest, DigestProvider provider) async {
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+
+    try {
+      final subscription = await subscriptionProvider.fetchSubscriptionByDigestId(digest.id);
+      final isOwner = await subscriptionProvider.isCurrentUserOwner(subscription.id);
+
+      if (!isOwner) {
+        _toggleSubscription(digest);
+        return;
+      }
+
+      final followers = await subscriptionProvider.getSubscriptionFollowers(subscription.id);
+
+      if (followers.isEmpty) {
+        _showLastOwnerWarning(digest);
+      } else {
+        _showTransferOwnershipDialog(digest, provider, subscription.id, followers);
+      }
+    } catch (e) {
+      debugPrint('Ошибка обработки отписки: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка при отмене подписки: $e')),
+        );
+      }
+    }
+  }
+
+
+  Future<void> _toggleSubscription(Digest digest) async {
     final subscriptionProvider =
         Provider.of<SubscriptionProvider>(context, listen: false);
 
