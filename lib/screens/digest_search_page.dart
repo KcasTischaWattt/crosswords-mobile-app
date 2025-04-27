@@ -50,11 +50,12 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
   }
 
   void _onSearchQueryChanged() {
-    Provider.of<DigestProvider>(context, listen: false).setSearchQuery(_searchController.text);
+    Provider.of<DigestProvider>(context, listen: false)
+        .setSearchQuery(_searchController.text);
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller, Function(String) setDate) async {
+  Future<void> _selectDate(BuildContext context,
+      TextEditingController controller, Function(String) setDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -108,8 +109,8 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
                 hintText: 'Поиск по названию',
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               ),
             ),
           ),
@@ -138,9 +139,13 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
     final provider = Provider.of<DigestProvider>(context);
     return Row(
       children: [
-        Expanded(child: _buildDatePickerField('Дата С', _dateFromController, provider.setDateFrom)),
+        Expanded(
+            child: _buildDatePickerField(
+                'Дата С', _dateFromController, provider.setDateFrom)),
         const SizedBox(width: 12),
-        Expanded(child: _buildDatePickerField('Дата По', _dateToController, provider.setDateTo)),
+        Expanded(
+            child: _buildDatePickerField(
+                'Дата По', _dateToController, provider.setDateTo)),
       ],
     );
   }
@@ -152,7 +157,8 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
     );
   }
 
-  Widget _buildDatePickerField(String label, TextEditingController controller, Function(String) setDate) {
+  Widget _buildDatePickerField(String label, TextEditingController controller,
+      Function(String) setDate) {
     return Container(
       decoration: _containerDecoration(),
       child: TextField(
@@ -164,7 +170,8 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
           labelText: label,
           labelStyle: const TextStyle(fontSize: 14),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
       ),
     );
