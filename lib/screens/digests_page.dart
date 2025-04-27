@@ -445,7 +445,7 @@ class _DigestsPageState extends State<DigestsPage>
   }
 
   bool _shouldShowLoading(DigestProvider provider, List<Digest> digests) {
-    return provider.isLoading && digests.isEmpty;
+    return provider.isLoading;
   }
 
   Widget _buildLoadingIndicator() {
