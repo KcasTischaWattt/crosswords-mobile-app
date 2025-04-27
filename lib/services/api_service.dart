@@ -349,7 +349,7 @@ class ApiService {
   static Future<void> changeSubscriptionOwner(
       int subscriptionId, String newOwnerEmail) async {
     await _dio.patch('/subscriptions/$subscriptionId/change_owner', data: {
-      "new_owner": newOwnerEmail,
+      "owner": newOwnerEmail,
     });
   }
 
