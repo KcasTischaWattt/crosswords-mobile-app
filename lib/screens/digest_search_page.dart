@@ -54,8 +54,8 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
         .setSearchQuery(_searchController.text);
   }
 
-  Future<void> _selectDate(BuildContext context,
-      TextEditingController controller, Function(String) setDate) async {
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller, Function(DateTime) setDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -63,9 +63,8 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      final formattedDate = DateFormat('dd/MM/yyyy').format(picked);
-      controller.text = formattedDate;
-      setDate(formattedDate);
+      setDate(picked);
+      controller.text = DateFormat('dd/MM/yyyy').format(picked);
     }
   }
 
@@ -141,11 +140,11 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
       children: [
         Expanded(
             child: _buildDatePickerField(
-                'Дата С', _dateFromController, provider.setDateFrom)),
+                'Дата С', _dateFromController, provider.setDateFromDateTime)),
         const SizedBox(width: 12),
         Expanded(
             child: _buildDatePickerField(
-                'Дата По', _dateToController, provider.setDateTo)),
+                'Дата По', _dateToController, provider.setDateToDateTime)),
       ],
     );
   }
@@ -158,7 +157,7 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
   }
 
   Widget _buildDatePickerField(String label, TextEditingController controller,
-      Function(String) setDate) {
+      Function(DateTime) setDate) {
     return Container(
       decoration: _containerDecoration(),
       child: TextField(
