@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/digest_provider.dart';
+import 'digest_search_results_page.dart';
 import 'widgets/filter_expansion_panels.dart';
 import 'widgets/action_buttons.dart';
 
@@ -70,7 +71,10 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
     provider.applySearchParams();
     // TODO работа поиска
     provider.loadDigests();
-    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const DigestSearchResultsPage()),
+    );
   }
 
   AppBar _buildAppBar() {
