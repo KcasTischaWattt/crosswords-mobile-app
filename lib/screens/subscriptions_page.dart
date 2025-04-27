@@ -105,12 +105,10 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
     );
   }
 
-  void _navigateToDigestsPage(int subscriptionId) {
+  void _navigateToDigestsPage(int subscriptionId) async {
     final subscriptionProvider =
         Provider.of<SubscriptionProvider>(context, listen: false);
-    subscriptionProvider.setSelectedSubscription(subscriptionId);
-
-    subscriptionProvider.setSelectedSubscription(subscriptionId);
+    await subscriptionProvider.selectSubscription(subscriptionId, context);
     Navigator.pop(context);
   }
 

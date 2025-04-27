@@ -2,9 +2,11 @@ import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:crosswords/providers/abstract/filter_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../data/models/subscription.dart';
 import '../data/models/subscribe_options.dart';
 import '../services/api_service.dart';
+import 'digest_provider.dart';
 
 class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
   final List<Subscription> _subscriptions = [];
@@ -381,6 +383,19 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       notifyListeners();
     } catch (e) {
       debugPrint('Ошибка обновления настроек подписки: $e');
+    }
+  }
+
+  Future<void> selectSubscription(int? subscriptionId, BuildContext context) async {
+    _selectedSubscriptionId = subscriptionId;
+    notifyListeners();
+
+    final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+
+    if (subscriptionId != null) {
+      await digestProvider.loadDigestsBySubscription(subscriptionId);
+    } else {
+      await digestProvider.loadDigests();
     }
   }
 
