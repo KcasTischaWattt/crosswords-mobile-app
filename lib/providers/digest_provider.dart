@@ -267,6 +267,10 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  Future<Digest> loadDigestById(String digestId) async {
+    return await ApiService.fetchDigestById(digestId);
+  }
+
   void setDateFromDateTime(DateTime date) {
     final formatted = DateFormat('dd/MM/yyyy').format(date);
     _tempSearchParams = _tempSearchParams.copyWith(dateFrom: formatted);

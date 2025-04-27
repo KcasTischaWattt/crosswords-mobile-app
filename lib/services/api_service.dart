@@ -298,6 +298,11 @@ class ApiService {
     return digestsJson.map((json) => Digest.fromJson(json)).toList();
   }
 
+  /// Получение дайджеста по ID
+  static Future<Digest> fetchDigestById(String digestId) async {
+    final response = await _dio.get('/digests/$digestId');
+    return Digest.fromJson(response.data);
+  }
 
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {

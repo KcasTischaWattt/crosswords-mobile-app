@@ -79,14 +79,19 @@ class Digest {
       public: json['public'],
       id: json['id'],
       title: json['title'],
-      sources: List<String>.from(json['sources']),
+      sources:
+          json['sources'] != null ? List<String>.from(json['sources']) : [],
       description: json['description'],
-      text: json['text'],
-      tags: List<String>.from(json['tags']),
+      text: json['text'] ?? '',
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
       date: json['date'],
       isOwner: json['is_owner'],
       owner: json['owner'],
-      urls: List<String>.from(json['urls']),
+      urls: json['urls'] != null
+          ? List<String>.from(json['urls'])
+          : json['url'] != null
+              ? List<String>.from(json['urls'])
+              : [],
       subscribeOptions: SubscribeOptions.fromJson(json['subscribe_options']),
     );
   }

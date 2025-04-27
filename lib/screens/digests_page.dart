@@ -755,13 +755,23 @@ class _DigestsPageState extends State<DigestsPage>
 
   Widget _buildReadMoreButton(Digest digest) {
     return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DigestDetailPage(digest: digest),
-          ),
-        );
+      onPressed: () async {
+        try {
+          final digestProvider =
+              Provider.of<DigestProvider>(context, listen: false);
+          final fullDigest = await digestProvider.loadDigestById(digest.id);
+          if (!mounted) return;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DigestDetailPage(digest: fullDigest),
+            ),
+          );
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
+          );
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).primaryColor,
@@ -874,11 +884,14 @@ class _DigestsPageState extends State<DigestsPage>
         ),
         LoadingRefreshButton(
           onRefresh: () async {
-            final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
-            final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+            final subscriptionProvider =
+                Provider.of<SubscriptionProvider>(context, listen: false);
+            final digestProvider =
+                Provider.of<DigestProvider>(context, listen: false);
 
             if (subscriptionProvider.selectedSubscriptionId != null) {
-              await digestProvider.loadDigestsBySubscription(subscriptionProvider.selectedSubscriptionId!);
+              await digestProvider.loadDigestsBySubscription(
+                  subscriptionProvider.selectedSubscriptionId!);
             } else {
               await digestProvider.loadDigests();
             }
