@@ -227,11 +227,11 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  // TODO удалить в будущем
   void updateSubscription(Subscription updatedSubscription) {
     final index =
         _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);
     if (index != -1) {
-      // TODO связь с бэком
       _subscriptions[index] = updatedSubscription;
       notifyListeners();
     }
@@ -363,6 +363,24 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> updateSubscriptionSettings(Subscription updatedSubscription) async {
+    final index = _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);
+    if (index == -1) return;
+
+    try {
+      await ApiService.put('/subscriptions/${updatedSubscription.id}/settings/update', data: {
+        'subscribed': updatedSubscription.subscribeOptions.subscribed,
+        'send_to_mail': updatedSubscription.subscribeOptions.sendToMail,
+        'mobile_notifications': updatedSubscription.subscribeOptions.mobileNotifications,
+      });
+
+      _subscriptions[index] = updatedSubscription;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Ошибка обновления настроек подписки: $e');
     }
   }
 

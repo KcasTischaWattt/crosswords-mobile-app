@@ -24,9 +24,7 @@ class _MySubscriptionsPageState extends State<MySubscriptionsPage> {
     Future.microtask(() {
       final provider =
           Provider.of<SubscriptionProvider>(context, listen: false);
-      if (provider.subscriptions.isEmpty) {
-        provider.loadSubscriptions();
-      }
+      provider.loadSubscriptions();
     });
   }
 
@@ -86,25 +84,27 @@ class _MySubscriptionsPageState extends State<MySubscriptionsPage> {
             _buildNotificationToggle(
               icon: Icons.email,
               active: subscription.subscribeOptions.sendToMail,
-              onTap: () {
-                provider.updateSubscription(subscription.copyWith(
+              onTap: () async {
+                final newSubscription = subscription.copyWith(
                   subscribeOptions: subscription.subscribeOptions.copyWith(
                     sendToMail: !subscription.subscribeOptions.sendToMail,
                   ),
-                ));
+                );
+                await provider.updateSubscriptionSettings(newSubscription);
               },
             ),
             const SizedBox(width: 8),
             _buildNotificationToggle(
               icon: Icons.notifications,
               active: subscription.subscribeOptions.mobileNotifications,
-              onTap: () {
-                provider.updateSubscription(subscription.copyWith(
+              onTap: () async {
+                final newSubscription = subscription.copyWith(
                   subscribeOptions: subscription.subscribeOptions.copyWith(
                     mobileNotifications:
                         !subscription.subscribeOptions.mobileNotifications,
                   ),
-                ));
+                );
+                await provider.updateSubscriptionSettings(newSubscription);
               },
             ),
           ],
