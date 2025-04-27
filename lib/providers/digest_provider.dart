@@ -91,16 +91,6 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  void setDateFrom(String date) {
-    _tempSearchParams = _tempSearchParams.copyWith(dateFrom: date);
-    notifyListeners();
-  }
-
-  void setDateTo(String date) {
-    _tempSearchParams = _tempSearchParams.copyWith(dateTo: date);
-    notifyListeners();
-  }
-
   void applySearchParams() {
     _currentSearchParams = _tempSearchParams.copyWith(
       searchQuery: _tempSearchParams.searchQuery,
