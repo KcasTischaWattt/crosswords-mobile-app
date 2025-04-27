@@ -1,6 +1,7 @@
 import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../data/models/article.dart';
 import '../data/models/note.dart';
 import '../services/api_service.dart';
@@ -388,6 +389,18 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     } else {
       applySearchParams();
     }
+    notifyListeners();
+  }
+
+  void setDateFromDateTime(DateTime date) {
+    final formatted = DateFormat('dd/MM/yyyy').format(date);
+    _tempSearchParams = _tempSearchParams.copyWith(dateFrom: formatted);
+    notifyListeners();
+  }
+
+  void setDateToDateTime(DateTime date) {
+    final formatted = DateFormat('dd/MM/yyyy').format(date);
+    _tempSearchParams = _tempSearchParams.copyWith(dateTo: formatted);
     notifyListeners();
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/article_provider.dart';
 import 'article_detail_page.dart';
@@ -68,7 +69,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
   }
 
   Future<void> _selectDate(BuildContext context,
-      TextEditingController controller, Function(String) setDate) async {
+      TextEditingController controller, Function(DateTime) setDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -76,8 +77,9 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      setDate(picked.toIso8601String().split('T').first);
-      controller.text = picked.toIso8601String().split('T').first;
+      final formattedDate = DateFormat('dd/MM/yyyy').format(picked);
+      controller.text = formattedDate;
+      setDate(picked);
     }
   }
 
@@ -307,11 +309,11 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
       children: [
         Expanded(
             child: _buildDatePickerField(
-                'Дата С', _dateFromController, provider.setDateFrom)),
+                'Дата С', _dateFromController, provider.setDateFromDateTime)),
         const SizedBox(width: 12),
         Expanded(
             child: _buildDatePickerField(
-                'Дата По', _dateToController, provider.setDateTo)),
+                'Дата По', _dateToController, provider.setDateToDateTime)),
       ],
     );
   }
@@ -325,7 +327,7 @@ class _ArticleSearchPageState extends State<ArticleSearchPage> {
 
   /// Поле выбора даты
   Widget _buildDatePickerField(String label, TextEditingController controller,
-      Function(String) setDate) {
+      Function(DateTime) setDate) {
     return Container(
       decoration: _dateContainerDecoration(),
       child: TextField(
