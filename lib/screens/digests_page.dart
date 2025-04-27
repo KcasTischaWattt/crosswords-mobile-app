@@ -874,7 +874,15 @@ class _DigestsPageState extends State<DigestsPage>
         ),
         LoadingRefreshButton(
           onRefresh: () async {
-            await digestProvider.loadDigests();
+            final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+            final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+
+            if (subscriptionProvider.selectedSubscriptionId != null) {
+              await digestProvider.loadDigestsBySubscription(subscriptionProvider.selectedSubscriptionId!);
+            } else {
+              await digestProvider.loadDigests();
+            }
+
             await subscriptionProvider.loadSubscriptions();
           },
           isDisabled:
