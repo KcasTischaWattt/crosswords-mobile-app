@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/digest_provider.dart';
 import 'digest_search_results_page.dart';
@@ -61,15 +62,15 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      setDate(picked.toIso8601String().split('T').first);
-      controller.text = picked.toIso8601String().split('T').first;
+      final formattedDate = DateFormat('dd/MM/yyyy').format(picked);
+      controller.text = formattedDate;
+      setDate(formattedDate);
     }
   }
 
   void _performSearch() {
     final provider = Provider.of<DigestProvider>(context, listen: false);
     provider.applySearchParams();
-    // TODO работа поиска
     provider.loadSearchedDigests();
     Navigator.push(
       context,

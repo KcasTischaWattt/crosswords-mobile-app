@@ -58,6 +58,33 @@ class DigestSearchParams {
     );
   }
 
+  Map<String, dynamic> toQueryParameters(int pageNumber, int matchesPerPage) {
+    final Map<String, dynamic> params = {
+      'subscribe_only': false,
+      'page_number': pageNumber,
+      'matches_per_page': matchesPerPage,
+    };
+
+    if (_searchQuery.isNotEmpty) {
+      params['search_body'] = _searchQuery;
+    }
+    if (_dateFrom.isNotEmpty) {
+      params['date_from'] = _dateFrom;
+    }
+    if (_dateTo.isNotEmpty) {
+      params['date_to'] = _dateTo;
+    }
+    if (_selectedTags.isNotEmpty) {
+      params['tags'] = _selectedTags;
+    }
+    if (_selectedSources.isNotEmpty) {
+      params['sources'] = _selectedSources;
+    }
+
+    return params;
+  }
+
+
   @override
   String toString() {
     return 'SearchParams(searchQuery: $searchQuery, dateFrom: $dateFrom, dateTo: $dateTo, '

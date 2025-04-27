@@ -289,18 +289,10 @@ class ApiService {
     required int pageNumber,
     required int matchesPerPage,
   }) async {
-    final Map<String, dynamic> queryParams = {
-      'search_body': searchParams.searchQuery,
-      'date_from': searchParams.dateFrom,
-      'date_to': searchParams.dateTo,
-      'tags': searchParams.selectedTags,
-      'sources': searchParams.selectedSources,
-      'subscribe_only': false,
-      'page_number': pageNumber,
-      'matches_per_page': matchesPerPage,
-    };
-
-    final response = await _dio.get("/digests/search", queryParameters: queryParams);
+    final response = await _dio.get(
+      "/digests/search",
+      queryParameters: searchParams.toQueryParameters(pageNumber, matchesPerPage),
+    );
     final List<dynamic> digestsJson = response.data['digests'] ?? [];
 
     return digestsJson.map((json) => Digest.fromJson(json)).toList();
