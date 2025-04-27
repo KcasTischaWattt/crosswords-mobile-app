@@ -70,7 +70,7 @@ class _DigestSearchPageState extends State<DigestSearchPage> {
     final provider = Provider.of<DigestProvider>(context, listen: false);
     provider.applySearchParams();
     // TODO работа поиска
-    provider.loadDigests();
+    provider.loadSearchedDigests();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const DigestSearchResultsPage()),

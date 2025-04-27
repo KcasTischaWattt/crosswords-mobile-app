@@ -187,9 +187,52 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
+  Future<void> _searchDigests({bool isLoadMore = false}) async {
+    if (_isLoading || (isLoadMore && _isLoadingMore)) return;
+
+    if (isLoadMore) {
+      _isLoadingMore = true;
+    } else {
+      _isLoading = true;
+      if (!isLoadMore) {
+        _currentPage = 0;
+      }
+    }
+
+    notifyListeners();
+
+    try {
+      final newDigests = await ApiService.searchDigests(
+        searchParams: _currentSearchParams,
+        pageNumber: _currentPage,
+        matchesPerPage: _pageSize,
+      );
+
+      if (!isLoadMore) {
+        _digests.clear();
+      }
+
+      if (newDigests.isNotEmpty) {
+        _digests.addAll(newDigests);
+        _currentPage++;
+      }
+    } catch (e) {
+      debugPrint("Ошибка при поиске дайджестов: $e");
+    }
+
+    _isLoading = false;
+    _isLoadingMore = false;
+    notifyListeners();
+  }
+
   Future<void> loadDigests() async => _fetchDigests();
 
   Future<void> loadMoreDigests() async => _fetchDigests(isLoadMore: true);
+
+  Future<void> loadSearchedDigests() async => _searchDigests();
+
+  Future<void> loadMoreSearchedDigests() async =>
+      _searchDigests(isLoadMore: true);
 
   void clear() {
     _digests.clear();

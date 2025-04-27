@@ -7,6 +7,7 @@ import 'dart:io' show Directory;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../data/models/digest.dart';
 import '../data/models/note.dart';
+import '../data/models/search_params/digest_search_params.dart';
 import '../data/models/subscribe_options.dart';
 import '../data/models/subscription.dart';
 
@@ -281,6 +282,30 @@ class ApiService {
       },
     );
   }
+
+  /// Поиск по дайджестам
+  static Future<List<Digest>> searchDigests({
+    required DigestSearchParams searchParams,
+    required int pageNumber,
+    required int matchesPerPage,
+  }) async {
+    final Map<String, dynamic> queryParams = {
+      'search_body': searchParams.searchQuery,
+      'date_from': searchParams.dateFrom,
+      'date_to': searchParams.dateTo,
+      'tags': searchParams.selectedTags,
+      'sources': searchParams.selectedSources,
+      'subscribe_only': false,
+      'page_number': pageNumber,
+      'matches_per_page': matchesPerPage,
+    };
+
+    final response = await _dio.get("/digests/search", queryParameters: queryParams);
+    final List<dynamic> digestsJson = response.data['digests'] ?? [];
+
+    return digestsJson.map((json) => Digest.fromJson(json)).toList();
+  }
+
 
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
