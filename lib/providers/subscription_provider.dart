@@ -253,13 +253,12 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   Future<void> loadSubscriptions() async {
     _isLoading = true;
+    _subscriptions.clear();
     notifyListeners();
 
     try {
       final newSubscriptions = await ApiService.fetchAvailableSubscriptions();
-      _subscriptions
-        ..clear()
-        ..addAll(newSubscriptions);
+      _subscriptions.addAll(newSubscriptions);
     } catch (e) {
       debugPrint("Ошибка при загрузке подписок: $e");
     }
@@ -369,16 +368,21 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
-  Future<void> updateSubscriptionSettings(Subscription updatedSubscription) async {
-    final index = _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);
+  Future<void> updateSubscriptionSettings(
+      Subscription updatedSubscription) async {
+    final index =
+        _subscriptions.indexWhere((sub) => sub.id == updatedSubscription.id);
     if (index == -1) return;
 
     try {
-      await ApiService.put('/subscriptions/${updatedSubscription.id}/settings/update', data: {
-        'subscribed': updatedSubscription.subscribeOptions.subscribed,
-        'send_to_mail': updatedSubscription.subscribeOptions.sendToMail,
-        'mobile_notifications': updatedSubscription.subscribeOptions.mobileNotifications,
-      });
+      await ApiService.put(
+          '/subscriptions/${updatedSubscription.id}/settings/update',
+          data: {
+            'subscribed': updatedSubscription.subscribeOptions.subscribed,
+            'send_to_mail': updatedSubscription.subscribeOptions.sendToMail,
+            'mobile_notifications':
+                updatedSubscription.subscribeOptions.mobileNotifications,
+          });
 
       _subscriptions[index] = updatedSubscription;
       notifyListeners();
@@ -387,7 +391,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
-  Future<void> selectSubscription(int? subscriptionId, BuildContext context) async {
+  Future<void> selectSubscription(
+      int? subscriptionId, BuildContext context) async {
     _selectedSubscriptionId = subscriptionId;
     notifyListeners();
 
@@ -408,7 +413,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     final newSubscribedState = !digest.subscribeOptions.subscribed;
 
     try {
-      final subscription = await ApiService.fetchSubscriptionByDigestId(digest.id);
+      final subscription =
+          await ApiService.fetchSubscriptionByDigestId(digest.id);
 
       await ApiService.put(
         '/subscriptions/${subscription.id}/settings/update',
@@ -419,10 +425,12 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         },
       );
 
-      final index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
+      final index =
+          _subscriptions.indexWhere((sub) => sub.id == subscription.id);
       if (index != -1) {
         _subscriptions[index] = subscription.copyWith(
-          subscribeOptions: digest.subscribeOptions.copyWith(subscribed: newSubscribedState),
+          subscribeOptions:
+              digest.subscribeOptions.copyWith(subscribed: newSubscribedState),
         );
       }
 
@@ -444,7 +452,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
   Future<List<String>> getSubscriptionFollowers(int subscriptionId) async {
     try {
-      final followers = await ApiService.fetchSubscriptionFollowers(subscriptionId);
+      final followers =
+          await ApiService.fetchSubscriptionFollowers(subscriptionId);
       followers.removeWhere((email) => email == _currentUserEmail);
       return followers;
     } catch (e) {
@@ -453,7 +462,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
-  Future<void> transferSubscriptionOwnership(int subscriptionId, String newOwnerEmail) async {
+  Future<void> transferSubscriptionOwnership(
+      int subscriptionId, String newOwnerEmail) async {
     try {
       await ApiService.changeSubscriptionOwner(subscriptionId, newOwnerEmail);
     } catch (e) {

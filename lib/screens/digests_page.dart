@@ -688,6 +688,8 @@ class _DigestsPageState extends State<DigestsPage>
           subscribed: !digest.subscribeOptions.subscribed,
         );
       });
+
+      await subscriptionProvider.loadSubscriptions();
     } catch (e) {
       if (!mounted) return;
       debugPrint(e.toString());
