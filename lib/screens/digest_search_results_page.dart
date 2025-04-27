@@ -238,13 +238,25 @@ class _DigestSearchResultsPageState extends State<DigestSearchResultsPage> {
       children: [
         Text(digest.date, style: const TextStyle(fontSize: 14)),
         ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DigestDetailPage(digest: digest),
-              ),
-            );
+          onPressed: () async {
+            final digestProvider =
+                Provider.of<DigestProvider>(context, listen: false);
+
+            try {
+              final fullDigest = await digestProvider.loadDigestById(digest.id);
+              if (!mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DigestDetailPage(digest: fullDigest),
+                ),
+              );
+            } catch (e) {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
+              );
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
