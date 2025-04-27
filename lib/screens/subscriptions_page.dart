@@ -24,11 +24,6 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
     _loadSubscriptions();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _loadSubscriptions() {
     Future.microtask(() {
       if (!mounted) return;
@@ -38,30 +33,6 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
         provider.loadSubscriptions();
       }
     });
-  }
-
-  void _toggleSubscription(
-      Subscription subscription, SubscriptionProvider provider) {
-    provider.updateSubscription(subscription.copyWith(
-      subscribeOptions: subscription.subscribeOptions.copyWith(
-        subscribed: !subscription.subscribeOptions.subscribed,
-      ),
-    ));
-  }
-
-  void _confirmUnsubscribe(
-      Subscription subscription, SubscriptionProvider provider) {
-    if (subscription.isOwner) {
-      _buildTransferOwnershipDialog(subscription, provider);
-    } else {
-      _toggleSubscription(subscription, provider);
-    }
-  }
-
-  void _transferOwnership(Subscription subscription,
-      SubscriptionProvider provider, String newOwner) {
-    provider.transferOwnership(subscription, newOwner);
-    _toggleSubscription(subscription, provider);
   }
 
   Widget _buildOnlySubscriptionsToggle() {
@@ -191,142 +162,19 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
   Widget _buildSubscriptionToggleButton(
       Subscription subscription, SubscriptionProvider provider) {
     return IconButton(
-      icon: Icon(
-        subscription.subscribeOptions.subscribed
-            ? Icons.check_circle
-            : Icons.add_circle_outline,
-      ),
-      onPressed: () {
-        if (subscription.subscribeOptions.subscribed) {
-          _buildUnsubscribeDialog(subscription, provider);
-        } else {
-          _toggleSubscription(subscription, provider);
-        }
-      },
-    );
-  }
-
-  void _buildUnsubscribeDialog(
-      Subscription subscription, SubscriptionProvider provider) {
-    String message = subscription.public
-        ? "Вы уверены, что хотите отказаться от подписки?"
-        : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Отмена подписки"),
-          content: Text(message),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Отмена")),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _confirmUnsubscribe(subscription, provider);
-              },
-              child:
-                  const Text("Отписаться", style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _buildTransferOwnershipDialog(
-      Subscription subscription, SubscriptionProvider provider) {
-    List<String> potentialOwners = _getPotentialOwners();
-
-    if (potentialOwners.isEmpty) {
-      _buildUnsubscribeDialog(subscription, provider);
-      return;
-    }
-
-    _showOwnershipDialog(subscription, provider, potentialOwners);
-  }
-
-  List<String> _getPotentialOwners() {
-    // TODO получение списка пользователей
-    return [
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3"
-    ];
-  }
-
-  void _showOwnershipDialog(Subscription subscription,
-      SubscriptionProvider provider, List<String> potentialOwners) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        String? selectedOwner;
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text("Выберите нового владельца"),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: potentialOwners.map((owner) {
-                            return RadioListTile<String>(
-                              title: Text(owner),
-                              value: owner,
-                              groupValue: selectedOwner,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedOwner = value;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Отмена"),
-                ),
-                TextButton(
-                  onPressed: selectedOwner == null
-                      ? null
-                      : () {
-                          Navigator.pop(context);
-                          _transferOwnership(
-                              subscription, provider, selectedOwner!);
-                        },
-                  child: const Text("Передать и отписаться",
-                      style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+        icon: Icon(
+          subscription.subscribeOptions.subscribed
+              ? Icons.check_circle
+              : Icons.add_circle_outline,
+        ),
+        onPressed: () async {
+          final subscriptionProvider =
+              Provider.of<SubscriptionProvider>(context, listen: false);
+          await subscriptionProvider.handleUnsubscribe(
+            context: context,
+            subscriptionId: subscription.id,
+          );
+        });
   }
 
   AppBar _buildAppBar() {

@@ -430,7 +430,8 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         return;
       }
 
-      final index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
+      final index =
+          _subscriptions.indexWhere((sub) => sub.id == subscription.id);
       if (index != -1) {
         _subscriptions[index] = subscription.copyWith(
           subscribeOptions: digest.subscribeOptions.copyWith(
@@ -474,6 +475,203 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       debugPrint('Ошибка передачи владения: $e');
       rethrow;
     }
+  }
+
+  Future<void> handleUnsubscribe({
+    required BuildContext context,
+    int? subscriptionId,
+    String? digestId,
+  }) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      Subscription subscription;
+      if (digestId != null) {
+        subscription = await fetchSubscriptionByDigestId(digestId);
+      } else if (subscriptionId != null) {
+        subscription = _subscriptions.firstWhere(
+            (sub) => sub.id == subscriptionId,
+            orElse: () => throw Exception('Подписка не найдена'));
+      } else {
+        throw Exception('Не указан ни subscriptionId, ни digestId');
+      }
+
+      final isOwner = await isCurrentUserOwner(subscription.id);
+      final followers = await getSubscriptionFollowers(subscription.id);
+
+      if (isOwner && followers.isEmpty) {
+        final confirmed = await _showLastOwnerWarningDialog(context);
+        if (confirmed) {
+          await _toggleSubscription(
+            subscription,
+            context: context,
+            digestId: digestId,
+          );
+        }
+      } else if (isOwner && followers.isNotEmpty) {
+        final newOwner = await _showTransferOwnershipDialog(context, followers);
+        if (newOwner != null) {
+          await transferSubscriptionOwnership(subscription.id, newOwner);
+          await _toggleSubscription(
+            subscription,
+            context: context,
+            digestId: digestId,
+          );
+        }
+      } else {
+        final confirmed = await _showUnsubscribeConfirmDialog(
+            context, subscription.public, subscription.title);
+        if (confirmed) {
+          await _toggleSubscription(
+            subscription,
+            context: context,
+            digestId: digestId,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Ошибка обработки отписки: $e');
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text('Ошибка отписки: $e')));
+    }
+  }
+
+  Future<void> _toggleSubscription(
+      Subscription subscription, {
+        required BuildContext context,
+        String? digestId,
+      }) async {
+    final newSubscribedState = !subscription.subscribeOptions.subscribed;
+
+    try {
+      final response = await ApiService.put(
+        '/subscriptions/${subscription.id}/settings/update',
+        data: {
+          'subscribed': newSubscribedState,
+          'send_to_mail': subscription.subscribeOptions.sendToMail,
+          'mobile_notifications': subscription.subscribeOptions.mobileNotifications,
+        },
+      );
+
+      if (response.data['deleted'] == true) {
+        _subscriptions.removeWhere((sub) => sub.id == subscription.id);
+      } else {
+        final index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
+        if (index != -1) {
+          _subscriptions[index] = subscription.copyWith(
+            subscribeOptions: subscription.subscribeOptions.copyWith(
+              subscribed: newSubscribedState,
+            ),
+          );
+        }
+      }
+
+      notifyListeners();
+
+      // Вызов загрузки подписок остается тут, если нужно
+      await loadSubscriptions();
+
+      // Теперь через переданный context
+      final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+      await digestProvider.loadDigests();
+    } catch (e) {
+      debugPrint('Ошибка переключения подписки: $e');
+      rethrow;
+    }
+  }
+
+
+  Future<bool> _showLastOwnerWarningDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Внимание!'),
+            content: const Text(
+                'Вы последний подписчик. После отписки подписка и все дайджесты будут удалены. Продолжить?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Удалить и отписаться',
+                    style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<String?> _showTransferOwnershipDialog(
+      BuildContext context, List<String> followers) async {
+    String? selectedOwner;
+
+    return await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: const Text('Выберите нового владельца'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: followers
+                    .map((follower) => RadioListTile<String>(
+                          title: Text(follower),
+                          value: follower,
+                          groupValue: selectedOwner,
+                          onChanged: (value) {
+                            setState(() => selectedOwner = value);
+                          },
+                        ))
+                    .toList(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: selectedOwner == null
+                    ? null
+                    : () => Navigator.pop(context, selectedOwner),
+                child: const Text('Передать и отписаться',
+                    style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<bool> _showUnsubscribeConfirmDialog(
+      BuildContext context, bool isPublic, String title) async {
+    String message = isPublic
+        ? 'Вы уверены, что хотите отписаться от "$title"?'
+        : 'Этот дайджест приватный. Чтобы снова подписаться, вам придётся запросить разрешение у владельца. Отписаться?';
+
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Отмена подписки'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Отписаться',
+                    style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   void clear() {
