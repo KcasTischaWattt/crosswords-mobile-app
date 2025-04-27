@@ -250,16 +250,6 @@ class ArticleProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  void setDateFrom(String date) {
-    _tempSearchParams = _tempSearchParams.copyWith(dateFrom: date);
-    notifyListeners();
-  }
-
-  void setDateTo(String date) {
-    _tempSearchParams = _tempSearchParams.copyWith(dateTo: date);
-    notifyListeners();
-  }
-
   @override
   void toggleSource(String source) {
     final selectedSources =
