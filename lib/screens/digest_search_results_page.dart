@@ -261,13 +261,28 @@ class _DigestSearchResultsPageState extends State<DigestSearchResultsPage> {
     );
   }
 
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: Colors.black.withValues(alpha: 0.3),
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DigestProvider>(context);
 
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _buildDigestList(provider),
+      body: Stack(
+        children: [
+          _buildDigestList(provider),
+          if (provider.isLoading && provider.filteredDigests.isNotEmpty)
+            _buildLoadingOverlay(),
+        ],
+      ),
     );
   }
 }
