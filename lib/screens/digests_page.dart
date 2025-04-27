@@ -541,14 +541,14 @@ class _DigestsPageState extends State<DigestsPage>
   void _transferOwnership(
       Digest digest, DigestProvider provider, String newOwner) {
     // TODO передача владельца
-    _toggleSubscription(digest, provider);
+    _toggleSubscription(digest);
   }
 
   void _showTransferOwnershipDialog(Digest digest, DigestProvider provider) {
     List<String> potentialOwners = _getPotentialOwners(digest);
 
     if (potentialOwners.isEmpty) {
-      _toggleSubscription(digest, provider);
+      _toggleSubscription(digest);
       return;
     }
 
@@ -632,7 +632,7 @@ class _DigestsPageState extends State<DigestsPage>
                 if (digest.isOwner) {
                   _showTransferOwnershipDialog(digest, provider);
                 } else {
-                  _toggleSubscription(digest, provider);
+                  _toggleSubscription(digest);
                 }
               },
               child:
@@ -644,18 +644,22 @@ class _DigestsPageState extends State<DigestsPage>
     );
   }
 
-  void _toggleSubscription(Digest digest, DigestProvider provider) {
-    // TODO передача на сервер
-    setState(() {
-      provider.updateDigest(
-        digest.copyWith(
-          subscribeOptions: digest.subscribeOptions.copyWith(
-            subscribed: !digest.subscribeOptions.subscribed,
-          ),
-        ),
-      );
-    });
-    provider.loadDigests();
+  void _toggleSubscription(Digest digest) async {
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
+
+    try {
+      await subscriptionProvider.toggleSubscriptionByDigest(digest);
+
+      setState(() {
+        digest.subscribeOptions = digest.subscribeOptions.copyWith(
+          subscribed: !digest.subscribeOptions.subscribed,
+        );
+      });
+    } catch (e) {
+      if (!mounted) return;
+      debugPrint(e.toString());
+    }
   }
 
   Widget _buildSubscribeButton(Digest digest) {
@@ -668,7 +672,7 @@ class _DigestsPageState extends State<DigestsPage>
         if (digest.subscribeOptions.subscribed) {
           _showUnsubscribeDialog(digest, provider);
         } else {
-          _toggleSubscription(digest, provider);
+          _toggleSubscription(digest);
         }
       },
     );

@@ -58,16 +58,23 @@ class Subscription {
   factory Subscription.fromJson(Map<String, dynamic> json) {
     return Subscription(
       id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      sources: List<String>.from(json['sources']),
-      tags: List<String>.from(json['tags']),
-      subscribeOptions: SubscribeOptions.fromJson(json['subscribe_options']),
-      creationDate: json['creation_date'],
-      public: json['public'],
-      owner: json['owner'],
-      isOwner: json['is_owner'],
-      followers: List<String>.from(json['followers']),
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      sources: List<String>.from(json['sources'] ?? []),
+      tags: List<String>.from(json['tags'] ?? []),
+      subscribeOptions:
+          SubscribeOptions.fromJson(json['subscribe_options'] ?? {}),
+      creationDate: json['creation_date'] ?? '',
+      public: json['public'] ?? true,
+      owner: json['owner'] ?? '',
+      isOwner: json['is_owner'] ?? false,
+      followers: json['followers'] is List
+          ? (json['followers'] as List)
+              .map((follower) => follower is Map<String, dynamic>
+                  ? follower['email'] as String
+                  : follower as String)
+              .toList()
+          : [],
     );
   }
 

@@ -323,6 +323,12 @@ class ApiService {
     );
   }
 
+  /// Получение подписки по ID дайджеста
+  static Future<Subscription> fetchSubscriptionByDigestId(String digestId) async {
+    final response = await _dio.get('/digests/$digestId/subscription');
+    return Subscription.fromJson(response.data);
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);

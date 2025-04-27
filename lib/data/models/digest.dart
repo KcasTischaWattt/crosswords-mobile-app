@@ -14,7 +14,7 @@ class Digest {
   final bool isOwner;
   final String owner;
   final List<String> urls;
-  final SubscribeOptions subscribeOptions;
+  late final SubscribeOptions subscribeOptions;
 
   Digest({
     required this.averageRating,

@@ -3,6 +3,7 @@ import 'package:crosswords/providers/abstract/filter_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../data/models/digest.dart';
 import '../data/models/subscription.dart';
 import '../data/models/subscribe_options.dart';
 import '../services/api_service.dart';
@@ -396,6 +397,35 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       await digestProvider.loadDigestsBySubscription(subscriptionId);
     } else {
       await digestProvider.loadDigests();
+    }
+  }
+
+  Future<void> toggleSubscriptionByDigest(Digest digest) async {
+    final newSubscribedState = !digest.subscribeOptions.subscribed;
+
+    try {
+      final subscription = await ApiService.fetchSubscriptionByDigestId(digest.id);
+
+      await ApiService.put(
+        '/subscriptions/${subscription.id}/settings/update',
+        data: {
+          'subscribed': newSubscribedState,
+          'send_to_mail': digest.subscribeOptions.sendToMail,
+          'mobile_notifications': digest.subscribeOptions.mobileNotifications,
+        },
+      );
+
+      final index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
+      if (index != -1) {
+        _subscriptions[index] = subscription.copyWith(
+          subscribeOptions: digest.subscribeOptions.copyWith(subscribed: newSubscribedState),
+        );
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Ошибка переключения подписки через дайджест: $e');
+      rethrow;
     }
   }
 

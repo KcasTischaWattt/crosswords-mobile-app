@@ -23,9 +23,9 @@ class SubscribeOptions {
 
   factory SubscribeOptions.fromJson(Map<String, dynamic> json) {
     return SubscribeOptions(
-      subscribed: json['subscribed'],
-      sendToMail: json['send_to_mail'],
-      mobileNotifications: json['mobile_notifications'],
+      subscribed: json['subscribed'] ?? false,
+      sendToMail: json['send_to_mail'] ?? false,
+      mobileNotifications: json['mobile_notifications'] ?? false,
     );
   }
 
