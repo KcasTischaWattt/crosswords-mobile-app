@@ -186,7 +186,8 @@ class ApiService {
   }
 
   /// Обновление комментария
-  static Future<void> updateComment(int docId, int commentId, String text) async {
+  static Future<void> updateComment(
+      int docId, int commentId, String text) async {
     await _dio.put("/documents/$docId/comment/$commentId", data: {
       "text": text,
     });
@@ -213,7 +214,7 @@ class ApiService {
     final response = await _dio.get(
       "/digests",
       queryParameters: {
-        "page_number": pageNumber,
+        "next_page": pageNumber,
         "matches_per_page": matchesPerPage,
       },
     );
@@ -254,7 +255,8 @@ class ApiService {
   }
 
   /// Получение информации о настройках пользователя
-  static Future<Map<String, dynamic>> getUserSubscriptionSettings(String email) async {
+  static Future<Map<String, dynamic>> getUserSubscriptionSettings(
+      String email) async {
     final response = await _dio.post(
       "/users/subscription_settings/check",
       data: {"username": email},
@@ -263,7 +265,8 @@ class ApiService {
   }
 
   /// Смена пароля
-  static Future<void> changePassword(String oldPassword, String newPassword) async {
+  static Future<void> changePassword(
+      String oldPassword, String newPassword) async {
     await _dio.patch(
       "/users/change/password",
       data: {
@@ -291,7 +294,8 @@ class ApiService {
   }) async {
     final response = await _dio.get(
       "/digests/search",
-      queryParameters: searchParams.toQueryParameters(pageNumber, matchesPerPage),
+      queryParameters:
+          searchParams.toQueryParameters(pageNumber, matchesPerPage),
     );
     final List<dynamic> digestsJson = response.data['digests'] ?? [];
 
@@ -302,6 +306,21 @@ class ApiService {
   static Future<Digest> fetchDigestById(String digestId) async {
     final response = await _dio.get('/digests/$digestId');
     return Digest.fromJson(response.data);
+  }
+
+  /// Получение дайджестов по подписке
+  static Future<Response> fetchDigestsBySubscription({
+    required int subscriptionId,
+    required int nextPage,
+    required int matchesPerPage,
+  }) async {
+    return await _dio.get(
+      "/subscriptions/$subscriptionId/digests",
+      queryParameters: {
+        "next_page": nextPage,
+        "matches_per_page": matchesPerPage,
+      },
+    );
   }
 
   /// GET запрос к API
@@ -316,7 +335,8 @@ class ApiService {
   }
 
   /// PUT запрос к API
-  static Future<Response> put(String endpoint, {Map<String, dynamic>? data}) async {
+  static Future<Response> put(String endpoint,
+      {Map<String, dynamic>? data}) async {
     return await _dio.put(endpoint, data: data);
   }
 }

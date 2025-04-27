@@ -7,15 +7,25 @@ import '../services/api_service.dart';
 import 'abstract/filter_provider.dart';
 import '../data/models/search_params/digest_search_params.dart';
 
+enum DigestsLoadMode {
+  all,
+  subscription,
+  search,
+}
+
 class DigestProvider extends ChangeNotifier implements FilterProvider {
   final List<Digest> _digests = [];
 
   bool _isLoading = false;
   bool _isLoadingMore = false;
-  int _currentPage = 0;
+  int _allDigestsPage = 0;
+  int _subscriptionDigestsPage = 0;
+  int _searchedDigestsPage = 0;
   final int _pageSize = 10;
 
   String _selectedCategory = 'Все дайджесты';
+
+  DigestsLoadMode _currentMode = DigestsLoadMode.all;
 
   DigestSearchParams _currentSearchParams = DigestSearchParams(
     searchQuery: '',
@@ -56,6 +66,8 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
   DigestSearchParams get currentSearchParams => _currentSearchParams;
 
   DigestSearchParams get tempSearchParams => _tempSearchParams;
+
+  DigestsLoadMode get currentMode => _currentMode;
 
   @override
   List<String> get selectedSources => _tempSearchParams.selectedSources;
@@ -116,6 +128,13 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     return digest.copyWith(userRating: rating);
   }
 
+  void setMode(DigestsLoadMode mode) {
+    if (_currentMode != mode) {
+      _currentMode = mode;
+      _resetPagination();
+    }
+  }
+
   @override
   void toggleSource(String source) {
     final selectedSources =
@@ -148,27 +167,23 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     if (isLoadMore) {
       _isLoadingMore = true;
     } else {
+      if (_isLoading) return;
       _isLoading = true;
-      if (!isLoadMore) {
-        _currentPage = 0;
-      }
+      _allDigestsPage = 0;
+      _digests.clear();
     }
 
     notifyListeners();
 
     try {
       final newDigests = await ApiService.fetchDigests(
-        pageNumber: _currentPage,
+        pageNumber: _allDigestsPage,
         matchesPerPage: _pageSize,
       );
 
-      if (!isLoadMore) {
-        _digests.clear();
-      }
-
       if (newDigests.isNotEmpty) {
         _digests.addAll(newDigests);
-        _currentPage++;
+        _allDigestsPage++;
       }
     } catch (e) {
       debugPrint("Ошибка при загрузке дайджестов: $e");
@@ -187,7 +202,7 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     } else {
       _isLoading = true;
       if (!isLoadMore) {
-        _currentPage = 0;
+        _searchedDigestsPage = 0;
       }
     }
 
@@ -196,7 +211,7 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     try {
       final newDigests = await ApiService.searchDigests(
         searchParams: _currentSearchParams,
-        pageNumber: _currentPage,
+        pageNumber: _searchedDigestsPage,
         matchesPerPage: _pageSize,
       );
 
@@ -206,7 +221,7 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
 
       if (newDigests.isNotEmpty) {
         _digests.addAll(newDigests);
-        _currentPage++;
+        _searchedDigestsPage++;
       }
     } catch (e) {
       debugPrint("Ошибка при поиске дайджестов: $e");
@@ -217,14 +232,32 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  Future<void> loadDigestsBySubscription(int subscriptionId) async {
+  Future<void> _loadDigestsBySubscription({
+    required int subscriptionId,
+    bool isLoadMore = false,
+  }) async {
+    if (_isLoading || (isLoadMore && _isLoadingMore)) return;
+
+    if (isLoadMore) {
+      _isLoadingMore = true;
+    } else {
+      _isLoading = true;
+      _subscriptionDigestsPage = 0;
+      _digests.clear();
+    }
+
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response =
-          await ApiService.get('/subscriptions/$subscriptionId/digests');
+      final response = await ApiService.fetchDigestsBySubscription(
+        subscriptionId: subscriptionId,
+        nextPage: _subscriptionDigestsPage,
+        matchesPerPage: _pageSize,
+      );
+
       final subscriptionData = response.data['subscription'];
+
       final subscriptionSources =
           List<String>.from(subscriptionData['sources'] ?? []);
       final subscriptionTags =
@@ -238,33 +271,73 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
       final subscriptionTitle = subscriptionData['title'] ?? "";
       final subscriptionDescription = subscriptionData['description'] ?? "";
 
-      _digests.clear();
-      _digests.addAll(
-        (subscriptionData['digests'] as List<dynamic>).map((digestJson) {
-          return Digest(
-            id: digestJson['id'],
-            title: subscriptionTitle,
-            averageRating: (digestJson['average_rating'] as num?)?.toDouble(),
-            userRating: null,
-            sources: subscriptionSources,
-            description: subscriptionDescription,
-            text: digestJson['text'] ?? '',
-            tags: subscriptionTags,
-            date: digestJson['date'],
-            public: subscriptionPublic,
-            isOwner: subscriptionData['is_owner'] ?? false,
-            owner: subscriptionOwner,
-            urls: [],
-            subscribeOptions: subscribeOptions,
-          );
-        }).toList(),
-      );
+      final newDigests =
+          (subscriptionData['digests'] as List<dynamic>).map((digestJson) {
+        return Digest(
+          id: digestJson['id'],
+          title: subscriptionTitle,
+          averageRating: (digestJson['average_rating'] as num?)?.toDouble(),
+          userRating: null,
+          sources: subscriptionSources,
+          description: subscriptionDescription,
+          text: digestJson['text'] ?? '',
+          tags: subscriptionTags,
+          date: digestJson['date'],
+          public: subscriptionPublic,
+          isOwner: subscriptionData['is_owner'] ?? false,
+          owner: subscriptionOwner,
+          urls: [],
+          subscribeOptions: subscribeOptions,
+        );
+      }).toList();
+
+      _digests.addAll(newDigests);
+
+      if (subscriptionData['next_page'] != null) {
+        _subscriptionDigestsPage = subscriptionData['next_page'];
+      } else {
+        _subscriptionDigestsPage = -1;
+      }
     } catch (e) {
       debugPrint('Ошибка загрузки дайджестов по подписке: $e');
     }
 
     _isLoading = false;
+    _isLoadingMore = false;
     notifyListeners();
+  }
+
+  Future<void> loadDigests() async {
+    setMode(DigestsLoadMode.all);
+    await _fetchDigests();
+  }
+
+  Future<void> loadMoreDigests() async {
+    setMode(DigestsLoadMode.all);
+    await _fetchDigests(isLoadMore: true);
+  }
+
+  Future<void> loadSearchedDigests() async {
+    setMode(DigestsLoadMode.search);
+    await _searchDigests();
+  }
+
+  Future<void> loadMoreSearchedDigests() async {
+    setMode(DigestsLoadMode.search);
+    await _searchDigests(isLoadMore: true);
+  }
+
+  Future<void> loadDigestsBySubscription(int subscriptionId) async {
+    setMode(DigestsLoadMode.subscription);
+    await _loadDigestsBySubscription(subscriptionId: subscriptionId);
+  }
+
+  Future<void> loadMoreDigestsBySubscription(int subscriptionId) async {
+    setMode(DigestsLoadMode.subscription);
+    await _loadDigestsBySubscription(
+      subscriptionId: subscriptionId,
+      isLoadMore: true,
+    );
   }
 
   Future<Digest> loadDigestById(String digestId) async {
@@ -283,20 +356,10 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     notifyListeners();
   }
 
-  Future<void> loadDigests() async => _fetchDigests();
-
-  Future<void> loadMoreDigests() async => _fetchDigests(isLoadMore: true);
-
-  Future<void> loadSearchedDigests() async => _searchDigests();
-
-  Future<void> loadMoreSearchedDigests() async =>
-      _searchDigests(isLoadMore: true);
-
   void clear() {
     _digests.clear();
     _isLoading = false;
     _isLoadingMore = false;
-    _currentPage = 0;
     _selectedCategory = 'Все дайджесты';
     _currentSearchParams = DigestSearchParams(
       searchQuery: '',
@@ -312,6 +375,13 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
       selectedSources: [],
       selectedTags: [],
     );
+    _resetPagination();
     notifyListeners();
+  }
+
+  void _resetPagination() {
+    _allDigestsPage = 0;
+    _subscriptionDigestsPage = 0;
+    _searchedDigestsPage = 0;
   }
 }
