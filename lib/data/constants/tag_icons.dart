@@ -1,6 +1,6 @@
 const Map<String, String> tagIcons = {
   'Ipo': 'assets/icons/business_tech.png',
-  'It': 'assets/icons/business_tech.png',
+  'IT': 'assets/icons/business_tech.png',
   'Nft': 'assets/icons/business_tech.png',
   'Авиация': 'assets/icons/transport.png',
   'Азия': 'assets/icons/intl_relations.png',
