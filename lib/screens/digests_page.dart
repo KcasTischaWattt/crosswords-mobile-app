@@ -198,7 +198,6 @@ class _DigestsPageState extends State<DigestsPage>
           setState(() {
             subscriptionProvider.resetSelectedSubscription();
           });
-          // TODO обновить список дайджестов
           digestProvider.loadDigests();
           return;
         }
@@ -207,8 +206,7 @@ class _DigestsPageState extends State<DigestsPage>
           subscriptionProvider.setSelectedSubscription(subscription.id);
         });
 
-        // TODO загрузка дайджестов для подписки
-        digestProvider.loadDigests();
+        digestProvider.loadDigestsBySubscription(subscription.id);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

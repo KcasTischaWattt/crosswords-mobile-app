@@ -2,6 +2,7 @@ import 'package:crosswords/data/constants/filter_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../data/models/digest.dart';
+import '../data/models/subscribe_options.dart';
 import '../services/api_service.dart';
 import 'abstract/filter_provider.dart';
 import '../data/models/search_params/digest_search_params.dart';
@@ -213,6 +214,56 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
 
     _isLoading = false;
     _isLoadingMore = false;
+    notifyListeners();
+  }
+
+  Future<void> loadDigestsBySubscription(int subscriptionId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response =
+          await ApiService.get('/subscriptions/$subscriptionId/digests');
+      final subscriptionData = response.data['subscription'];
+      final subscriptionSources =
+          List<String>.from(subscriptionData['sources'] ?? []);
+      final subscriptionTags =
+          List<String>.from(subscriptionData['tags'] ?? []);
+      final subscriptionPublic = subscriptionData['public'] ?? true;
+      final subscriptionOwner = subscriptionData['is_owner'] == true
+          ? (await ApiService.getCurrentUserEmail())
+          : "unknown@unknown.com";
+      final subscribeOptions =
+          SubscribeOptions.fromJson(subscriptionData['subscribe_options']);
+      final subscriptionTitle = subscriptionData['title'] ?? "";
+      final subscriptionDescription = subscriptionData['description'] ?? "";
+
+      _digests.clear();
+      _digests.addAll(
+        (subscriptionData['digests'] as List<dynamic>).map((digestJson) {
+          return Digest(
+            id: digestJson['id'],
+            title: subscriptionTitle,
+            averageRating: (digestJson['average_rating'] as num?)?.toDouble(),
+            userRating: null,
+            sources: subscriptionSources,
+            description: subscriptionDescription,
+            text: digestJson['text'] ?? '',
+            tags: subscriptionTags,
+            date: digestJson['date'],
+            public: subscriptionPublic,
+            isOwner: subscriptionData['is_owner'] ?? false,
+            owner: subscriptionOwner,
+            urls: [],
+            subscribeOptions: subscribeOptions,
+          );
+        }).toList(),
+      );
+    } catch (e) {
+      debugPrint('Ошибка загрузки дайджестов по подписке: $e');
+    }
+
+    _isLoading = false;
     notifyListeners();
   }
 
