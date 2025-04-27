@@ -1,3 +1,4 @@
+import 'package:crosswords/screens/widgets/loading_button.dart';
 import 'package:crosswords/screens/widgets/loading_refresh_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -237,58 +238,43 @@ class _DigestSearchResultsPageState extends State<DigestSearchResultsPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(digest.date, style: const TextStyle(fontSize: 14)),
-        ElevatedButton(
-          onPressed: _loadingDigestId == digest.id
-              ? null
-              : () async {
-                  setState(() {
-                    _loadingDigestId = digest.id;
-                  });
+        Text(
+          digest.date,
+          style: const TextStyle(fontSize: 14),
+        ),
+        LoadingButton(
+          isLoading: _loadingDigestId == digest.id,
+          onPressed: () async {
+            setState(() {
+              _loadingDigestId = digest.id;
+            });
 
-                  final digestProvider =
-                      Provider.of<DigestProvider>(context, listen: false);
+            final digestProvider =
+                Provider.of<DigestProvider>(context, listen: false);
 
-                  try {
-                    final fullDigest =
-                        await digestProvider.loadDigestById(digest.id);
-                    if (!mounted) return;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DigestDetailPage(digest: fullDigest),
-                      ),
-                    );
-                  } catch (e) {
-                    if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
-                    );
-                  } finally {
-                    if (mounted) {
-                      setState(() {
-                        _loadingDigestId = null;
-                      });
-                    }
-                  }
-                },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).primaryColor,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-          child: _loadingDigestId == digest.id
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text(
-                  'Подробнее',
-                  style: TextStyle(color: Colors.black, fontSize: 18),
+            try {
+              final fullDigest = await digestProvider.loadDigestById(digest.id);
+              if (!mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DigestDetailPage(digest: fullDigest),
                 ),
+              );
+            } catch (e) {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Ошибка загрузки дайджеста: $e')),
+              );
+            } finally {
+              if (mounted) {
+                setState(() {
+                  _loadingDigestId = null;
+                });
+              }
+            }
+          },
+          text: 'Подробнее',
         ),
       ],
     );
