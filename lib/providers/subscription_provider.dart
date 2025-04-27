@@ -413,10 +413,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     final newSubscribedState = !digest.subscribeOptions.subscribed;
 
     try {
-      final subscription =
-          await ApiService.fetchSubscriptionByDigestId(digest.id);
+      final subscription = await fetchSubscriptionByDigestId(digest.id);
 
-      await ApiService.put(
+      final response = await ApiService.put(
         '/subscriptions/${subscription.id}/settings/update',
         data: {
           'subscribed': newSubscribedState,
@@ -425,16 +424,21 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         },
       );
 
-      final index =
-          _subscriptions.indexWhere((sub) => sub.id == subscription.id);
-      if (index != -1) {
-        _subscriptions[index] = subscription.copyWith(
-          subscribeOptions:
-              digest.subscribeOptions.copyWith(subscribed: newSubscribedState),
-        );
+      if (response.data['deleted'] == true) {
+        _subscriptions.removeWhere((sub) => sub.id == subscription.id);
+        notifyListeners();
+        return;
       }
 
-      notifyListeners();
+      final index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
+      if (index != -1) {
+        _subscriptions[index] = subscription.copyWith(
+          subscribeOptions: digest.subscribeOptions.copyWith(
+            subscribed: newSubscribedState,
+          ),
+        );
+        notifyListeners();
+      }
     } catch (e) {
       debugPrint('Ошибка переключения подписки через дайджест: $e');
       rethrow;

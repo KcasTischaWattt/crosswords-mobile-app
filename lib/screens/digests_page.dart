@@ -529,11 +529,14 @@ class _DigestsPageState extends State<DigestsPage>
     );
   }
 
-  void _transferOwnership(Digest digest, DigestProvider provider, int subscriptionId, String newOwner) async {
-    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+  void _transferOwnership(Digest digest, DigestProvider provider,
+      int subscriptionId, String newOwner) async {
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
 
     try {
-      await subscriptionProvider.transferSubscriptionOwnership(subscriptionId, newOwner);
+      await subscriptionProvider.transferSubscriptionOwnership(
+          subscriptionId, newOwner);
       await _toggleSubscription(digest);
     } catch (e) {
       debugPrint('Ошибка передачи владения: $e');
@@ -545,7 +548,8 @@ class _DigestsPageState extends State<DigestsPage>
     }
   }
 
-  void _showTransferOwnershipDialog(Digest digest, DigestProvider provider, int subscriptionId, List<String> followers) {
+  void _showTransferOwnershipDialog(Digest digest, DigestProvider provider,
+      int subscriptionId, List<String> followers) {
     String? selectedOwner;
 
     showDialog(
@@ -580,10 +584,12 @@ class _DigestsPageState extends State<DigestsPage>
                   onPressed: selectedOwner == null
                       ? null
                       : () {
-                    Navigator.pop(context);
-                    _transferOwnership(digest, provider, subscriptionId, selectedOwner!);
-                  },
-                  child: const Text('Передать и отписаться', style: TextStyle(color: Colors.red)),
+                          Navigator.pop(context);
+                          _transferOwnership(
+                              digest, provider, subscriptionId, selectedOwner!);
+                        },
+                  child: const Text('Передать и отписаться',
+                      style: TextStyle(color: Colors.red)),
                 ),
               ],
             );
@@ -592,7 +598,6 @@ class _DigestsPageState extends State<DigestsPage>
       },
     );
   }
-
 
   void _showUnsubscribeDialog(Digest digest, DigestProvider provider) {
     showDialog(
@@ -613,7 +618,8 @@ class _DigestsPageState extends State<DigestsPage>
                 Navigator.pop(context);
                 await _handleUnsubscribe(digest, provider);
               },
-              child: const Text('Отписаться', style: TextStyle(color: Colors.red)),
+              child:
+                  const Text('Отписаться', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -627,7 +633,8 @@ class _DigestsPageState extends State<DigestsPage>
       builder: (context) {
         return AlertDialog(
           title: const Text('Внимание!'),
-          content: Text('Вы последний подписчик на эту подписку.\n\nПосле отписки подписка и все связанные дайджесты будут удалены. Продолжить?'),
+          content: Text(
+              'Вы последний подписчик на эту подписку.\n\nПосле отписки подписка и все связанные дайджесты будут удалены. Продолжить?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -638,7 +645,8 @@ class _DigestsPageState extends State<DigestsPage>
                 Navigator.pop(context);
                 _toggleSubscription(digest);
               },
-              child: const Text('Удалить и отписаться', style: TextStyle(color: Colors.red)),
+              child: const Text('Удалить и отписаться',
+                  style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -646,24 +654,30 @@ class _DigestsPageState extends State<DigestsPage>
     );
   }
 
-  Future<void> _handleUnsubscribe(Digest digest, DigestProvider provider) async {
-    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+  Future<void> _handleUnsubscribe(
+      Digest digest, DigestProvider provider) async {
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
 
     try {
-      final subscription = await subscriptionProvider.fetchSubscriptionByDigestId(digest.id);
-      final isOwner = await subscriptionProvider.isCurrentUserOwner(subscription.id);
+      final subscription =
+          await subscriptionProvider.fetchSubscriptionByDigestId(digest.id);
+      final isOwner =
+          await subscriptionProvider.isCurrentUserOwner(subscription.id);
 
       if (!isOwner) {
         _toggleSubscription(digest);
         return;
       }
 
-      final followers = await subscriptionProvider.getSubscriptionFollowers(subscription.id);
+      final followers =
+          await subscriptionProvider.getSubscriptionFollowers(subscription.id);
 
       if (followers.isEmpty) {
         _showLastOwnerWarning(digest);
       } else {
-        _showTransferOwnershipDialog(digest, provider, subscription.id, followers);
+        _showTransferOwnershipDialog(
+            digest, provider, subscription.id, followers);
       }
     } catch (e) {
       debugPrint('Ошибка обработки отписки: $e');
@@ -675,10 +689,10 @@ class _DigestsPageState extends State<DigestsPage>
     }
   }
 
-
   Future<void> _toggleSubscription(Digest digest) async {
     final subscriptionProvider =
         Provider.of<SubscriptionProvider>(context, listen: false);
+    final digestProvider = Provider.of<DigestProvider>(context, listen: false);
 
     try {
       await subscriptionProvider.toggleSubscriptionByDigest(digest);
@@ -690,6 +704,7 @@ class _DigestsPageState extends State<DigestsPage>
       });
 
       await subscriptionProvider.loadSubscriptions();
+      await digestProvider.loadDigests();
     } catch (e) {
       if (!mounted) return;
       debugPrint(e.toString());
