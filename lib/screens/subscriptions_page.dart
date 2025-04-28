@@ -187,13 +187,17 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
       onPressed: () async {
         final newSubscription = subscription.copyWith(
           subscribeOptions: subscription.subscribeOptions.copyWith(
-            mobileNotifications:
-                !subscription.subscribeOptions.mobileNotifications,
+            mobileNotifications: !subscription.subscribeOptions.mobileNotifications,
           ),
         );
+
+        provider.updateSubscription(newSubscription);
+
         try {
           await provider.updateSubscriptionSettings(newSubscription);
         } catch (e) {
+          provider.updateSubscription(subscription);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Ошибка обновления уведомлений: $e')),
           );
@@ -201,6 +205,7 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
       },
     );
   }
+
 
   Widget _buildSubscriptionToggleButton(
       Subscription subscription, SubscriptionProvider provider) {
