@@ -3,6 +3,7 @@ import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
+import 'digest_edit_page.dart';
 import 'widgets/item_chips_list_widget.dart';
 import 'widgets/custom_expansion_tile_widget.dart';
 
@@ -26,9 +27,28 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
       menuItems.add({
         'icons': Icons.edit,
         'text': "Редактировать",
-        'action': () {
+        'action': () async {
           Navigator.pop(context);
-          //TODO Логика редактирования
+          final subscriptionProvider =
+              Provider.of<SubscriptionProvider>(context, listen: false);
+
+          try {
+            final subscription = await subscriptionProvider
+                .fetchSubscriptionByDigestId(widget.digest.id);
+            if (!mounted) return;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DigestEditPage(subscription: subscription),
+              ),
+            );
+          } catch (e) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Ошибка загрузки подписки: $e')),
+            );
+          }
         }
       });
     }
