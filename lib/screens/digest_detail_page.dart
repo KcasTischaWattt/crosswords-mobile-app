@@ -170,6 +170,8 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                     final subscriptionProvider =
                         Provider.of<SubscriptionProvider>(context,
                             listen: false);
+                    final digestProvider =
+                        Provider.of<DigestProvider>(context, listen: false);
 
                     try {
                       final subscription = await subscriptionProvider
@@ -186,6 +188,14 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                       await subscriptionProvider
                           .updateSubscriptionSettings(updatedSubscription);
 
+                      final updatedDigest = widget.digest.copyWith(
+                        subscribeOptions:
+                            widget.digest.subscribeOptions.copyWith(
+                          mobileNotifications: mobileNotifications,
+                          sendToMail: emailNotifications,
+                        ),
+                      );
+                      digestProvider.updateDigest(updatedDigest);
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
