@@ -359,6 +359,14 @@ class ApiService {
     return Subscription.fromJson(response.data);
   }
 
+  /// Оценка дайджеста
+  static Future<void> rateDigest(String digestId, int rating) async {
+    await _dio.patch(
+      '/digests/$digestId/rate',
+      data: {'digest_core_rating': rating},
+    );
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);

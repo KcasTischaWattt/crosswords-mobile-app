@@ -243,23 +243,38 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
   }
 
   Widget _buildRatingExpansionTile(BuildContext context) {
+    final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+
     return CustomExpansionTile(
       title: "Оцените качество дайджеста",
       customContent: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(5, (index) {
+          final isRated = widget.digest.userRating != null &&
+              index < widget.digest.userRating!;
+
           return IconButton(
             icon: Icon(
-              widget.digest.userRating != null &&
-                      index < widget.digest.userRating!
-                  ? Icons.star
-                  : Icons.star_border,
+              isRated ? Icons.star : Icons.star_border,
               color: Theme.of(context).primaryColor,
             ),
-            onPressed: () {
-              final provider =
-                  Provider.of<DigestProvider>(context, listen: false);
-              provider.setRating(index + 1, widget.digest);
+            onPressed: () async {
+              final rating = index + 1;
+              try {
+                await digestProvider.rateDigest(widget.digest, rating);
+
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Оценка $rating сохранена!')),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Ошибка при оценке: $e')),
+                  );
+                }
+              }
             },
           );
         }),

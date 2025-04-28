@@ -344,6 +344,19 @@ class DigestProvider extends ChangeNotifier implements FilterProvider {
     return await ApiService.fetchDigestById(digestId);
   }
 
+  Future<void> rateDigest(Digest digest, int rating) async {
+    final oldDigest = digest.copyWith();
+    try {
+      final updatedDigest = digest.copyWith(userRating: rating);
+      updateDigest(updatedDigest);
+      await ApiService.rateDigest(digest.id, rating);
+    } catch (e) {
+      updateDigest(oldDigest);
+      debugPrint('Ошибка при оценке дайджеста: $e');
+      rethrow;
+    }
+  }
+
   void setDateFromDateTime(DateTime date) {
     final formatted = DateFormat('dd/MM/yyyy').format(date);
     _tempSearchParams = _tempSearchParams.copyWith(dateFrom: formatted);
