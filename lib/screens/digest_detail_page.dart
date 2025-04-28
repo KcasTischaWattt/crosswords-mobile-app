@@ -164,9 +164,42 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                   child: const Text("Отмена"),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.pop(dialogContext);
-                    // TODO: Добавить логику сохранения настроек уведомлений
+
+                    final subscriptionProvider =
+                        Provider.of<SubscriptionProvider>(context,
+                            listen: false);
+
+                    try {
+                      final subscription = await subscriptionProvider
+                          .fetchSubscriptionByDigestId(digest.id);
+
+                      final updatedSubscription = subscription.copyWith(
+                        subscribeOptions:
+                            subscription.subscribeOptions.copyWith(
+                          mobileNotifications: mobileNotifications,
+                          sendToMail: emailNotifications,
+                        ),
+                      );
+
+                      await subscriptionProvider
+                          .updateSubscriptionSettings(updatedSubscription);
+
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Настройки уведомлений сохранены')),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Ошибка сохранения настроек: $e')),
+                        );
+                      }
+                    }
                   },
                   child: const Text("Применить"),
                 ),
