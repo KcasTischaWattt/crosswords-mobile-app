@@ -29,13 +29,27 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
         'text': "Редактировать",
         'action': () async {
           Navigator.pop(context);
+
           final subscriptionProvider =
               Provider.of<SubscriptionProvider>(context, listen: false);
+
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          );
 
           try {
             final subscription = await subscriptionProvider
                 .fetchSubscriptionByDigestId(widget.digest.id);
             if (!mounted) return;
+
+            Navigator.pop(context);
+
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -45,6 +59,9 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
             );
           } catch (e) {
             if (!mounted) return;
+
+            Navigator.pop(context);
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Ошибка загрузки подписки: $e')),
             );
