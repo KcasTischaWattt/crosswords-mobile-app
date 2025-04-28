@@ -8,6 +8,7 @@ import 'package:velocity_x/velocity_x.dart';
 import '../providers/auth_provider.dart';
 import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
+import 'digest_edit_page.dart';
 import 'subscriptions_page.dart';
 import 'package:flutter/gestures.dart';
 import 'digest_search_page.dart';
@@ -573,10 +574,25 @@ class _DigestsPageState extends State<DigestsPage>
 
     return IconButton(
       icon: const Icon(Icons.edit),
-      onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Редактирование: ${digest.title}")),
-        );
+      onPressed: () async {
+        final subscriptionProvider =
+            Provider.of<SubscriptionProvider>(context, listen: false);
+        try {
+          final subscription = await subscriptionProvider
+              .fetchSubscriptionByDigestId(digest.id);
+          if (!mounted) return;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DigestEditPage(subscription: subscription),
+            ),
+          );
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка загрузки подписки: $e')),
+          );
+        }
       },
     );
   }
