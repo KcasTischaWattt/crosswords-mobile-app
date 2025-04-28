@@ -353,6 +353,12 @@ class ApiService {
     });
   }
 
+  /// Получение информации о подписке по ID
+  static Future<Subscription> fetchSubscriptionById(int subscriptionId) async {
+    final response = await _dio.get('/subscriptions/$subscriptionId');
+    return Subscription.fromJson(response.data);
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);

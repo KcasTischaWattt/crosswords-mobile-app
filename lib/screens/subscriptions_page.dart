@@ -131,12 +131,26 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
   Widget _buildEditButton(Subscription subscription) {
     return IconButton(
       icon: const Icon(Icons.edit),
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DigestEditPage(subscription: subscription),
-        ),
-      ),
+      onPressed: () async {
+        final subscriptionProvider =
+            Provider.of<SubscriptionProvider>(context, listen: false);
+        try {
+          final fetchedSubscription =
+              await subscriptionProvider.fetchSubscriptionById(subscription.id);
+          if (!mounted) return;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  DigestEditPage(subscription: fetchedSubscription),
+            ),
+          );
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Не удалось загрузить подписку: $e')),
+          );
+        }
+      },
     );
   }
 

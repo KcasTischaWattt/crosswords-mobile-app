@@ -688,6 +688,10 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         false;
   }
 
+  Future<Subscription> fetchSubscriptionById(int subscriptionId) async {
+    return await ApiService.fetchSubscriptionById(subscriptionId);
+  }
+
   void clear() {
     _subscriptions.clear();
     _selectedSources.clear();
