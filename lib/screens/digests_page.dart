@@ -551,29 +551,41 @@ class _DigestsPageState extends State<DigestsPage>
   Widget _buildNotificationButton(Digest digest) {
     final subscriptionProvider =
         Provider.of<SubscriptionProvider>(context, listen: false);
+    final digestProvider = Provider.of<DigestProvider>(context, listen: false);
 
     if (!digest.subscribeOptions.subscribed) return const SizedBox.shrink();
 
+    final isEnabled = digest.subscribeOptions.mobileNotifications;
+
     return IconButton(
-      icon: Icon(digest.subscribeOptions.mobileNotifications
-          ? Icons.notifications_active
-          : Icons.notifications_none),
+      icon: Icon(
+        isEnabled ? Icons.notifications_active : Icons.notifications_none,
+      ),
       onPressed: () async {
+        digestProvider.updateDigest(
+          digest.copyWith(
+            subscribeOptions: digest.subscribeOptions.copyWith(
+              mobileNotifications: !isEnabled,
+            ),
+          ),
+        );
+
         try {
           final subscription =
               await subscriptionProvider.fetchSubscriptionByDigestId(digest.id);
 
           final updatedSubscription = subscription.copyWith(
             subscribeOptions: subscription.subscribeOptions.copyWith(
-              mobileNotifications:
-                  !subscription.subscribeOptions.mobileNotifications,
+              mobileNotifications: !isEnabled,
             ),
           );
-
           await subscriptionProvider
               .updateSubscriptionSettings(updatedSubscription);
         } catch (e) {
           if (!mounted) return;
+
+          digestProvider.updateDigest(digest);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Ошибка изменения уведомлений: $e')),
           );
