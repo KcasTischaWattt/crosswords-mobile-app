@@ -184,13 +184,20 @@ class _SubscriptionsPageState extends State<SubscriptionsPage>
             ? Icons.notifications_active
             : Icons.notifications_none,
       ),
-      onPressed: () {
-        provider.updateSubscription(subscription.copyWith(
+      onPressed: () async {
+        final newSubscription = subscription.copyWith(
           subscribeOptions: subscription.subscribeOptions.copyWith(
             mobileNotifications:
                 !subscription.subscribeOptions.mobileNotifications,
           ),
-        ));
+        );
+        try {
+          await provider.updateSubscriptionSettings(newSubscription);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка обновления уведомлений: $e')),
+          );
+        }
       },
     );
   }
