@@ -28,6 +28,7 @@ class _DigestsPageState extends State<DigestsPage>
     with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
   String? _loadingDigestId;
+  String? _loadingEditDigestId;
 
   @override
   void initState() {
@@ -572,28 +573,49 @@ class _DigestsPageState extends State<DigestsPage>
     if (!digest.subscribeOptions.subscribed) return const SizedBox.shrink();
     if (!digest.isOwner) return const SizedBox.shrink();
 
+    final isLoading = _loadingEditDigestId == digest.id;
+
     return IconButton(
-      icon: const Icon(Icons.edit),
-      onPressed: () async {
-        final subscriptionProvider =
-            Provider.of<SubscriptionProvider>(context, listen: false);
-        try {
-          final subscription = await subscriptionProvider
-              .fetchSubscriptionByDigestId(digest.id);
-          if (!mounted) return;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DigestEditPage(subscription: subscription),
-            ),
-          );
-        } catch (e) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Ошибка загрузки подписки: $e')),
-          );
-        }
-      },
+      icon: isLoading
+          ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.edit),
+      onPressed: isLoading
+          ? null
+          : () async {
+              final subscriptionProvider =
+                  Provider.of<SubscriptionProvider>(context, listen: false);
+              setState(() {
+                _loadingEditDigestId = digest.id;
+              });
+
+              try {
+                final subscription = await subscriptionProvider
+                    .fetchSubscriptionByDigestId(digest.id);
+                if (!mounted) return;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        DigestEditPage(subscription: subscription),
+                  ),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Ошибка загрузки подписки: $e')),
+                );
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _loadingEditDigestId = null;
+                  });
+                }
+              }
+            },
     );
   }
 
