@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../providers/digest_provider.dart';
 import '../data/models/digest.dart';
 import 'package:provider/provider.dart';
+import '../providers/subscription_provider.dart';
 import 'widgets/item_chips_list_widget.dart';
 import 'widgets/custom_expansion_tile_widget.dart';
 
@@ -15,7 +16,6 @@ class DigestDetailPage extends StatefulWidget {
 }
 
 class _DigestDetailPageState extends State<DigestDetailPage> {
-
   void _showSettingsMenu(BuildContext context) {
     final bool isOwner = widget.digest.isOwner;
     final bool isSubscribed = widget.digest.subscribeOptions.subscribed;
@@ -47,10 +47,15 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     menuItems.add({
       'icons': isSubscribed ? Icons.unsubscribe : Icons.subscriptions,
       'text': isSubscribed ? "Отписаться" : "Подписаться",
-      'action': () {
+      'action': () async {
         Navigator.pop(context);
-        _showUnsubscribeConfirmationDialog(context, widget.digest);
-      }
+        final subscriptionProvider =
+            Provider.of<SubscriptionProvider>(context, listen: false);
+        await subscriptionProvider.handleUnsubscribe(
+          context: context,
+          digestId: widget.digest.id,
+        );
+      },
     });
 
     showModalBottomSheet(
@@ -71,7 +76,8 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
             children: menuItems.map((item) {
               return ListTile(
                 leading: Icon(item['icons'] as IconData, size: 28),
-                title: Text(item['text'] as String, style: TextStyle(fontSize: 20)),
+                title: Text(item['text'] as String,
+                    style: TextStyle(fontSize: 20)),
                 onTap: item['action'] as VoidCallback,
               );
             }).toList(),
@@ -135,124 +141,6 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     );
   }
 
-  void _showUnsubscribeConfirmationDialog(BuildContext context, Digest digest) {
-    String message = digest.public
-        ? "Вы уверены, что хотите отказаться от подписки?"
-        : "Этот дайджест является приватным. Чтобы снова подписаться, вам нужно будет запросить разрешение у владельца. Вы уверены, что хотите отписаться?";
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Отмена подписки"),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Отмена"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                if (digest.isOwner) {
-                  _showTransferOwnershipDialog(context, digest);
-                } else {
-                  //TODO Логика отписки
-                }
-              },
-              child: const Text("Отписаться", style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  List<String> _getPotentialOwners() {
-    // TODO Логика получения списка потенциальных владельцев
-    return [
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3",
-      "User1",
-      "User2",
-      "User3"
-    ];
-  }
-
-  void _showTransferOwnershipDialog(BuildContext context, Digest digest) {
-    List<String> potentialOwners = _getPotentialOwners();
-
-    if (potentialOwners.isEmpty) {
-      _showUnsubscribeConfirmationDialog(context, digest);
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        String? selectedOwner;
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text("Выберите нового владельца"),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: potentialOwners.map((owner) {
-                            return RadioListTile<String>(
-                              title: Text(owner),
-                              value: owner,
-                              groupValue: selectedOwner,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedOwner = value;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Отмена"),
-                ),
-                TextButton(
-                  onPressed: selectedOwner == null
-                      ? null
-                      : () {
-                    Navigator.pop(context);
-                    // TODO логика передачи владения
-                  },
-                  child: const Text("Передать и отписаться", style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
   AppBar _buildAppBar() {
     return AppBar(
       toolbarHeight: 60,
@@ -282,18 +170,21 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
         children: List.generate(5, (index) {
           return IconButton(
             icon: Icon(
-              widget.digest.userRating != null && index < widget.digest.userRating!
+              widget.digest.userRating != null &&
+                      index < widget.digest.userRating!
                   ? Icons.star
                   : Icons.star_border,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
-              final provider = Provider.of<DigestProvider>(context, listen: false);
+              final provider =
+                  Provider.of<DigestProvider>(context, listen: false);
               provider.setRating(index + 1, widget.digest);
             },
           );
         }),
-      ), children: [],
+      ),
+      children: [],
     );
   }
 
