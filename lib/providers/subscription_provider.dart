@@ -490,10 +490,20 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         subscription = await fetchSubscriptionByDigestId(digestId);
       } else if (subscriptionId != null) {
         subscription = _subscriptions.firstWhere(
-            (sub) => sub.id == subscriptionId,
-            orElse: () => throw Exception('Подписка не найдена'));
+          (sub) => sub.id == subscriptionId,
+          orElse: () => throw Exception('Подписка не найдена'),
+        );
       } else {
         throw Exception('Не указан ни subscriptionId, ни digestId');
+      }
+
+      if (!subscription.subscribeOptions.subscribed) {
+        await _toggleSubscription(
+          subscription,
+          context: context,
+          digestId: digestId,
+        );
+        return;
       }
 
       final isOwner = await isCurrentUserOwner(subscription.id);
@@ -520,7 +530,10 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         }
       } else {
         final confirmed = await _showUnsubscribeConfirmDialog(
-            context, subscription.public, subscription.title);
+          context,
+          subscription.public,
+          subscription.title,
+        );
         if (confirmed) {
           await _toggleSubscription(
             subscription,
@@ -530,17 +543,18 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         }
       }
     } catch (e) {
-      debugPrint('Ошибка обработки отписки: $e');
-      scaffoldMessenger
-          .showSnackBar(SnackBar(content: Text('Ошибка отписки: $e')));
+      debugPrint('Ошибка обработки подписки/отписки: $e');
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Ошибка: $e')),
+      );
     }
   }
 
   Future<void> _toggleSubscription(
-      Subscription subscription, {
-        required BuildContext context,
-        String? digestId,
-      }) async {
+    Subscription subscription, {
+    required BuildContext context,
+    String? digestId,
+  }) async {
     final newSubscribedState = !subscription.subscribeOptions.subscribed;
 
     try {
@@ -549,14 +563,16 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
         data: {
           'subscribed': newSubscribedState,
           'send_to_mail': subscription.subscribeOptions.sendToMail,
-          'mobile_notifications': subscription.subscribeOptions.mobileNotifications,
+          'mobile_notifications':
+              subscription.subscribeOptions.mobileNotifications,
         },
       );
 
       if (response.data['deleted'] == true) {
         _subscriptions.removeWhere((sub) => sub.id == subscription.id);
       } else {
-        final index = _subscriptions.indexWhere((sub) => sub.id == subscription.id);
+        final index =
+            _subscriptions.indexWhere((sub) => sub.id == subscription.id);
         if (index != -1) {
           _subscriptions[index] = subscription.copyWith(
             subscribeOptions: subscription.subscribeOptions.copyWith(
@@ -570,14 +586,14 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
 
       await loadSubscriptions();
 
-      final digestProvider = Provider.of<DigestProvider>(context, listen: false);
+      final digestProvider =
+          Provider.of<DigestProvider>(context, listen: false);
       await digestProvider.loadDigests();
     } catch (e) {
       debugPrint('Ошибка переключения подписки: $e');
       rethrow;
     }
   }
-
 
   Future<bool> _showLastOwnerWarningDialog(BuildContext context) async {
     return await showDialog<bool>(
