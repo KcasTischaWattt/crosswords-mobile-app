@@ -1,5 +1,7 @@
 import 'package:crosswords/providers/user_settings_provider.dart';
 import 'package:crosswords/providers/auth_provider.dart';
+import 'package:crosswords/services/push_notification_service.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,8 +18,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main() {
+void main() async {
   ApiService.initializeInterceptors();
+  await Firebase.initializeApp();
+  await PushNotificationService().initialize();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
