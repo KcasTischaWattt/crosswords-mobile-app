@@ -1,0 +1,2 @@
+C:/Users/Matvey/StudioProjects/crosswords/android/app/.cxx/Debug/6c1c2d1b/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Matvey/StudioProjects/crosswords/android/app/.cxx/Debug/6c1c2d1b/armeabi-v7a/CMakeFiles/rebuild_cache.dir
