@@ -1,5 +1,6 @@
 import 'package:crosswords/providers/user_settings_provider.dart';
 import 'package:crosswords/providers/auth_provider.dart';
+import 'package:crosswords/screens/digest_detail_page_with_loading.dart';
 import 'package:crosswords/services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +97,23 @@ class _MyAppState extends State<MyApp> {
     await prefs.setString('theme_mode', mode.name);
   }
 
+  Route<dynamic>? _onGenerateRoute(RouteSettings settings) {
+    final uri = Uri.parse(settings.name ?? '');
+    if (uri.pathSegments.length == 2 &&
+        uri.pathSegments.first == 'digest' &&
+        uri.pathSegments[1].isNotEmpty) {
+      return MaterialPageRoute(
+        builder: (context) =>
+            DigestDetailPageWithLoading(digestId: uri.pathSegments[1]),
+      );
+    }
+    return MaterialPageRoute(
+      builder: (_) => const Scaffold(
+        body: Center(child: Text('Страница не найдена')),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
@@ -116,6 +134,7 @@ class _MyAppState extends State<MyApp> {
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
           themeMode: _themeMode,
+          onGenerateRoute: _onGenerateRoute,
           home: authProvider.showMainApp
               ? MainApp(
                   setTheme: _setTheme,

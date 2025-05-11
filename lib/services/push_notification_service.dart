@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../main.dart';
 import 'api_service.dart';
 
 class PushNotificationService {
@@ -28,6 +29,23 @@ class PushNotificationService {
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       await ApiService.sendFcmToken(newToken);
     });
+
+    // Обработка нажатия на уведомление
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      final digestId = message.data['digestId'];
+      if (digestId != null) {
+        navigatorKey.currentState?.pushNamed('/digest/$digestId');
+      }
+    });
+
+    // Обработка фоновых уведомлений
+    final initialMessage = await _fcm.getInitialMessage();
+    if (initialMessage != null) {
+      final digestId = initialMessage.data['digestId'];
+      if (digestId != null) {
+        navigatorKey.currentState?.pushNamed('/digest/$digestId');
+      }
+    }
 
     // Настройка локальных уведомлений
     const androidSettings =

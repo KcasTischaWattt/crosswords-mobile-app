@@ -17,6 +17,7 @@ class DigestDetailPage extends StatefulWidget {
 }
 
 class _DigestDetailPageState extends State<DigestDetailPage> {
+
   void _showSettingsMenu(BuildContext context) {
     final bool isOwner = widget.digest.isOwner;
     final bool isSubscribed = widget.digest.subscribeOptions.subscribed;
