@@ -1,6 +1,8 @@
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:crosswords/services/push_notification_service.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../data/models/article.dart';
 import 'dart:io' show Directory;
@@ -82,9 +84,12 @@ class ApiService {
       return;
     }
 
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+
     final response = await _dio.post("/users/login", data: {
       "username": username,
       "password": password,
+      "fcm_token": fcmToken,
     });
 
     if (response.statusCode != 200) {
@@ -100,14 +105,16 @@ class ApiService {
       return;
     }
 
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+
     await _dio.post(
       "/users/register",
       data: {
         "name": name,
         "surname": surname,
-        "username": email,
         "email": email,
         "password": password,
+        "fcm_token": fcmToken,
       },
     );
   }
@@ -121,6 +128,7 @@ class ApiService {
     }
 
     try {
+      await PushNotificationService().deleteFcmToken();
       await _dio.post("/users/logout");
     } catch (e) {
       debugPrint("Ошибка при выходе: $e");
@@ -365,6 +373,17 @@ class ApiService {
       '/digests/$digestId/rate',
       data: {'digest_core_rating': rating},
     );
+  }
+
+  /// Отправка FCM токена
+  static Future<void> sendFcmToken(String token) async {
+    try {
+      await _dio.post("/users/create_fcm_token", queryParameters: {
+        "fcmToken": token,
+      });
+    } catch (e) {
+      debugPrint("Ошибка при отправке FCM токена: $e");
+    }
   }
 
   /// GET запрос к API
