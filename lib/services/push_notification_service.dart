@@ -1,9 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../main.dart';
+import '../screens/digest_detail_page.dart';
+import '../screens/digest_detail_page_with_loading.dart';
 import 'api_service.dart';
 
 class PushNotificationService {
@@ -34,7 +37,11 @@ class PushNotificationService {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       final digestId = message.data['digestId'];
       if (digestId != null) {
-        navigatorKey.currentState?.pushNamed('/digest/$digestId');
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (_) => DigestDetailPageWithLoading(digestId: digestId),
+          ),
+        );
       }
     });
 
@@ -43,9 +50,25 @@ class PushNotificationService {
     if (initialMessage != null) {
       final digestId = initialMessage.data['digestId'];
       if (digestId != null) {
-        navigatorKey.currentState?.pushNamed('/digest/$digestId');
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (_) => DigestDetailPageWithLoading(digestId: digestId),
+          ),
+        );
       }
     }
+
+    // Обработка, если уведомление открыло закрытое приложение
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        _handleMessage(message);
+      }
+    });
+
+// Обработка, если приложение в фоне
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      _handleMessage(message);
+    });
 
     // Настройка локальных уведомлений
     const androidSettings =
@@ -89,6 +112,19 @@ class PushNotificationService {
       debugPrint("FCM токен удалён с устройства");
     } catch (e) {
       debugPrint("Ошибка при удалении FCM токена: $e");
+    }
+  }
+
+  /// Обработка сообщения
+  void _handleMessage(RemoteMessage message) {
+    final digestId = message.data['digestId'];
+    if (digestId != null) {
+      debugPrint("Навигация по уведомлению: digestId = $digestId");
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => DigestDetailPageWithLoading(digestId: digestId),
+        ),
+      );
     }
   }
 }
