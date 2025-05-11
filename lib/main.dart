@@ -20,9 +20,9 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   ApiService.initializeInterceptors();
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await PushNotificationService().initialize();
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
       providers: [
