@@ -130,7 +130,7 @@ class ApiService {
 
     try {
       await _dio.post("/users/logout");
-      await FirebaseMessaging.instance.deleteToken();
+      await PushNotificationService().deleteFcmToken(fcmToken);
       debugPrint("Логаут завершён успешно");
     } catch (e) {
       debugPrint("Ошибка при выходе: $e");
