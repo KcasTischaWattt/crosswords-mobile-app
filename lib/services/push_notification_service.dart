@@ -1,11 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import '../main.dart';
-import '../screens/digest_detail_page.dart';
 import '../screens/digest_detail_page_with_loading.dart';
 import 'api_service.dart';
 
@@ -105,7 +102,12 @@ class PushNotificationService {
     debugPrint("Handling background message: ${message.messageId}");
   }
 
-  Future<void> deleteFcmToken(String token) async {
+  /// Удаление FCM токена
+  Future<void> deleteFcmToken(String? token) async {
+    if (token == null || token.isEmpty) {
+      debugPrint("FCM токен отсутствует, удаление пропущено");
+      return;
+    }
     try {
       await ApiService.deleteFcmToken(token);
       await FirebaseMessaging.instance.deleteToken();
