@@ -16,15 +16,6 @@ class PushNotificationService {
     // Запрос разрешения на получение уведомлений
     await _fcm.requestPermission();
 
-    // Получение токена
-    final token = await _fcm.getToken();
-    print("FCM Token: $token");
-
-    // Отправка токена на сервер
-    if (token != null) {
-      await ApiService.sendFcmToken(token);
-    }
-
     // Обработка обновления токена
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       await ApiService.sendFcmToken(newToken);
