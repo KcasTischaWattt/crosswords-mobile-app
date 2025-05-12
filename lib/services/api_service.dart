@@ -119,7 +119,6 @@ class ApiService {
     );
   }
 
-  /// Логаут
   static Future<void> logout() async {
     if (useMock) {
       await Future.delayed(const Duration(seconds: 1));
@@ -127,9 +126,12 @@ class ApiService {
       return;
     }
 
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+
     try {
-      await PushNotificationService().deleteFcmToken();
       await _dio.post("/users/logout");
+      await FirebaseMessaging.instance.deleteToken();
+      debugPrint("Логаут завершён успешно");
     } catch (e) {
       debugPrint("Ошибка при выходе: $e");
     }
@@ -378,11 +380,22 @@ class ApiService {
   /// Отправка FCM токена
   static Future<void> sendFcmToken(String token) async {
     try {
-      await _dio.post("/users/create_fcm_token", queryParameters: {
+      await _dio.post("/users/fcm_token/create", queryParameters: {
         "fcmToken": token,
       });
     } catch (e) {
       debugPrint("Ошибка при отправке FCM токена: $e");
+    }
+  }
+
+  /// Удаление FCM токена
+  static Future<void> deleteFcmToken(String token) async {
+    try {
+      await _dio.delete("/users/fcm_token/delete", queryParameters: {
+        "fcmToken": token,
+      });
+    } catch (e) {
+      debugPrint("Ошибка при удалении FCM токена: $e");
     }
   }
 

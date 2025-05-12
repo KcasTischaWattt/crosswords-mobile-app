@@ -105,11 +105,11 @@ class PushNotificationService {
     debugPrint("Handling background message: ${message.messageId}");
   }
 
-  /// Удаление FCM токена
-  Future<void> deleteFcmToken() async {
+  Future<void> deleteFcmToken(String token) async {
     try {
+      await ApiService.deleteFcmToken(token);
       await FirebaseMessaging.instance.deleteToken();
-      debugPrint("FCM токен удалён с устройства");
+      debugPrint("FCM токен удалён");
     } catch (e) {
       debugPrint("Ошибка при удалении FCM токена: $e");
     }
