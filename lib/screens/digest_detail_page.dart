@@ -17,10 +17,17 @@ class DigestDetailPage extends StatefulWidget {
 }
 
 class _DigestDetailPageState extends State<DigestDetailPage> {
+  late Digest _digest;
+
+  @override
+  void initState() {
+    super.initState();
+    _digest = widget.digest;
+  }
 
   void _showSettingsMenu(BuildContext context) {
-    final bool isOwner = widget.digest.isOwner;
-    final bool isSubscribed = widget.digest.subscribeOptions.subscribed;
+    final bool isOwner = _digest.isOwner;
+    final bool isSubscribed = _digest.subscribeOptions.subscribed;
 
     final menuItems = <Map<String, dynamic>>[];
 
@@ -46,7 +53,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
 
           try {
             final subscription = await subscriptionProvider
-                .fetchSubscriptionByDigestId(widget.digest.id);
+                .fetchSubscriptionByDigestId(_digest.id);
             if (!mounted) return;
 
             Navigator.pop(context);
@@ -77,7 +84,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
         'text': "Настройка уведомлений",
         'action': () {
           Navigator.pop(context);
-          _showNotificationSettingsDialog(context, widget.digest);
+          _showNotificationSettingsDialog(context, _digest);
         }
       });
     }
@@ -89,10 +96,25 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
         Navigator.pop(context);
         final subscriptionProvider =
             Provider.of<SubscriptionProvider>(context, listen: false);
-        await subscriptionProvider.handleUnsubscribe(
+        final success = await subscriptionProvider.handleUnsubscribe(
           context: context,
-          digestId: widget.digest.id,
+          digestId: _digest.id,
         );
+        if (!isSubscribed && success) {
+          setState(() {
+            _digest = _digest.copyWith(
+              subscribeOptions: _digest.subscribeOptions.copyWith(
+                subscribed: false,
+              ),
+            );
+          });
+        } else if (isSubscribed && success) {
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Ошибка при подписке')),
+          );
+        }
       },
     });
 
@@ -188,10 +210,17 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
 
                       await subscriptionProvider
                           .updateSubscriptionSettings(updatedSubscription);
+                      setState(() {
+                        _digest = _digest.copyWith(
+                          subscribeOptions: _digest.subscribeOptions.copyWith(
+                            mobileNotifications: mobileNotifications,
+                            sendToMail: emailNotifications,
+                          ),
+                        );
+                      });
 
-                      final updatedDigest = widget.digest.copyWith(
-                        subscribeOptions:
-                            widget.digest.subscribeOptions.copyWith(
+                      final updatedDigest = _digest.copyWith(
+                        subscribeOptions: _digest.subscribeOptions.copyWith(
                           mobileNotifications: mobileNotifications,
                           sendToMail: emailNotifications,
                         ),
@@ -227,7 +256,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
       toolbarHeight: 60,
       centerTitle: true,
       title: Text(
-        widget.digest.title,
+        _digest.title,
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
       actions: [
@@ -251,8 +280,8 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
       customContent: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(5, (index) {
-          final isRated = widget.digest.userRating != null &&
-              index < widget.digest.userRating!;
+          final isRated =
+              _digest.userRating != null && index < _digest.userRating!;
 
           return IconButton(
             icon: Icon(
@@ -262,7 +291,10 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
             onPressed: () async {
               final rating = index + 1;
               try {
-                await digestProvider.rateDigest(widget.digest, rating);
+                await digestProvider.rateDigest(_digest, rating);
+                setState(() {
+                  _digest = _digest.copyWith(userRating: rating);
+                });
 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -288,8 +320,8 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final textStyle = DefaultTextStyle.of(context).style;
-        final dateText = widget.digest.date;
-        final ownerText = widget.digest.owner;
+        final dateText = _digest.date;
+        final ownerText = _digest.owner;
         final separator = " | ";
 
         final fullText = "$dateText$separator$ownerText";
@@ -310,8 +342,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(fullText),
-                  if (widget.digest.isOwner)
-                    Icon(Icons.workspace_premium, size: 16),
+                  if (_digest.isOwner) Icon(Icons.workspace_premium, size: 16),
                 ],
               )
             else ...[
@@ -319,8 +350,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (widget.digest.isOwner)
-                    Icon(Icons.workspace_premium, size: 16),
+                  if (_digest.isOwner) Icon(Icons.workspace_premium, size: 16),
                   Expanded(
                     child: Text(
                       ownerText,
@@ -353,19 +383,19 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
 
               // Название дайджеста
               Text(
-                widget.digest.title,
+                _digest.title,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
 
               // Описание дайджеста
-              Text(widget.digest.description,
+              Text(_digest.description,
                   style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 16),
 
               // Теги
               ItemListWidget(
-                items: widget.digest.tags,
+                items: _digest.tags,
                 dialogTitle: "Все теги",
                 chipColor: Theme.of(context).primaryColor,
                 textColor: Colors.black,
@@ -374,12 +404,12 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
               const SizedBox(height: 16),
 
               // Контент дайджеста
-              Text(widget.digest.text),
+              Text(_digest.text),
               const SizedBox(height: 16),
 
               // Источники
               ItemListWidget(
-                items: widget.digest.sources,
+                items: _digest.sources,
                 dialogTitle: "Все источники",
                 chipColor: Theme.of(context).secondaryHeaderColor,
                 textColor: Colors.white,

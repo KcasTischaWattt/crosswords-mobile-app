@@ -477,7 +477,7 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
-  Future<void> handleUnsubscribe({
+  Future<bool> handleUnsubscribe({
     required BuildContext context,
     int? subscriptionId,
     String? digestId,
@@ -503,7 +503,7 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
           context: context,
           digestId: digestId,
         );
-        return;
+        return true;
       }
 
       final isOwner = await isCurrentUserOwner(subscription.id);
@@ -517,6 +517,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
             context: context,
             digestId: digestId,
           );
+          return true;
+        } else {
+          return false;
         }
       } else if (isOwner && followers.isNotEmpty) {
         final newOwner = await _showTransferOwnershipDialog(context, followers);
@@ -527,6 +530,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
             context: context,
             digestId: digestId,
           );
+          return true;
+        } else {
+          return false;
         }
       } else {
         final confirmed = await _showUnsubscribeConfirmDialog(
@@ -540,6 +546,9 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
             context: context,
             digestId: digestId,
           );
+          return true;
+        } else {
+          return false;
         }
       }
     } catch (e) {
@@ -547,6 +556,7 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
       scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Ошибка: $e')),
       );
+      return false;
     }
   }
 
