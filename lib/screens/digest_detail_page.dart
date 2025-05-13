@@ -104,7 +104,7 @@ class _DigestDetailPageState extends State<DigestDetailPage> {
           setState(() {
             _digest = _digest.copyWith(
               subscribeOptions: _digest.subscribeOptions.copyWith(
-                subscribed: false,
+                subscribed: true,
               ),
             );
           });
