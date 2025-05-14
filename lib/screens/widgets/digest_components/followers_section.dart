@@ -28,11 +28,11 @@ class FollowersSection extends StatelessWidget {
                       trailing: isCurrentUser
                           ? null
                           : IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                _showDeleteConfirmationDialog(context, user);
-                              },
-                            ),
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          _showDeleteConfirmationDialog(context, user);
+                        },
+                      ),
                     );
                   }).toList(),
                 ),
