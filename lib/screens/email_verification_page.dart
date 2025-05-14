@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../services/api_service.dart';
@@ -26,6 +28,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   String _code = '';
   bool _loading = false;
   String? _errorMessage;
+  Timer? _resendTimer;
+  int _secondsLeft = 60;
+  bool _canResend = false;
 
   @override
   void initState() {
@@ -33,13 +38,37 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     _sendVerificationCode();
   }
 
+  @override
+  void dispose() {
+    _resendTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _sendVerificationCode() async {
+    setState(() {
+      _canResend = false;
+      _secondsLeft = 60;
+    });
+
     try {
       await ApiService.post("/users/verification_code/send", {
         "email": widget.email,
       });
+      _resendTimer?.cancel();
+      _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_secondsLeft == 0) {
+          timer.cancel();
+          setState(() => _canResend = true);
+        } else {
+          setState(() => _secondsLeft--);
+        }
+      });
     } catch (e) {
       setState(() => _errorMessage = "Не удалось отправить код на почту.");
+      setState(() {
+        _canResend = true;
+        _secondsLeft = 0;
+      });
     }
   }
 
@@ -146,6 +175,21 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                     ? const CircularProgressIndicator()
                     : const Text("Подтвердить",
                     style: TextStyle(fontSize: 18, color: Colors.black)),
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: _canResend ? _sendVerificationCode : null,
+                child: Text(
+                  _canResend
+                      ? "Отправить ещё раз"
+                      : "Можно повторить через $_secondsLeft сек",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: _canResend ? Theme.of(context).primaryColor : Colors.grey,
+                    decoration:
+                    _canResend ? TextDecoration.underline : TextDecoration.none,
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               TextButton(
