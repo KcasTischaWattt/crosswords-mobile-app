@@ -91,70 +91,123 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     }
   }
 
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
+              size: 28),
+          onPressed: widget.toggleTheme,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+        const Icon(Icons.mark_email_read_outlined,
+            size: 100, color: Colors.grey),
+        const SizedBox(height: 24),
+        const Text(
+          "Введите код из письма",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          "Мы отправили 6-значный код на ${widget.email}",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+        ),
+        const SizedBox(height: 32),
+      ],
+    );
+  }
+
+  Widget _buildCodeField() {
+    final theme = Theme.of(context);
+    final fillColor = theme.scaffoldBackgroundColor;
+    return PinCodeTextField(
+      appContext: context,
+      length: 6,
+      keyboardType: TextInputType.number,
+      animationType: AnimationType.fade,
+      pinTheme: PinTheme(
+        shape: PinCodeFieldShape.box,
+        borderRadius: BorderRadius.circular(10),
+        fieldHeight: 50,
+        fieldWidth: 45,
+        activeFillColor: fillColor,
+        selectedFillColor: fillColor,
+        inactiveFillColor: fillColor,
+        activeColor: theme.primaryColor,
+        selectedColor: theme.primaryColor,
+        inactiveColor: Colors.grey,
+      ),
+      animationDuration: const Duration(milliseconds: 300),
+      enableActiveFill: true,
+      onChanged: (value) => setState(() => _code = value),
+    );
+  }
+
+  Widget _buildConfirmButton() {
+    return ElevatedButton(
+      onPressed: _loading || _code.length != 6 ? null : _checkCode,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: _loading
+          ? const CircularProgressIndicator()
+          : const Text("Подтвердить",
+              style: TextStyle(fontSize: 18, color: Colors.black)),
+    );
+  }
+
+  Widget _buildResendButton() {
+    return TextButton(
+      onPressed: _canResend ? _sendVerificationCode : null,
+      child: Text(
+        _canResend
+            ? "Отправить ещё раз"
+            : "Можно повторить через $_secondsLeft сек",
+        style: TextStyle(
+          fontSize: 16,
+          color: _canResend ? Theme.of(context).primaryColor : Colors.grey,
+          decoration:
+              _canResend ? TextDecoration.underline : TextDecoration.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkipButton() {
+    return TextButton(
+      onPressed: widget.onSkip,
+      child: const Text(
+        "Продолжить без подтверждения",
+        style: TextStyle(fontSize: 16, decoration: TextDecoration.underline),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nights_stay,
-                size: 28),
-            onPressed: widget.toggleTheme,
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 40),
-              const Icon(Icons.mark_email_read_outlined,
-                  size: 100, color: Colors.grey),
-              const SizedBox(height: 24),
-              Text(
-                "Введите код из письма",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "Мы отправили 6-значный код на ${widget.email}",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 32),
-              PinCodeTextField(
-                appContext: context,
-                length: 6,
-                keyboardType: TextInputType.number,
-                animationType: AnimationType.fade,
-                pinTheme: PinTheme(
-                  shape: PinCodeFieldShape.box,
-                  borderRadius: BorderRadius.circular(10),
-                  fieldHeight: 50,
-                  fieldWidth: 45,
-                  activeFillColor:
-                  isDark ? const Color(0xFF1F1F1F) : Colors.white,
-                  selectedFillColor:
-                  isDark ? const Color(0xFF1F1F1F) : Colors.white,
-                  inactiveFillColor:
-                  isDark ? const Color(0xFF1F1F1F) : Colors.white,
-                  activeColor: Theme.of(context).primaryColor,
-                  selectedColor: Theme.of(context).primaryColor,
-                  inactiveColor: Colors.grey,
-                ),
-                animationDuration: const Duration(milliseconds: 300),
-                enableActiveFill: true,
-                onChanged: (value) {
-                  setState(() => _code = value);
-                },
-              ),
+              _buildHeader(),
+              _buildCodeField(),
               if (_errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -162,44 +215,11 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                       style: const TextStyle(color: Colors.red)),
                 ),
               const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _loading || _code.length != 6 ? null : _checkCode,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: _loading
-                    ? const CircularProgressIndicator()
-                    : const Text("Подтвердить",
-                    style: TextStyle(fontSize: 18, color: Colors.black)),
-              ),
+              _buildConfirmButton(),
               const SizedBox(height: 16),
-              TextButton(
-                onPressed: _canResend ? _sendVerificationCode : null,
-                child: Text(
-                  _canResend
-                      ? "Отправить ещё раз"
-                      : "Можно повторить через $_secondsLeft сек",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _canResend ? Theme.of(context).primaryColor : Colors.grey,
-                    decoration:
-                    _canResend ? TextDecoration.underline : TextDecoration.none,
-                  ),
-                ),
-              ),
+              _buildResendButton(),
               const SizedBox(height: 16),
-              TextButton(
-                onPressed: widget.onSkip,
-                child: const Text(
-                  "Продолжить без подтверждения",
-                  style: TextStyle(
-                      fontSize: 16, decoration: TextDecoration.underline),
-                ),
-              ),
+              _buildSkipButton(),
             ],
           ),
         ),
