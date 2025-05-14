@@ -702,6 +702,45 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     return await ApiService.fetchSubscriptionById(subscriptionId);
   }
 
+  Future<void> saveEditedSubscription(Subscription oldSubscription) async {
+    _isCreating = true;
+    notifyListeners();
+
+    final updated = oldSubscription.copyWith(
+      title: _title,
+      description: _description,
+      sources: _selectedSources,
+      tags: _selectedTags,
+      followers: _followers,
+      public: _isPublic,
+      subscribeOptions: SubscribeOptions(
+        sendToMail: _sendToMail,
+        mobileNotifications: _mobileNotifications,
+        subscribed: oldSubscription.subscribeOptions.subscribed,
+      ),
+      // TODO при расширении функционала добавить owner
+      owner: oldSubscription.owner,
+    );
+
+    try {
+      await ApiService.updateSubscription(updated);
+
+      final index =
+      _subscriptions.indexWhere((sub) => sub.id == updated.id);
+      if (index != -1) {
+        _subscriptions[index] = updated;
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Ошибка при обновлении подписки: $e');
+      rethrow;
+    } finally {
+      _isCreating = false;
+      notifyListeners();
+    }
+  }
+
   void clear() {
     _subscriptions.clear();
     _selectedSources.clear();

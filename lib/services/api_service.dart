@@ -399,6 +399,28 @@ class ApiService {
     }
   }
 
+  /// Обновление подписки
+  static Future<void> updateSubscription(Subscription subscription) async {
+    final data = {
+      "title": subscription.title,
+      "description": subscription.description,
+      "sources": subscription.sources,
+      "tags": subscription.tags,
+      "followers": subscription.followers
+          .map((email) => {"username": email})
+          .toList(),
+      "public": subscription.public,
+      "subscribe_options": {
+        "send_to_mail": subscription.subscribeOptions.sendToMail,
+        "mobile_notifications": subscription.subscribeOptions.mobileNotifications,
+      },
+      "owner": subscription.owner,
+    };
+
+    await _dio.put('/subscriptions/${subscription.id}/update', data: data);
+  }
+
+
   /// Проверка необходимости подтверждения email
   static Future<bool> needsEmailConfirmation() async {
     final response = await _dio.get("/users/check_verification");

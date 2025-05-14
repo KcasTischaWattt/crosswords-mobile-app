@@ -74,23 +74,30 @@ class _DigestEditPageState extends State<DigestEditPage> {
         .setCurrentFollowerInput(_recipientController.text);
   }
 
-  void _saveChanges() {
+  void _saveChanges() async {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
 
-    Subscription updatedSubscription = widget.subscription.copyWith(
-      title: provider.title,
-      description: provider.description,
-      followers: provider.followers,
-      subscribeOptions: widget.subscription.subscribeOptions.copyWith(
-        sendToMail: provider.sendToMail,
-        mobileNotifications: provider.mobileNotifications,
-      ),
-      public: provider.isPublic,
-    );
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
 
-    provider.updateSubscription(updatedSubscription);
-    Navigator.pop(context);
+      await provider.saveEditedSubscription(widget.subscription);
+
+      if (!mounted) return;
+      Navigator.pop(context);
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Не удалось сохранить изменения: $e")),
+      );
+    }
   }
+
 
   void _resetFilters() {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
