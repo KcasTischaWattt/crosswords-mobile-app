@@ -2,6 +2,7 @@ import 'package:crosswords/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
+import 'email_verification_page.dart';
 
 class RegisterPage extends StatefulWidget {
   final Future<void> Function() onRegisterSuccess;
@@ -42,7 +43,21 @@ class _RegisterPageState extends State<RegisterPage> {
         _passwordController.text,
       );
 
-      await widget.onRegisterSuccess();
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => EmailVerificationPage(
+          email: _emailController.text.trim(),
+          onVerificationSuccess: () {
+            Navigator.of(context).pop();
+            widget.onRegisterSuccess();
+          },
+          onSkip: () {
+            Navigator.of(context).pop();
+            widget.onRegisterSuccess();
+          },
+          toggleTheme: widget.toggleTheme,
+          isDarkMode: widget.isDarkMode,
+        ),
+      ));
 
       final ctx = context;
       Provider.of<AuthProvider>(ctx, listen: false).setAuthenticated(true);
