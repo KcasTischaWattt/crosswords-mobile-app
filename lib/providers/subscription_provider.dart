@@ -741,6 +741,22 @@ class SubscriptionProvider extends ChangeNotifier implements FilterProvider {
     }
   }
 
+  Future<Subscription> resetToOriginalState(int subscriptionId) async {
+    final fresh = await fetchSubscriptionById(subscriptionId);
+
+    setTitle(fresh.title);
+    setDescription(fresh.description);
+    setFollowers(fresh.followers);
+    setSendToMail(fresh.subscribeOptions.sendToMail);
+    setMobileNotifications(fresh.subscribeOptions.mobileNotifications);
+    setSources(fresh.sources);
+    setTags(fresh.tags);
+    setIsPublic(fresh.public);
+    setOwner(fresh.owner);
+
+    return fresh;
+  }
+
   void clear() {
     _subscriptions.clear();
     _selectedSources.clear();

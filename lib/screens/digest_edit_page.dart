@@ -99,13 +99,31 @@ class _DigestEditPageState extends State<DigestEditPage> {
   }
 
 
-  void _resetFilters() {
+  void _resetFilters() async {
     final provider = Provider.of<SubscriptionProvider>(context, listen: false);
-    provider.resetAndAddDefault();
 
-    _titleController.text = provider.title;
-    _descriptionController.text = provider.description;
-    _recipientController.text = provider.currentFollowerInput;
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final fresh = await provider.resetToOriginalState(widget.subscription.id);
+
+      _titleController.text = fresh.title;
+      _descriptionController.text = fresh.description;
+      _recipientController.text = "";
+
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Не удалось сбросить изменения: $e")),
+      );
+    }
   }
 
   void _confirmResetFilters() {
