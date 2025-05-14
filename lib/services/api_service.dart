@@ -399,6 +399,12 @@ class ApiService {
     }
   }
 
+  /// Проверка необходимости подтверждения email
+  static Future<bool> needsEmailConfirmation() async {
+    final response = await _dio.get("/users/check_verification");
+    return response.data['needs_confirmation'] ?? false;
+  }
+
   /// GET запрос к API
   static Future<Response> get(String endpoint) async {
     return await _dio.get(endpoint);

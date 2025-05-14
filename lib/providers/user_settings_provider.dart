@@ -9,6 +9,7 @@ class UserSettingsProvider extends ChangeNotifier {
   bool _mobileNotifications = false;
   bool _personalSendToMail = false;
   bool _personalMobileNotifications = false;
+  bool _needsConfirmation = false;
 
   bool _isLoading = false;
   bool _isPasswordChanging = false;
@@ -29,6 +30,8 @@ class UserSettingsProvider extends ChangeNotifier {
   bool get isPasswordChanging => _isPasswordChanging;
 
   bool get isEmailChanging => _isEmailChanging;
+
+  bool get needsConfirmation => _needsConfirmation;
 
   Future<void> loadSettings() async {
     try {
@@ -113,6 +116,7 @@ class UserSettingsProvider extends ChangeNotifier {
     }
   }
 
+  /// Смена почты пользователя
   Future<String?> changeEmail(String newEmail) async {
     if (newEmail.isEmpty) {
       return 'Пожалуйста, заполните поле почты.';
@@ -134,5 +138,14 @@ class UserSettingsProvider extends ChangeNotifier {
       _isEmailChanging = false;
       notifyListeners();
     }
+  }
+
+  /// Проверка необходимости подтверждения почты
+  Future<void> loadVerificationStatus() async {
+    try {
+      final result = await ApiService.needsEmailConfirmation();
+      _needsConfirmation = result;
+      notifyListeners();
+    } catch (_) {}
   }
 }
