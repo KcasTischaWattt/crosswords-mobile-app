@@ -234,186 +234,162 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildEmailConfirmationWarning(
+      ThemeData theme, UserSettingsProvider userSettingsProvider) {
+    if (!userSettingsProvider.needsConfirmation) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.primaryColor.withOpacity(0.1),
+        border: Border.all(color: theme.primaryColor, width: 1.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.warning_amber_rounded,
+              color: Colors.orange, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Требуется подтверждение",
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                const Text(
+                  "Чтобы получать дайджесты на почту, необходимо подтвердить адрес электронной почты.",
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final email = await ApiService.getCurrentUserEmail();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => EmailVerificationPage(
+                            email: email,
+                            onVerificationSuccess: () {
+                              userSettingsProvider.loadVerificationStatus();
+                              Navigator.of(context).pop();
+                            },
+                            onSkip: () => Navigator.of(context).pop(),
+                            toggleTheme: () => widget.setTheme(
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? ThemeMode.light
+                                  : ThemeMode.dark,
+                            ),
+                            isDarkMode:
+                                Theme.of(context).brightness == Brightness.dark,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.primaryColor,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    icon: const Icon(Icons.email_outlined, color: Colors.black),
+                    label: const Text("Подтвердить почту",
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGeneralSettingsBlock(
+      ThemeData theme, Color cardColor, bool isAuthenticated) {
+    return _buildSettingsBlock(
+      'Общие',
+      [
+        if (isAuthenticated)
+          _buildStaticTile('Сменить почту', '', theme,
+              onTap: _navigateToChangeEmail),
+        if (isAuthenticated)
+          _buildStaticTile('Сменить пароль', '', theme,
+              onTap: _navigateToChangePassword),
+        _buildStaticTile('Язык', 'Русский', theme),
+        _buildStaticTile('Тема', currentThemeName, theme,
+            onTap: _showThemeBottomSheet),
+      ],
+      cardColor,
+    );
+  }
+
+  Widget _buildNotificationsBlock(
+      ThemeData theme, UserSettingsProvider provider, Color cardColor) {
+    return _buildSettingsBlock(
+      'Уведомления и рассылки',
+      [
+        _buildSwitchTile('Разрешить добавлять меня в рассылку',
+            provider.subscribable, provider.setSubscribable, theme),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: provider.subscribable
+              ? Column(
+                  key: ValueKey<bool>(provider.subscribable),
+                  children: [
+                    _buildSwitchTile('Разрешить сторонние уведомления на почту',
+                        provider.sendToMail, provider.setSendToMail, theme),
+                    _buildSwitchTile(
+                        'Разрешить сторонние мобильные уведомления',
+                        provider.mobileNotifications,
+                        provider.setMobileNotifications,
+                        theme),
+                  ],
+                )
+              : const SizedBox.shrink(),
+        ),
+        _buildSwitchTile('Разрешить уведомления на почту',
+            provider.personalSendToMail, provider.setPersonalSendToMail, theme),
+        _buildSwitchTile(
+            'Разрешить мобильные уведомления',
+            provider.personalMobileNotifications,
+            provider.setPersonalMobileNotifications,
+            theme),
+        _buildStaticTile('Настройки уведомлений', '', theme,
+            onTap: _navigateToNotificationSettings),
+      ],
+      cardColor,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cardColor =
         theme.bottomNavigationBarTheme.backgroundColor ?? Colors.grey[900];
     final isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
-    final userSettingsProvider =
-        Provider.of<UserSettingsProvider>(context, listen: true);
+    final provider = Provider.of<UserSettingsProvider>(context, listen: true);
 
     return Scaffold(
       appBar: _buildAppBar(),
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: userSettingsProvider.isLoading
+      body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               children: [
-                if (isAuthenticated && userSettingsProvider.needsConfirmation)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.primaryColor.withOpacity(0.1),
-                      border: Border.all(color: theme.primaryColor, width: 1.5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.warning_amber_rounded,
-                            color: Colors.orange, size: 28),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Требуется подтверждение",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                "Чтобы получать дайджесты на почту, необходимо подтвердить адрес электронной почты.",
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              const SizedBox(height: 8),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: ElevatedButton.icon(
-                                  onPressed: () async {
-                                    final email =
-                                        await ApiService.getCurrentUserEmail();
-
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => EmailVerificationPage(
-                                          email: email,
-                                          onVerificationSuccess: () {
-                                            userSettingsProvider
-                                                .loadVerificationStatus();
-                                            Navigator.of(context).pop();
-                                          },
-                                          onSkip: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          toggleTheme: () => widget.setTheme(
-                                              Theme.of(context).brightness ==
-                                                      Brightness.dark
-                                                  ? ThemeMode.light
-                                                  : ThemeMode.dark),
-                                          isDarkMode:
-                                              Theme.of(context).brightness ==
-                                                  Brightness.dark,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: theme.primaryColor,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  icon: const Icon(Icons.email_outlined,
-                                      color: Colors.black),
-                                  label: const Text(
-                                    "Подтвердить почту",
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                _buildSettingsBlock(
-                    'Общие',
-                    [
-                      if (isAuthenticated)
-                        _buildStaticTile('Сменить почту', '', theme,
-                            onTap: _navigateToChangeEmail),
-                      if (isAuthenticated)
-                        _buildStaticTile('Сменить пароль', '', theme,
-                            onTap: _navigateToChangePassword),
-                      _buildStaticTile('Язык', 'Русский', theme),
-                      _buildStaticTile('Тема', currentThemeName, theme,
-                          onTap: _showThemeBottomSheet),
-                    ],
-                    cardColor!),
-                SizedBox(height: 20),
                 if (isAuthenticated)
-                  _buildSettingsBlock(
-                    'Уведомления и рассылки',
-                    [
-                      _buildSwitchTile(
-                        'Разрешить добавлять меня в рассылку',
-                        userSettingsProvider.subscribable,
-                        (value) {
-                          userSettingsProvider.setSubscribable(value);
-                        },
-                        theme,
-                      ),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: userSettingsProvider.subscribable
-                            ? Column(
-                                key: ValueKey<bool>(
-                                    userSettingsProvider.subscribable),
-                                children: [
-                                  _buildSwitchTile(
-                                    'Разрешить сторонние уведомления на почту',
-                                    userSettingsProvider.sendToMail,
-                                    (value) {
-                                      userSettingsProvider.setSendToMail(value);
-                                    },
-                                    theme,
-                                  ),
-                                  _buildSwitchTile(
-                                    'Разрешить сторонние мобильные уведомления',
-                                    userSettingsProvider.mobileNotifications,
-                                    (value) {
-                                      userSettingsProvider
-                                          .setMobileNotifications(value);
-                                    },
-                                    theme,
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                      _buildSwitchTile(
-                        'Разрешить уведомления на почту',
-                        userSettingsProvider.personalSendToMail,
-                        (value) {
-                          userSettingsProvider.setPersonalSendToMail(value);
-                        },
-                        theme,
-                      ),
-                      _buildSwitchTile(
-                        'Разрешить мобильные уведомления',
-                        userSettingsProvider.personalMobileNotifications,
-                        (value) {
-                          userSettingsProvider
-                              .setPersonalMobileNotifications(value);
-                        },
-                        theme,
-                      ),
-                      _buildStaticTile('Настройки уведомлений', '', theme,
-                          onTap: _navigateToNotificationSettings),
-                    ],
-                    cardColor,
-                  ),
+                  _buildEmailConfirmationWarning(theme, provider),
+                _buildGeneralSettingsBlock(theme, cardColor!, isAuthenticated),
+                const SizedBox(height: 20),
+                if (isAuthenticated)
+                  _buildNotificationsBlock(theme, provider, cardColor),
                 const SizedBox(height: 10),
                 _buildAuthButton(context),
                 const SizedBox(height: 16),
