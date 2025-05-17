@@ -4,10 +4,11 @@ import 'package:crosswords/data/constants/tag_icons.dart';
 final List<String> _sources = [
   'Коммерсантъ',
   'Интерфакс',
-  'ЦБ Узбекистан',
-  'ЦБ Таджикистан',
-  'ЦБ Кыргызстан',
-  'ЦБ Азербайджан',
+  'Центробанк Узбекистан',
+  'Центробанк Таджикистан',
+  'Центробанк Кыргызстан',
+  'Центробанк Азербайджан',
+  'Центробанк РФ'
 ];
 
 final List<String> _tags = (tagIcons.keys.toList()..sort());

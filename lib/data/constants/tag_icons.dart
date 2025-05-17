@@ -124,4 +124,5 @@ const Map<String, String> tagIcons = {
   'Спорт': 'assets/icons/sports.png',
   'Спортсмены': 'assets/icons/sports.png',
   'Криптовалюта': 'assets/icons/business_tech.png',
+  'Не определено': 'assets/icons/business_tech.png',
 };
